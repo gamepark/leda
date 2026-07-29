@@ -50,7 +50,7 @@ export default defineConfig(({ mode }) => {
     },
     resolve: {
       alias: {
-        '@gamepark/game-template': path.resolve(__dirname, '../rules/src')
+        '@gamepark/leda': path.resolve(__dirname, '../rules/src')
       },
       dedupe: ['react', 'react-dom', 'react-redux', '@dnd-kit/core', '@emotion/react', 'react-i18next']
     },

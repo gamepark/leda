@@ -1,3 +1,3 @@
-export { GameTemplateRules } from './GameTemplateRules'
-export { GameTemplateOptionsSpec } from './GameTemplateOptions'
-export { GameTemplateSetup } from './GameTemplateSetup'
+export { LedaRules } from './LedaRules'
+export { LedaOptionsSpec } from './LedaOptions'
+export { LedaSetup } from './LedaSetup'

@@ -1,7 +1,7 @@
 import { css } from '@emotion/react'
 import { Clan } from '@gamepark/leda/Clan'
 import { CustomMoveType } from '@gamepark/leda/rules/CustomMoveType'
-import { Dialog, ThemeButton, useLegalMoves, usePlay } from '@gamepark/react-game'
+import { Dialog, PlayMoveButton, ThemeButton, useLegalMoves, usePlay } from '@gamepark/react-game'
 import { CustomMove, isCustomMoveType } from '@gamepark/rules-api'
 import { useTranslation } from 'react-i18next'
 import { clanBacks } from '../material/ClanCardDescription'
@@ -26,19 +26,26 @@ export const ChooseClanDialog = ({ open, close }: ChooseClanDialogProps) => {
   /**
    * Picking at random is a client side shortcut, not a rule: it plays one of the moves the player could have
    * clicked, so the game state cannot tell it apart from a deliberate choice.
+   * This one cannot be a PlayMoveButton: which move it plays is only decided on the click, and drawing it during
+   * the render would make the render impure.
    */
-  const chooseAtRandom = () => play(moves[Math.floor(Math.random() * moves.length)])
+  const chooseAtRandom = () => {
+    play(moves[Math.floor(Math.random() * moves.length)])
+    close()
+  }
 
+  // onPlay closes on the spot: taking a clan creates a deck, shuffles it and draws from it, and the active player
+  // only changes once all of that has finished animating, which is far too late to close the dialog.
   return (
     <Dialog open={open} onBackdropClick={close}>
       <div css={content}>
         <h2 css={title}>{t('clan.choose')}</h2>
         <div css={clanList}>
           {moves.map((move) => (
-            <button key={move.data} css={clanButton} onClick={() => play(move)}>
+            <PlayMoveButton key={move.data} move={move} onPlay={close} css={clanButton}>
               <img src={clanBacks[move.data!]} alt="" css={clanImage} />
               <span>{t(`clan.${move.data}`)}</span>
-            </button>
+            </PlayMoveButton>
           ))}
         </div>
         <ThemeButton css={randomButton} onClick={chooseAtRandom}>

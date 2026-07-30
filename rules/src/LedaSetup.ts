@@ -3,13 +3,12 @@ import { LedaOptions } from './LedaOptions'
 import { LedaRules } from './LedaRules'
 import { LocationType } from './material/LocationType'
 import { MaterialType } from './material/MaterialType'
-import { PlayerColor } from './PlayerColor'
 import { RuleId } from './rules/RuleId'
 
 /**
  * This class creates a new Game based on the game options
  */
-export class LedaSetup extends MaterialGameSetup<PlayerColor, MaterialType, LocationType, LedaOptions> {
+export class LedaSetup extends MaterialGameSetup<number, MaterialType, LocationType, LedaOptions> {
   Rules = LedaRules
 
   setupMaterial(_options: LedaOptions) {

@@ -3,6 +3,14 @@
     "1": "Chats",
     "2": "Pandas",
     "3": "Requins",
-    "4": "Scorpions"
+    "4": "Scorpions",
+    "choose": "Choisissez votre clan",
+    "random": "Au hasard !"
+  },
+  "header": {
+    "choose-clan": {
+      "you": "Choisissez votre clan",
+      "player": "{player} choisit son clan"
+    }
   }
 }

@@ -1,156 +1,20 @@
-import { ActionTileId } from '@gamepark/leda/material/ActionTileId'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
-import { MilitaryVictoryTokenId } from '@gamepark/leda/material/MilitaryVictoryTokenId'
-import { TileId } from '@gamepark/leda/material/TileId'
-import { CardDescription, MaterialDescription, TokenDescription } from '@gamepark/react-game'
-import { MaterialItem } from '@gamepark/rules-api'
-import ActionTileBack from '../images/action-tiles/back.png'
-import ActionTileBottomLeft from '../images/action-tiles/bottom-left.png'
-import ActionTileBottomRight from '../images/action-tiles/bottom-right.png'
-import ActionTileCornersOrCenter from '../images/action-tiles/corners-or-center.png'
-import ActionTileTopLeft from '../images/action-tiles/top-left.png'
-import ActionTileTopRight from '../images/action-tiles/top-right.png'
-import MilitaryVictoryBack from '../images/military-victory/back.png'
-import MilitaryVictoryDoubleVictory from '../images/military-victory/double-victory.png'
-import MilitaryVictoryDraw from '../images/military-victory/draw.png'
-import MilitaryVictoryFlipDesert from '../images/military-victory/flip-desert.png'
-import MilitaryVictoryFood from '../images/military-victory/food.png'
-import MilitaryVictorySpy from '../images/military-victory/spy.png'
-import MilitaryVictoryStealFood from '../images/military-victory/steal-food.png'
-import MilitaryVictoryUpgrade from '../images/military-victory/upgrade.png'
-import MilitaryVictoryVictory from '../images/military-victory/victory.png'
-import PermanentDrawFront from '../images/tiles/recto/permanent-draw.jpg'
-import PermanentFoodFront from '../images/tiles/recto/permanent-food.jpg'
-import PermanentMilitaryFront from '../images/tiles/recto/permanent-military.jpg'
-import PermanentSpecialActivationFront from '../images/tiles/recto/permanent-special-activation.jpg'
-import TemporaryDrawFront from '../images/tiles/recto/temporary-draw.jpg'
-import TemporaryFoodFront from '../images/tiles/recto/temporary-food.jpg'
-import TemporaryMilitaryFront from '../images/tiles/recto/temporary-military.jpg'
-import TemporarySpecialActivationFront from '../images/tiles/recto/temporary-special-activation.jpg'
-import TemporaryUpgradeFront from '../images/tiles/recto/temporary-upgrade.jpg'
-import PermanentDrawBack from '../images/tiles/verso/permanent-draw.jpg'
-import PermanentFoodBack from '../images/tiles/verso/permanent-food.jpg'
-import PermanentMilitaryBack from '../images/tiles/verso/permanent-military.jpg'
-import PermanentSpecialActivationBack from '../images/tiles/verso/permanent-special-activation.jpg'
-import TemporaryDrawBack from '../images/tiles/verso/temporary-draw.jpg'
-import TemporaryFoodBack from '../images/tiles/verso/temporary-food.jpg'
-import TemporaryMilitaryBack from '../images/tiles/verso/temporary-military.jpg'
-import TemporarySpecialActivationBack from '../images/tiles/verso/temporary-special-activation.jpg'
-import TemporaryUpgradeBack from '../images/tiles/verso/temporary-upgrade.jpg'
-import FoodTokenImage from '../images/tokens/food.png'
-
-/**
- * Sizes are in centimeters. The tiles are 7 cm square: their artboards are 700 px at 254 dpi, which is exactly
- * 10 px per millimeter. The other pieces carry no reliable dpi, so their size is an estimate read off the setup
- * illustration of the rulebook; only their ratio comes from the images.
- */
-export const tileSize = 7
-
-/** The 16 double sided tiles of a player's grid. They are square, hence the same width and height. */
-class TileDescription extends CardDescription<number, MaterialType, LocationType, TileId> {
-  width = tileSize
-  height = tileSize
-  borderRadius = 0.5
-
-  images = {
-    [TileId.PermanentDraw]: PermanentDrawFront,
-    [TileId.PermanentSpecialActivation]: PermanentSpecialActivationFront,
-    [TileId.PermanentFood]: PermanentFoodFront,
-    [TileId.PermanentMilitary]: PermanentMilitaryFront,
-    [TileId.TemporaryFood]: TemporaryFoodFront,
-    [TileId.TemporaryDraw]: TemporaryDrawFront,
-    [TileId.TemporaryUpgrade]: TemporaryUpgradeFront,
-    [TileId.TemporarySpecialActivation]: TemporarySpecialActivationFront,
-    [TileId.TemporaryMilitary]: TemporaryMilitaryFront
-  }
-
-  backImages = {
-    [TileId.PermanentDraw]: PermanentDrawBack,
-    [TileId.PermanentSpecialActivation]: PermanentSpecialActivationBack,
-    [TileId.PermanentFood]: PermanentFoodBack,
-    [TileId.PermanentMilitary]: PermanentMilitaryBack,
-    [TileId.TemporaryFood]: TemporaryFoodBack,
-    [TileId.TemporaryDraw]: TemporaryDrawBack,
-    [TileId.TemporaryUpgrade]: TemporaryUpgradeBack,
-    [TileId.TemporarySpecialActivation]: TemporarySpecialActivationBack,
-    [TileId.TemporaryMilitary]: TemporaryMilitaryBack
-  }
-
-  /** A tile shows its back once it has been upgraded, or flipped to its Desert side. */
-  isFlipped(item: Partial<MaterialItem<number, LocationType, TileId>>) {
-    return item.location?.rotation === true
-  }
-}
-
-/** The 5 Action tiles. Their shadow is baked into the images, hence the transparency flag. */
-class ActionTileDescription extends TokenDescription<number, MaterialType, LocationType, ActionTileId> {
-  height = 4
-  ratio = 389 / 663
-  borderRadius = 0.2
-  transparency = true
-
-  images = {
-    [ActionTileId.TopLeft]: ActionTileTopLeft,
-    [ActionTileId.TopRight]: ActionTileTopRight,
-    [ActionTileId.BottomLeft]: ActionTileBottomLeft,
-    [ActionTileId.BottomRight]: ActionTileBottomRight,
-    [ActionTileId.CornersOrCenter]: ActionTileCornersOrCenter
-  }
-
-  backImage = ActionTileBack
-
-  /** The pile between the players is face down: a tile is only visible once revealed. */
-  isFlipped(item: Partial<MaterialItem<number, LocationType, ActionTileId>>) {
-    return item.location?.type === LocationType.ActionTileDeck
-  }
-}
-
-/** The 18 Military Victory tokens. */
-class MilitaryVictoryTokenDescription extends TokenDescription<number, MaterialType, LocationType, MilitaryVictoryTokenId> {
-  width = 2.2
-  ratio = 436 / 409
-  transparency = true
-
-  images = {
-    [MilitaryVictoryTokenId.Victory]: MilitaryVictoryVictory,
-    [MilitaryVictoryTokenId.DoubleVictory]: MilitaryVictoryDoubleVictory,
-    [MilitaryVictoryTokenId.Spy]: MilitaryVictorySpy,
-    [MilitaryVictoryTokenId.FlipDesert]: MilitaryVictoryFlipDesert,
-    [MilitaryVictoryTokenId.Upgrade]: MilitaryVictoryUpgrade,
-    [MilitaryVictoryTokenId.Food]: MilitaryVictoryFood,
-    [MilitaryVictoryTokenId.StealFood]: MilitaryVictoryStealFood,
-    [MilitaryVictoryTokenId.Draw]: MilitaryVictoryDraw
-  }
-
-  backImage = MilitaryVictoryBack
-
-  /** The pile between the players is face down. A token a player has won is face up. */
-  isFlipped(item: Partial<MaterialItem<number, LocationType, MilitaryVictoryTokenId>>) {
-    return item.location?.type === LocationType.MilitaryVictoryDeck
-  }
-}
-
-/** Food has no id and no back: in the game state it only ever exists in front of a player. */
-class FoodTokenDescription extends TokenDescription<number, MaterialType, LocationType> {
-  width = 1.9
-  ratio = 317 / 359
-  transparency = true
-  image = FoodTokenImage
-
-  /**
-   * The reserve is not part of the game state, since it is unlimited (see MaterialType.FoodToken).
-   * This pile of 20 exists in the app only: it never changes, whatever the players own.
-   */
-  staticItem = { location: { type: LocationType.FoodSupply }, quantity: 20 }
-
-  /** Food a player gains or spends is animated from and to the reserve rather than fading in and out. */
-  stockLocation = { type: LocationType.FoodSupply }
-}
+import { MaterialDescription } from '@gamepark/react-game'
+import { ActionTileDescription } from './ActionTileDescription'
+import { ClanCardDescription } from './ClanCardDescription'
+import { FoodTokenDescription } from './FoodTokenDescription'
+import { MilitaryVictoryTokenDescription } from './MilitaryVictoryTokenDescription'
+import { SharkTokenDescription } from './SharkTokenDescription'
+import { TileDescription } from './TileDescription'
+import { VictoryConditionCardDescription } from './VictoryConditionCardDescription'
 
 export const Material: Partial<Record<MaterialType, MaterialDescription<number, MaterialType, LocationType>>> = {
   [MaterialType.Tile]: new TileDescription(),
   [MaterialType.ActionTile]: new ActionTileDescription(),
+  [MaterialType.ClanCard]: new ClanCardDescription(),
+  [MaterialType.VictoryConditionCard]: new VictoryConditionCardDescription(),
   [MaterialType.MilitaryVictoryToken]: new MilitaryVictoryTokenDescription(),
-  [MaterialType.FoodToken]: new FoodTokenDescription()
+  [MaterialType.FoodToken]: new FoodTokenDescription(),
+  [MaterialType.SharkToken]: new SharkTokenDescription()
 }

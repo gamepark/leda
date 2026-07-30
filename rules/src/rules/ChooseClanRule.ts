@@ -37,7 +37,10 @@ export class ChooseClanRule extends PlayerTurnRule<number, MaterialType, Locatio
     if (clan === undefined) return []
     const player = this.player
     return [
-      ...this.material(MaterialType.ClanCard).createItems(clanCards(clan).map((id) => ({ id, location: { type: LocationType.PlayerDeck, player } }))),
+      // A whole deck appears at once: one move rather than one per card.
+      this.material(MaterialType.ClanCard).createItemsAtOnce(
+        clanCards(clan).map((front) => ({ id: { front, back: clan }, location: { type: LocationType.PlayerDeck, player } }))
+      ),
       ...(clan === Clan.Shark
         ? [this.material(MaterialType.SharkToken).createItem({ location: { type: LocationType.PlayerSharkSupply, player }, quantity: sharkTokens })]
         : []),

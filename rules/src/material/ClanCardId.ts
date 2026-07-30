@@ -1,3 +1,5 @@
+import type { Clan } from '../Clan'
+
 /**
  * The clan cards a player draws and then plays onto their grid: 13 for the Cats, 11 for each other clan.
  * The Victory condition card of a clan is not one of them, it is a material type of its own.
@@ -97,4 +99,14 @@ export enum ClanCardId {
   ScorpionPortalSwap,
   /** Portal, cost 9 minus your number of Military Victory tokens. No player may gain a Military Victory token this round. */
   ScorpionPortalBlockMilitaryVictory
+}
+
+/**
+ * A clan card is identified by both of its faces. The clan is redundant with the front, which already encodes it,
+ * but it has to be a field of its own: hiding a card removes its front, and what is left has to be enough to draw
+ * its back, which is the emblem of its clan.
+ */
+export type ClanCardItemId = {
+  front: ClanCardId
+  back: Clan
 }

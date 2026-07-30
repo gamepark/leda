@@ -1,6 +1,7 @@
 import {
+  hideFront,
+  hideFrontToOthers,
   hideItemId,
-  hideItemIdToOthers,
   MaterialGame,
   MaterialMove,
   PositiveSequenceStrategy,
@@ -29,6 +30,10 @@ export class LedaRules
    * Hiding is what makes a face down pile actually face down: without it the ids travel to the clients, which could
    * read the order of a pile, and a Shuffle would be sent with its result, which the client cannot predict.
    * A hand is secret rather than hidden: its owner sees it, the opponent does not.
+   *
+   * The Action tiles and the Military Victory tokens all share one back, so hiding their whole id is enough.
+   * A clan card does not: only its front is hidden, so that the clan it belongs to survives and its back can still
+   * be drawn. That is what the composite id of {@link ClanCardItemId} is for.
    */
   hidingStrategies = {
     [MaterialType.ActionTile]: {
@@ -38,8 +43,8 @@ export class LedaRules
       [LocationType.MilitaryVictoryDeck]: hideItemId
     },
     [MaterialType.ClanCard]: {
-      [LocationType.PlayerDeck]: hideItemId,
-      [LocationType.PlayerHand]: hideItemIdToOthers
+      [LocationType.PlayerDeck]: hideFront,
+      [LocationType.PlayerHand]: hideFrontToOthers
     }
   }
 

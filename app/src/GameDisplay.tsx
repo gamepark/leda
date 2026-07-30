@@ -8,7 +8,7 @@ export function GameDisplay() {
   const margin = { top: 7, left: 0, right: 0, bottom: 0 }
   return (
     <>
-      <GameTable xMin={-38.5} xMax={38.5} yMin={-20} yMax={26} margin={margin} css={process.env.NODE_ENV === 'development' && tableBorder}>
+      <GameTable xMin={-40.4} xMax={40.4} yMin={-22} yMax={17} margin={margin} css={process.env.NODE_ENV === 'development' && tableBorder}>
         <GameTableNavigation css={navigation} />
         <PlayerPanels />
         {process.env.NODE_ENV === 'development' && <DevToolsHub fabBottom="calc(5em)" />}

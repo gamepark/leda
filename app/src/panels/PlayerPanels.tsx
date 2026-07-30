@@ -52,7 +52,7 @@ const clanPanel = (clan?: Clan) => {
  */
 const panelPosition = (index: number) => css`
   position: absolute;
-  bottom: 1em;
-  ${index === 0 ? 'left: 1em;' : 'right: 1em;'}
+  bottom: 2em;
+  ${index === 0 ? 'left: 2em;' : 'right: 2em;'}
   width: 28em;
 `

@@ -3,6 +3,7 @@ import { Clan, clanCards, playableClans } from '../Clan'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { CustomMoveType } from './CustomMoveType'
+import { RuleId } from './RuleId'
 
 /** The Shark clan comes with 9 tokens of its own. The other clans have no extra material. */
 const sharkTokens = 9
@@ -68,14 +69,15 @@ export class ChooseClanRule extends PlayerTurnRule<number, MaterialType, Locatio
     ]
   }
 
+  /** Always drawn from the lowest x, which is the top of the pile the DeckLocator draws. */
   get deck() {
-    return this.material(MaterialType.ClanCard).location(LocationType.PlayerDeck).player(this.player)
+    return this.material(MaterialType.ClanCard).location(LocationType.PlayerDeck).player(this.player).sort((card) => card.location.x!)
   }
 
+  /** The opponent picks their own clan, then both players look at their starting hand at the same time. */
   nextStep() {
     const opponent = this.nextPlayer
-    if (!this.hasClan(opponent)) return [this.startPlayerTurn(this.game.rule!.id, opponent)]
-    // TODO: both players are ready. Next comes the mulligan of setup step 6, then the first round.
-    return []
+    if (!this.hasClan(opponent)) return [this.startPlayerTurn(RuleId.ChooseClan, opponent)]
+    return [this.startSimultaneousRule(RuleId.Mulligan)]
   }
 }

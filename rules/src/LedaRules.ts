@@ -11,6 +11,7 @@ import {
 import { LocationType } from './material/LocationType'
 import { MaterialType } from './material/MaterialType'
 import { ChooseClanRule } from './rules/ChooseClanRule'
+import { MulliganRule } from './rules/MulliganRule'
 import { RuleId } from './rules/RuleId'
 
 /**
@@ -22,7 +23,8 @@ export class LedaRules
   implements TimeLimit<MaterialGame<number, MaterialType, LocationType>, MaterialMove<number, MaterialType, LocationType>, number>
 {
   rules = {
-    [RuleId.ChooseClan]: ChooseClanRule
+    [RuleId.ChooseClan]: ChooseClanRule,
+    [RuleId.Mulligan]: MulliganRule
   }
 
   /**

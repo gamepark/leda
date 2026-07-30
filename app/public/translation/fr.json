@@ -9,8 +9,13 @@
   },
   "header": {
     "choose-clan": {
-      "you": "Choisissez votre clan",
+      "you": "<reopen>Choisissez votre clan</reopen>",
       "player": "{player} choisit son clan"
+    },
+    "mulligan": {
+      "you": "Gardez-vous ces cartes ? <keep>Garder</keep> <redraw>Remélanger</redraw>",
+      "player": "{player} regarde sa main de départ",
+      "players": "Les joueurs regardent leur main de départ"
     }
   }
 }

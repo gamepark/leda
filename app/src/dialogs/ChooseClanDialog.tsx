@@ -7,12 +7,18 @@ import { useTranslation } from 'react-i18next'
 import { clanBacks } from '../material/ClanCardDescription'
 import { copper } from '../theme'
 
+type ChooseClanDialogProps = {
+  open: boolean
+  close: () => void
+}
+
 /**
  * Setup step 6: the player picks a clan among those still in the box.
  * A clan is shown by the back of its cards, which is its emblem, and which is also the back of the Victory
  * condition card the player is about to take.
+ * Opening and closing is owned by ChooseClanHeader, which is what reopens the dialog once it has been dismissed.
  */
-export const ChooseClanDialog = () => {
+export const ChooseClanDialog = ({ open, close }: ChooseClanDialogProps) => {
   const { t } = useTranslation()
   const play = usePlay()
   const moves = useLegalMoves<CustomMove<CustomMoveType, Clan>>(isCustomMoveType(CustomMoveType.ChooseClan))
@@ -24,7 +30,7 @@ export const ChooseClanDialog = () => {
   const chooseAtRandom = () => play(moves[Math.floor(Math.random() * moves.length)])
 
   return (
-    <Dialog open={moves.length > 0}>
+    <Dialog open={open} onBackdropClick={close}>
       <div css={content}>
         <h2 css={title}>{t('clan.choose')}</h2>
         <div css={clanList}>
@@ -85,8 +91,10 @@ const clanImage = css`
   box-shadow: 0 0.15em 0.4em rgba(0, 0, 0, 0.45);
 `
 
+/** Sized between the clan labels and the title, so it reads as a choice of its own rather than as a footnote. */
 const randomButton = css`
   display: block;
-  margin: 1.5em auto 0;
-  font-size: 1.6em;
+  margin: 1.2em auto 0;
+  font-size: 2.2em;
+  padding: 0.4em 1.2em;
 `

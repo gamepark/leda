@@ -19,6 +19,7 @@ export const parchmentDark = '#d7c6ae'
 export const copper = '#bd6e43'
 export const copperHover = '#a6613b'
 export const copperActive = '#905433'
+export const copperLight = '#e9cfb2'
 export const ink = '#231f20'
 export const deepBlue = '#004670'
 
@@ -34,6 +35,34 @@ export const clanColors: Partial<Record<Clan, string>> = {
 
 export const clanGold = '#e8c851'
 
+/**
+ * Buttons over the parchment surfaces: ink label in a copper outline, filling with a light copper tint on hover.
+ * Contrast ratios: 12.2 at rest, 10.9 on hover, 4.5 while pressed.
+ */
+const parchmentButtons = css`
+  color: ${ink};
+  background: transparent;
+  border: 0.08em solid ${copper};
+  border-radius: 2em;
+  font-weight: 700;
+  transition:
+    background-color 0.1s ease-in-out,
+    color 0.1s ease-in-out;
+
+  &:not(:disabled) {
+    &:hover,
+    &:focus {
+      background: ${copperLight};
+      color: ${ink};
+    }
+
+    &:active {
+      background: ${copperActive};
+      color: ${parchment};
+    }
+  }
+`
+
 /** The background of the table is left alone: it is the cover art of the game, not something the rulebook dictates. */
 export const ledaTheme: LedaTheme = {
   dialog: {
@@ -46,14 +75,21 @@ export const ledaTheme: LedaTheme = {
       box-shadow:
         inset 0 0 0 0.12em ${parchmentDark},
         0 0.5em 1.5em rgba(0, 0, 0, 0.55);
-    `
+    `,
+    /**
+     * Repeated here even though it is the same as theme.buttons, because a Dialog composes its buttons as
+     * [base, theme.buttons, theme.dialog.buttons] with the theme of the tree it is mounted in. The clan dialog is
+     * mounted inside the header, whose ThemeProvider replaces theme.buttons with the recipe for the dark bar, so
+     * this last entry is what keeps the dialog buttons readable on parchment wherever the dialog is rendered from.
+     */
+    buttons: parchmentButtons
   },
 
   palette: {
     primary: copper,
     primaryHover: copperHover,
     primaryActive: copperActive,
-    primaryLight: '#e9cfb2',
+    primaryLight: copperLight,
     primaryLighter: '#f4e8d6',
     surface: parchment,
     onSurface: ink,
@@ -61,30 +97,34 @@ export const ledaTheme: LedaTheme = {
     onSurfaceActive: '#dbb08f'
   },
 
-  /** Buttons read as parchment labels: copper outline, filling with copper on hover. */
-  buttons: css`
-    color: ${ink};
-    background: transparent;
-    border: 0.08em solid ${copper};
-    border-radius: 2em;
-    font-weight: 700;
-    transition:
-      background-color 0.1s ease-in-out,
-      color 0.1s ease-in-out;
+  /** The game wide button recipe, for everything that is not the header bar. */
+  buttons: parchmentButtons,
 
-    &:not(:disabled) {
-      &:hover,
-      &:focus {
-        background: ${copper};
-        color: ${parchment};
-      }
+  /**
+   * The header bar is dark, so the recipe above would put a near black label on it: 1.1 of contrast, unreadable
+   * until hovered. Over the bar the label is parchment instead, and hovering fills the button with parchment.
+   * Contrast ratios: 11.3 at rest, 12.2 on hover, 4.5 while pressed.
+   */
+  header: {
+    buttons: css`
+      color: ${parchment};
+      background: transparent;
+      border: 0.08em solid ${copper};
 
-      &:active {
-        background: ${copperActive};
-        color: ${parchment};
+      &:not(:disabled) {
+        &:hover,
+        &:focus {
+          background: ${parchment};
+          color: ${ink};
+        }
+
+        &:active {
+          background: ${copperActive};
+          color: ${parchment};
+        }
       }
-    }
-  `,
+    `
+  },
 
   /** The panels sit right next to the grids, on the same parchment as the dialogs. */
   playerPanel: {

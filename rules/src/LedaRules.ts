@@ -1,4 +1,12 @@
-import { MaterialGame, MaterialMove, MaterialRules, PositiveSequenceStrategy, TimeLimit } from '@gamepark/rules-api'
+import {
+  hideItemId,
+  hideItemIdToOthers,
+  MaterialGame,
+  MaterialMove,
+  PositiveSequenceStrategy,
+  SecretMaterialRules,
+  TimeLimit
+} from '@gamepark/rules-api'
 import { LocationType } from './material/LocationType'
 import { MaterialType } from './material/MaterialType'
 import { ChooseClanRule } from './rules/ChooseClanRule'
@@ -9,11 +17,30 @@ import { RuleId } from './rules/RuleId'
  * It must follow Game Park "Rules" API so that the Game Park server can enforce the rules.
  */
 export class LedaRules
-  extends MaterialRules<number, MaterialType, LocationType>
+  extends SecretMaterialRules<number, MaterialType, LocationType>
   implements TimeLimit<MaterialGame<number, MaterialType, LocationType>, MaterialMove<number, MaterialType, LocationType>, number>
 {
   rules = {
     [RuleId.ChooseClan]: ChooseClanRule
+  }
+
+  /**
+   * What is face down on the table, and what a player holds in hand.
+   * Hiding is what makes a face down pile actually face down: without it the ids travel to the clients, which could
+   * read the order of a pile, and a Shuffle would be sent with its result, which the client cannot predict.
+   * A hand is secret rather than hidden: its owner sees it, the opponent does not.
+   */
+  hidingStrategies = {
+    [MaterialType.ActionTile]: {
+      [LocationType.ActionTileDeck]: hideItemId
+    },
+    [MaterialType.MilitaryVictoryToken]: {
+      [LocationType.MilitaryVictoryDeck]: hideItemId
+    },
+    [MaterialType.ClanCard]: {
+      [LocationType.PlayerDeck]: hideItemId,
+      [LocationType.PlayerHand]: hideItemIdToOthers
+    }
   }
 
   /**

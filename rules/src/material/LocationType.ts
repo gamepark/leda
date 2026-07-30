@@ -12,6 +12,13 @@ export enum LocationType {
   MilitaryVictoryDeck,
 
   /**
+   * The Food reserve near the play area. No item ever goes here: the reserve is not modelled
+   * (see {@link MaterialType.FoodToken}). The app displays a fixed pile of Food there, and Food that a player
+   * gains or spends is animated from and to this location.
+   */
+  FoodSupply,
+
+  /**
    * A player's 4x4 grid, addressed by x and y in 0..3.
    * Holds the tiles and everything stacked on them: clan cards are played onto a tile (front or Desert
    * face, upgraded or not) or onto another clan card, and Shark tokens are placed on Shark cards.

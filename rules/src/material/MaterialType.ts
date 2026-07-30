@@ -19,7 +19,11 @@ export enum MaterialType {
   /** The 18 Military Victory tokens, won by taking the upper hand during the military conflict. */
   MilitaryVictoryToken,
 
-  /** The 20 Food tokens, the main resource, spent to play clan cards. */
+  /**
+   * The main resource, spent to play clan cards. The box holds 20 of them, but the rules never say what happens
+   * once the supply is empty, so the supply is not modelled: gaining Food creates items, spending it deletes them.
+   * Food only ever exists in {@link LocationType.PlayerFood}.
+   */
   FoodToken,
 
   /** The 9 Shark tokens, only in play if a player took the Shark clan. Placing the last one wins the game. */

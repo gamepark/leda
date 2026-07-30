@@ -1,3 +1,5 @@
+import { getEnumValues } from '@gamepark/rules-api'
+
 /**
  * The 18 Military Victory tokens, shuffled face down between the players.
  *
@@ -26,3 +28,21 @@ export enum MilitaryVictoryTokenId {
   /** x2. 1 Victory symbol, and draw 1 card. */
   Draw
 }
+
+/** How many copies of each token are in the pile. */
+const militaryVictoryTokenQuantities: Record<MilitaryVictoryTokenId, number> = {
+  [MilitaryVictoryTokenId.Victory]: 3,
+  [MilitaryVictoryTokenId.DoubleVictory]: 2,
+  [MilitaryVictoryTokenId.Spy]: 2,
+  [MilitaryVictoryTokenId.FlipDesert]: 2,
+  [MilitaryVictoryTokenId.Upgrade]: 3,
+  [MilitaryVictoryTokenId.Food]: 2,
+  [MilitaryVictoryTokenId.StealFood]: 2,
+  [MilitaryVictoryTokenId.Draw]: 2
+}
+
+/** The 18 Military Victory tokens, before they are shuffled. */
+export const militaryVictoryTokens: MilitaryVictoryTokenId[] = getEnumValues(MilitaryVictoryTokenId).flatMap((token) =>
+  Array.from({ length: militaryVictoryTokenQuantities[token] }, () => token)
+)
+

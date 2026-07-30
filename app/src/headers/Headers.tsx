@@ -1,7 +1,7 @@
 import { RuleId } from '@gamepark/leda/rules/RuleId'
 import { ComponentType } from 'react'
-import { TheFirstStepHeader } from './TheFirstStepHeader'
+import { ChooseClanHeader } from './ChooseClanHeader'
 
 export const Headers: Partial<Record<RuleId, ComponentType>> = {
-  [RuleId.TheFirstStep]: TheFirstStepHeader
+  [RuleId.ChooseClan]: ChooseClanHeader
 }

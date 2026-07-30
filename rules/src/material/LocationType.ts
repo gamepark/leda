@@ -11,9 +11,6 @@ export enum LocationType {
   /** The 18 Military Victory tokens, face down between the players. */
   MilitaryVictoryDeck,
 
-  /** The Food tokens nobody owns yet, near the play area. */
-  FoodSupply,
-
   /**
    * A player's 4x4 grid, addressed by x and y in 0..3.
    * Holds the tiles and everything stacked on them: clan cards are played onto a tile (front or Desert
@@ -36,7 +33,10 @@ export enum LocationType {
   /** The Military Victory tokens a player has won. Their symbols decide who becomes the active player. */
   PlayerMilitaryVictory,
 
-  /** The Food a player owns. */
+  /**
+   * The Food a player owns, the only place Food ever exists. There is no supply to take it from or return it to:
+   * see {@link MaterialType.FoodToken}.
+   */
   PlayerFood,
 
   /** The Shark tokens their owner has not placed on a card yet. */

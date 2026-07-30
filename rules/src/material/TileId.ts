@@ -1,3 +1,5 @@
+import { getEnumValues } from '@gamepark/rules-api'
+
 /**
  * The 16 base tiles a player arranges into their 4x4 grid during setup.
  *
@@ -30,3 +32,20 @@ export enum TileId {
   /** x1. Front: gain 1 Military, then flip to Desert. */
   TemporaryMilitary
 }
+
+/** How many copies of each tile a player owns. */
+const tileQuantities: Record<TileId, number> = {
+  [TileId.PermanentDraw]: 1,
+  [TileId.PermanentSpecialActivation]: 1,
+  [TileId.PermanentFood]: 4,
+  [TileId.PermanentMilitary]: 2,
+  [TileId.TemporaryFood]: 4,
+  [TileId.TemporaryDraw]: 1,
+  [TileId.TemporaryUpgrade]: 1,
+  [TileId.TemporarySpecialActivation]: 1,
+  [TileId.TemporaryMilitary]: 1
+}
+
+/** The 16 tiles of one player, in punchboard order. Both players own the same ones. */
+export const baseTiles: TileId[] = getEnumValues(TileId).flatMap((tile) => Array.from({ length: tileQuantities[tile] }, () => tile))
+

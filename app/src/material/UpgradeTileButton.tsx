@@ -1,6 +1,6 @@
 import { faArrowUp } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { upgradableTiles } from '@gamepark/leda/rules/activation'
+import { upgradableTiles } from '@gamepark/leda/rules/tileChoices'
 import { LedaMenuButton } from './LedaMenuButton'
 import { TileButtonProps } from './TileMenuButton'
 import { tileButtonPosition } from './tileButtonPosition'

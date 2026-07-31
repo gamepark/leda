@@ -12,6 +12,9 @@ import { LocationType } from './material/LocationType'
 import { MaterialType } from './material/MaterialType'
 import { ActivateZoneRule } from './rules/ActivateZoneRule'
 import { ChooseActionRule } from './rules/ChooseActionRule'
+import { EndOfRoundRule } from './rules/EndOfRoundRule'
+import { FlipDesertRule } from './rules/FlipDesertRule'
+import { MilitaryConflictRule } from './rules/MilitaryConflictRule'
 import { ChooseClanRule } from './rules/ChooseClanRule'
 import { MulliganRule } from './rules/MulliganRule'
 import { RuleId } from './rules/RuleId'
@@ -30,7 +33,10 @@ export class LedaRules
     [RuleId.Mulligan]: MulliganRule,
     [RuleId.ChooseAction]: ChooseActionRule,
     [RuleId.ActivateZone]: ActivateZoneRule,
-    [RuleId.UpgradeTile]: UpgradeTileRule
+    [RuleId.MilitaryConflict]: MilitaryConflictRule,
+    [RuleId.EndOfRound]: EndOfRoundRule,
+    [RuleId.UpgradeTile]: UpgradeTileRule,
+    [RuleId.FlipDesert]: FlipDesertRule
   }
 
   /**

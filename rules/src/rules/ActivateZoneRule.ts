@@ -45,7 +45,10 @@ export class ActivateZoneRule extends PlayerTurnRule<number, MaterialType, Locat
     const moves = this.activate(cell, effects)
     // An Upgrade is a choice, so the square hands over to the rule that offers it, and the sequence stops there:
     // that rule hands the player back to this one, whose onRuleStart reads what is left to activate.
-    if (effects[TileEffect.Upgrade]) return [...moves, this.startRule(RuleId.UpgradeTile)]
+    if (effects[TileEffect.Upgrade]) {
+      this.memorize(Memory.NextRule, RuleId.ActivateZone)
+      return [...moves, this.startRule(RuleId.UpgradeTile)]
+    }
     return [...moves, ...this.nextStep()]
   }
 
@@ -102,13 +105,11 @@ export class ActivateZoneRule extends PlayerTurnRule<number, MaterialType, Locat
 
   /**
    * Nothing happens until the player has activated everything they could. Then their opponent activates the same
-   * zone of their own grid, and once both are done the round is over.
+   * zone of their own grid, and once both are done comes the military conflict.
    */
   nextStep(): Move[] {
     if (this.activableCells.length > 0) return []
     if (this.player === this.remind<number>(Memory.RoundPlayer)) return [this.startPlayerTurn(RuleId.ActivateZone, this.nextPlayer)]
-    // TODO: phase 2 is the military conflict and phase 3 the organisation. Until they exist the round ends here.
-    // The player who was not the active one becomes it, which is this player: they activated second.
-    return [this.startPlayerTurn(RuleId.ChooseAction, this.player)]
+    return [this.startRule(RuleId.MilitaryConflict)]
   }
 }

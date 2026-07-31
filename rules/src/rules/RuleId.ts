@@ -25,8 +25,23 @@ export enum RuleId {
   ActivateZone,
 
   /**
-   * An Upgrade effect the player just activated: they turn one of their permanent tiles over, onto its upgraded
-   * side, then go back to activating the rest of the zone.
+   * Phase 2 of a round: the player who gathered the most military symbols during the activation takes the top
+   * Military Victory token, reveals it and resolves its effect. Nothing happens if the players are tied.
    */
-  UpgradeTile
+  MilitaryConflict,
+
+  /** The round is over: the player who was not the active one becomes the active player. */
+  EndOfRound,
+
+  /**
+   * The rules below are not steps of a round: an effect opens one to ask the player something, and it hands the
+   * game back to whatever was in progress (see {@link EffectRule}). Anything may open them: a tile that was
+   * activated, a Military Victory token, or a clan card.
+   */
+
+  /** An Upgrade effect: the player turns one of their permanent tiles over, onto its upgraded side. */
+  UpgradeTile,
+
+  /** A Flip effect: the player turns one of their Deserts back onto its front, where it can be activated again. */
+  FlipDesert
 }

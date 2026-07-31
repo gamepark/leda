@@ -13,5 +13,12 @@ export enum Memory {
   ActivatedCells,
 
   /** The military symbols a player gathered during the activation, until the military conflict compares them. */
-  MilitarySymbols
+  MilitarySymbols,
+
+  /**
+   * Where to go once an effect that asks the player to choose is resolved: the rule that was interrupted, or what
+   * comes after the one that opened the choice. Set by whoever opens such a rule, and forgotten as soon as that
+   * rule hands over (see {@link EffectRule}), so that it holds a rule only while one is actually waiting.
+   */
+  NextRule
 }

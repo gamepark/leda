@@ -28,6 +28,10 @@
     "upgrade-tile": {
       "you": "Améliorez une de vos tuiles permanentes",
       "player": "{player} améliore une de ses tuiles permanentes"
+    },
+    "flip-desert": {
+      "you": "Retournez un de vos Déserts sur sa face recto",
+      "player": "{player} retourne un de ses Déserts"
     }
   }
 }

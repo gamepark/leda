@@ -3,6 +3,7 @@ import { RuleId } from '@gamepark/leda/rules/RuleId'
 import { usePlayerId, useRules } from '@gamepark/react-game'
 import { ActivateTileButton } from './ActivateTileButton'
 import { ChooseActionTileButton } from './ChooseActionTileButton'
+import { FlipDesertButton } from './FlipDesertButton'
 import { UpgradeTileButton } from './UpgradeTileButton'
 
 export type TileButtonProps = {
@@ -31,6 +32,8 @@ export const TileMenuButton = ({ index }: { index: number }) => {
       return <ActivateTileButton index={index} rules={rules} player={me} />
     case RuleId.UpgradeTile:
       return <UpgradeTileButton index={index} rules={rules} player={me} />
+    case RuleId.FlipDesert:
+      return <FlipDesertButton index={index} rules={rules} player={me} />
     default:
       return null
   }

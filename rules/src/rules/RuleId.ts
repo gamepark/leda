@@ -10,5 +10,11 @@ export enum RuleId {
    * Still setup step 6: a player who is not happy with the cards they just drew may, once only, shuffle them back
    * into their deck and draw as many again. Then it is their opponent's turn to pick a clan.
    */
-  Mulligan
+  Mulligan,
+
+  /**
+   * Phase 1 of a round: the active player reveals the top Action tile, then picks one of the zones of 4 squares
+   * it offers. Both players will then activate that zone of their own grid.
+   */
+  ChooseAction
 }

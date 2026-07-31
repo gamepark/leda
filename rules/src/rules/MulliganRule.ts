@@ -2,6 +2,7 @@ import { CustomMove, isCustomMoveType, isMoveItemTypeAtOnce, ItemMove, MaterialM
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { CustomMoveType } from './CustomMoveType'
+import { RuleId } from './RuleId'
 
 /**
  * End of setup step 6: a player who is not happy with the cards they drew may shuffle them back into their deck and
@@ -47,8 +48,8 @@ export class MulliganRule extends SimultaneousRule<number, MaterialType, Locatio
     return this.material(MaterialType.ClanCard).location(LocationType.PlayerDeck).player(player).sort((card) => card.location.x!)
   }
 
+  /** The setup is over. The first round begins, and the first player is the active one. */
   getMovesAfterPlayersDone() {
-    // TODO: the setup is over, the first round begins.
-    return []
+    return [this.startPlayerTurn(RuleId.ChooseAction, this.game.players[0])]
   }
 }

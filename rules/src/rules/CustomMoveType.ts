@@ -6,5 +6,8 @@ export enum CustomMoveType {
   Mulligan,
 
   /** A player keeps their starting hand, which ends their part of the setup. */
-  KeepStartingHand
+  KeepStartingHand,
+
+  /** The active player picks one of the zones the revealed Action tile offers. The data is the {@link ActionZone}. */
+  ChooseAction
 }

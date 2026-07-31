@@ -1,7 +1,8 @@
+import { css } from '@emotion/react'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { TileId } from '@gamepark/leda/material/TileId'
-import { CardDescription } from '@gamepark/react-game'
+import { CardDescription, ItemContext } from '@gamepark/react-game'
 import { MaterialItem } from '@gamepark/rules-api'
 import PermanentDrawFront from '../images/tiles/recto/permanent-draw.jpg'
 import PermanentFoodFront from '../images/tiles/recto/permanent-food.jpg'
@@ -21,6 +22,8 @@ import TemporaryFoodBack from '../images/tiles/verso/temporary-food.jpg'
 import TemporaryMilitaryBack from '../images/tiles/verso/temporary-military.jpg'
 import TemporarySpecialActivationBack from '../images/tiles/verso/temporary-special-activation.jpg'
 import TemporaryUpgradeBack from '../images/tiles/verso/temporary-upgrade.jpg'
+import { copper, parchment } from '../theme'
+import { ActionZoneTileButton } from './ActionZoneTileButton'
 
 /**
  * Sizes are in centimeters. The tiles are 7 cm square: their artboards are 700 px at 254 dpi, which is exactly
@@ -64,4 +67,31 @@ export class TileDescription extends CardDescription<number, MaterialType, Locat
   isFlipped(item: Partial<MaterialItem<number, LocationType, TileId>>) {
     return item.location?.rotation === true
   }
+
+  /**
+   * The squares of the player's own grid always carry their menu: the button inside it is what decides whether
+   * there is anything to offer, and it has to be mounted to do so (see {@link ActionZoneTileButton}).
+   */
+  menuAlwaysVisible = true
+
+  getItemMenu(item: MaterialItem<number, LocationType, TileId>, context: ItemContext<number, MaterialType, LocationType>) {
+    if (item.location.type !== LocationType.PlayerGrid || item.location.player !== context.player) return
+    return <ActionZoneTileButton index={context.index} />
+  }
+
+  /** A square the active player selected is ringed, in their own grid and in their opponent's. */
+  getItemExtraCss(item: MaterialItem<number, LocationType, TileId>) {
+    return item.selected ? selectedTile : undefined
+  }
 }
+
+/**
+ * The ring is as thick as the gap between 2 squares, so that the rings of a selected zone meet and read as one
+ * border drawn around it. The parchment line inside the copper one keeps it visible over any tile artwork.
+ */
+const selectedTile = css`
+  border-radius: 0.5em;
+  box-shadow:
+    0 0 0 0.15em ${parchment},
+    0 0 0 0.3em ${copper};
+`

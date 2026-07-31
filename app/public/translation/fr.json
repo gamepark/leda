@@ -16,6 +16,10 @@
       "you": "Gardez-vous ces cartes ? <keep>Garder</keep> <redraw>Remélanger</redraw>",
       "player": "{player} regarde sa main de départ",
       "players": "Les joueurs regardent leur main de départ"
+    },
+    "choose-action": {
+      "you": "Choisissez la zone à activer puis <validate>Validez</validate>",
+      "player": "{player} choisit la zone à activer"
     }
   }
 }

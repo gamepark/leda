@@ -7,13 +7,11 @@ export function GameDisplay() {
   // left or bottom right corner, over the bottom band of the table where their Food and Military Victory tokens are.
   const margin = { top: 7, left: 0, right: 0, bottom: 0 }
   return (
-    <>
-      <GameTable xMin={-40.4} xMax={40.4} yMin={-22} yMax={17} margin={margin} css={process.env.NODE_ENV === 'development' && tableBorder}>
-        <GameTableNavigation css={navigation} />
-        <PlayerPanels />
-        {process.env.NODE_ENV === 'development' && <DevToolsHub fabBottom="calc(5em)" />}
-      </GameTable>
-    </>
+    <GameTable xMin={-40.4} xMax={40.4} yMin={-22} yMax={17} margin={margin} css={process.env.NODE_ENV === 'development' && tableBorder}>
+      <GameTableNavigation css={navigation} />
+      <PlayerPanels />
+      {process.env.NODE_ENV === 'development' && <DevToolsHub fabBottom="calc(5em)" />}
+    </GameTable>
   )
 }
 

@@ -2,7 +2,8 @@ import { LedaRules } from '@gamepark/leda/LedaRules'
 import { ActionZone, actionTileZones, actionZoneCells, revealedActionTile, zoneContains } from '@gamepark/leda/material/ActionZone'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
-import { Location, MaterialMove, XYCoordinates } from '@gamepark/rules-api'
+import { cellOf, gridTiles, tileAt } from '@gamepark/leda/material/PlayerGrid'
+import { MaterialMove, XYCoordinates } from '@gamepark/rules-api'
 
 /**
  * While the active player picks the zone to activate, they select the squares of their grid one by one, and the
@@ -13,20 +14,12 @@ import { Location, MaterialMove, XYCoordinates } from '@gamepark/rules-api'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
-export const cellOf = (location: Location): XYCoordinates => ({ x: location.x!, y: location.y! })
-
-/** The 16 tiles of a player's grid. Clan cards played on a square are other items: only the tile is selected. */
-const gridTiles = (rules: LedaRules, player: number) => rules.material(MaterialType.Tile).location(LocationType.PlayerGrid).player(player)
-
-const tileAt = (rules: LedaRules, player: number, cell: XYCoordinates) =>
-  gridTiles(rules, player).location((location) => location.x === cell.x && location.y === cell.y)
+/** Clan cards played on a square are other items: only the tile of a square carries the selection. */
+const tiles = (rules: LedaRules) => rules.material(MaterialType.Tile)
 
 /** The squares of their own grid the player has selected so far. */
 export const selectedCells = (rules: LedaRules, player: number): XYCoordinates[] =>
-  gridTiles(rules, player)
-    .selected()
-    .getItems()
-    .map((item) => cellOf(item.location))
+  gridTiles(tiles(rules), player).selected().getItems().map((item) => cellOf(item.location))
 
 /** The zones the Action tile of the round offers. */
 const revealedZones = (rules: LedaRules): ActionZone[] => {
@@ -65,7 +58,7 @@ export const selectCellMoves = (rules: LedaRules, player: number, cell: XYCoordi
 }
 
 const selectCells = (rules: LedaRules, player: number, cells: XYCoordinates[]): Move[] =>
-  cells.flatMap((cell) => tileAt(rules, player, cell).selected(false).selectItems())
+  cells.flatMap((cell) => tileAt(tiles(rules), player, cell).selected(false).selectItems())
 
 /** The selection is undone as a whole: a zone is picked as a block, so there is nothing to take back square by square. */
 export const clearSelectionMoves = (rules: LedaRules): Move[] => rules.material(MaterialType.Tile).selected().unselectItems()

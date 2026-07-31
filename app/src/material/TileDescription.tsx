@@ -1,7 +1,11 @@
 import { css } from '@emotion/react'
+import { zoneContains } from '@gamepark/leda/material/ActionZone'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
+import { cellOf } from '@gamepark/leda/material/PlayerGrid'
 import { TileId } from '@gamepark/leda/material/TileId'
+import { roundZone } from '@gamepark/leda/rules/activation'
+import { RuleId } from '@gamepark/leda/rules/RuleId'
 import { CardDescription, ItemContext } from '@gamepark/react-game'
 import { MaterialItem } from '@gamepark/rules-api'
 import PermanentDrawFront from '../images/tiles/recto/permanent-draw.jpg'
@@ -23,7 +27,7 @@ import TemporaryMilitaryBack from '../images/tiles/verso/temporary-military.jpg'
 import TemporarySpecialActivationBack from '../images/tiles/verso/temporary-special-activation.jpg'
 import TemporaryUpgradeBack from '../images/tiles/verso/temporary-upgrade.jpg'
 import { copper, parchment } from '../theme'
-import { ActionZoneTileButton } from './ActionZoneTileButton'
+import { TileMenuButton } from './TileMenuButton'
 
 /**
  * Sizes are in centimeters. The tiles are 7 cm square: their artboards are 700 px at 254 dpi, which is exactly
@@ -70,13 +74,24 @@ export class TileDescription extends CardDescription<number, MaterialType, Locat
 
   /**
    * The squares of the player's own grid always carry their menu: the button inside it is what decides whether
-   * there is anything to offer, and it has to be mounted to do so (see {@link ActionZoneTileButton}).
+   * there is anything to offer, and it has to be mounted to do so (see {@link TileMenuButton}).
    */
   menuAlwaysVisible = true
 
   getItemMenu(item: MaterialItem<number, LocationType, TileId>, context: ItemContext<number, MaterialType, LocationType>) {
     if (item.location.type !== LocationType.PlayerGrid || item.location.player !== context.player) return
-    return <ActionZoneTileButton index={context.index} />
+    return <TileMenuButton index={context.index} />
+  }
+
+  /**
+   * Once the zone is picked, it shines in both grids until both players have activated it.
+   * Unlike the css below, this is read by the parent of the item on every render, so it is refreshed for every
+   * square as soon as the rules move on, and not only for the squares whose own item changed.
+   */
+  highlight(item: MaterialItem<number, LocationType, TileId>, context: ItemContext<number, MaterialType, LocationType>) {
+    if (context.rules.game.rule?.id !== RuleId.ActivateZone || item.location.type !== LocationType.PlayerGrid) return undefined
+    const zone = roundZone(context.rules)
+    return zone !== undefined && zoneContains(zone, cellOf(item.location))
   }
 
   /** A square the active player selected is ringed, in their own grid and in their opponent's. */

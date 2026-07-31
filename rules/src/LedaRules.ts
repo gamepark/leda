@@ -10,6 +10,7 @@ import {
 } from '@gamepark/rules-api'
 import { LocationType } from './material/LocationType'
 import { MaterialType } from './material/MaterialType'
+import { ActivateZoneRule } from './rules/ActivateZoneRule'
 import { ChooseActionRule } from './rules/ChooseActionRule'
 import { ChooseClanRule } from './rules/ChooseClanRule'
 import { MulliganRule } from './rules/MulliganRule'
@@ -26,7 +27,8 @@ export class LedaRules
   rules = {
     [RuleId.ChooseClan]: ChooseClanRule,
     [RuleId.Mulligan]: MulliganRule,
-    [RuleId.ChooseAction]: ChooseActionRule
+    [RuleId.ChooseAction]: ChooseActionRule,
+    [RuleId.ActivateZone]: ActivateZoneRule
   }
 
   /**

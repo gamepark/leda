@@ -16,5 +16,11 @@ export enum RuleId {
    * Phase 1 of a round: the active player reveals the top Action tile, then picks one of the zones of 4 squares
    * it offers. Both players will then activate that zone of their own grid.
    */
-  ChooseAction
+  ChooseAction,
+
+  /**
+   * Still phase 1: a player activates every square of the chosen zone in their own grid, if possible and in the
+   * order of their choice. The active player of the round goes first, then their opponent does the same.
+   */
+  ActivateZone
 }

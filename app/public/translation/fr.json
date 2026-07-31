@@ -20,6 +20,10 @@
     "choose-action": {
       "you": "Choisissez la zone à activer puis <validate>Validez</validate>",
       "player": "{player} choisit la zone à activer"
+    },
+    "activate-zone": {
+      "you": "Activez les cases de la zone, dans l'ordre de votre choix",
+      "player": "{player} active les cases de la zone"
     }
   }
 }

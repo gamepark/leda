@@ -2,6 +2,7 @@ import { Material, XYCoordinates } from '@gamepark/rules-api'
 import { ActionTileId } from './ActionTileId'
 import { LocationType } from './LocationType'
 import { MaterialType } from './MaterialType'
+import { sameCell } from './PlayerGrid'
 
 /**
  * The zones of 4 squares an Action tile may designate. Rows and columns are numbered like the rulebook does,
@@ -69,8 +70,7 @@ export const actionTileZones: Record<ActionTileId, ActionZone[]> = {
 }
 
 /** Whether a zone covers a given square of a grid. */
-export const zoneContains = (zone: ActionZone, cell: XYCoordinates): boolean =>
-  actionZoneCells[zone].some((zoneCell) => zoneCell.x === cell.x && zoneCell.y === cell.y)
+export const zoneContains = (zone: ActionZone, cell: XYCoordinates): boolean => actionZoneCells[zone].some((zoneCell) => sameCell(zoneCell, cell))
 
 /**
  * The Action tile of the current round: the last one turned face up, which the location strategy numbered highest.

@@ -9,5 +9,8 @@ export enum CustomMoveType {
   KeepStartingHand,
 
   /** The active player picks one of the zones the revealed Action tile offers. The data is the {@link ActionZone}. */
-  ChooseAction
+  ChooseAction,
+
+  /** A player activates one square of the zone in their grid. The data is its {@link XYCoordinates}. */
+  ActivateSquare
 }

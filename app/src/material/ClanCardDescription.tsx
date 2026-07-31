@@ -2,7 +2,7 @@ import { Clan } from '@gamepark/leda/Clan'
 import { ClanCardId, ClanCardItemId } from '@gamepark/leda/material/ClanCardId'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
-import { CardDescription, MaterialContext } from '@gamepark/react-game'
+import { CardDescription, ItemContext, MaterialContext } from '@gamepark/react-game'
 import { MaterialItem } from '@gamepark/rules-api'
 import CatBack from '../images/cards/cat/back.jpg'
 import CatCopyOpponentCard from '../images/cards/cat/cat-copy-opponent-card.jpg'
@@ -42,6 +42,9 @@ import SharkPackRedrawToken from '../images/cards/shark/shark-pack-redraw-token.
 import SharkPackSpy from '../images/cards/shark/shark-pack-spy.jpg'
 import SharkSpyOrTriggerToken from '../images/cards/shark/shark-spy-or-trigger-token.jpg'
 import SharkUpgrade from '../images/cards/shark/shark-upgrade.jpg'
+import { isSpiedByOther } from './spiedItem'
+import { SpiedItemButtons } from './SpiedItemButtons'
+import { SpyPileButton } from './SpyPileButton'
 import { tileSize } from './TileDescription'
 
 /**
@@ -111,7 +114,18 @@ export class ClanCardDescription extends CardDescription<number, MaterialType, L
    */
   isFlipped(item: Partial<MaterialItem<number, LocationType, ClanCardItemId>>, context: MaterialContext) {
     return (
-      item.location?.type === LocationType.PlayerDeck || (item.location?.type === LocationType.PlayerHand && context.player !== item.location.player)
+      item.location?.type === LocationType.PlayerDeck ||
+      (item.location?.type === LocationType.PlayerHand && context.player !== item.location.player) ||
+      isSpiedByOther(item.location, context)
     )
+  }
+
+  /** A player's own deck and the spied card carry the buttons of a Spy effect, which decide whether to show. */
+  menuAlwaysVisible = true
+
+  getItemMenu(item: MaterialItem<number, LocationType, ClanCardItemId>, context: ItemContext<number, MaterialType, LocationType>) {
+    if (item.location.type === LocationType.SpiedItem) return <SpiedItemButtons type={MaterialType.ClanCard} />
+    if (item.location.type !== LocationType.PlayerDeck || item.location.player !== context.player) return
+    return <SpyPileButton type={MaterialType.ClanCard} index={context.index} />
   }
 }

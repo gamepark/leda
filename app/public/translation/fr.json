@@ -1,4 +1,9 @@
 {
+  "spy": {
+    "look": "Scruter",
+    "on-top": "Sur la pile",
+    "under": "Sous la pile"
+  },
   "clan": {
     "1": "Chats",
     "2": "Pandas",
@@ -32,6 +37,14 @@
     "flip-desert": {
       "you": "Retournez un de vos Déserts sur sa face recto",
       "player": "{player} retourne un de ses Déserts"
+    },
+    "spy": {
+      "you": "Scrutez le premier élément d'une pile",
+      "player": "{player} scrute une pile"
+    },
+    "spy-return": {
+      "you": "Remettez cet élément sur ou sous sa pile",
+      "player": "{player} remet l'élément dans sa pile"
     }
   }
 }

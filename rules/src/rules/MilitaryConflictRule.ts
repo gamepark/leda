@@ -14,7 +14,8 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  */
 const tokenChoices: Partial<Record<MilitaryVictoryTokenId, RuleId>> = {
   [MilitaryVictoryTokenId.Upgrade]: RuleId.UpgradeTile,
-  [MilitaryVictoryTokenId.FlipDesert]: RuleId.FlipDesert
+  [MilitaryVictoryTokenId.FlipDesert]: RuleId.FlipDesert,
+  [MilitaryVictoryTokenId.Spy]: RuleId.Spy
 }
 
 /**
@@ -57,18 +58,17 @@ export class MilitaryConflictRule extends MaterialRulesPart<number, MaterialType
         return this.foodOf(this.opponentOf(player)).moveItems({ type: LocationType.PlayerFood, player }, 1)
       default:
         // Victory and DoubleVictory are worth their symbols and nothing else.
-        // TODO: Spy lets the player look at the top of a pile of their choice, and put it back on top or under.
         return []
     }
   }
 
-  /** The pile is drawn from the lowest x, which is the top of the stack the DeckLocator draws. */
+  /** deck() draws from the highest x, which is the top of the pile the DeckLocator stacks. */
   get deck() {
-    return this.material(MaterialType.MilitaryVictoryToken).location(LocationType.MilitaryVictoryDeck).sort((token) => token.location.x!)
+    return this.material(MaterialType.MilitaryVictoryToken).location(LocationType.MilitaryVictoryDeck).deck()
   }
 
   deckOf(player: number) {
-    return this.material(MaterialType.ClanCard).location(LocationType.PlayerDeck).player(player).sort((card) => card.location.x!)
+    return this.material(MaterialType.ClanCard).location(LocationType.PlayerDeck).player(player).deck()
   }
 
   foodOf(player: number) {

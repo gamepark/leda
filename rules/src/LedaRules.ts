@@ -2,6 +2,7 @@ import {
   hideFront,
   hideFrontToOthers,
   hideItemId,
+  hideItemIdToOthers,
   MaterialGame,
   MaterialMove,
   PositiveSequenceStrategy,
@@ -18,6 +19,7 @@ import { MilitaryConflictRule } from './rules/MilitaryConflictRule'
 import { ChooseClanRule } from './rules/ChooseClanRule'
 import { MulliganRule } from './rules/MulliganRule'
 import { RuleId } from './rules/RuleId'
+import { SpyRule } from './rules/SpyRule'
 import { UpgradeTileRule } from './rules/UpgradeTileRule'
 
 /**
@@ -36,7 +38,8 @@ export class LedaRules
     [RuleId.MilitaryConflict]: MilitaryConflictRule,
     [RuleId.EndOfRound]: EndOfRoundRule,
     [RuleId.UpgradeTile]: UpgradeTileRule,
-    [RuleId.FlipDesert]: FlipDesertRule
+    [RuleId.FlipDesert]: FlipDesertRule,
+    [RuleId.Spy]: SpyRule
   }
 
   /**
@@ -48,17 +51,23 @@ export class LedaRules
    * The Action tiles and the Military Victory tokens all share one back, so hiding their whole id is enough.
    * A clan card does not: only its front is hidden, so that the clan it belongs to survives and its back can still
    * be drawn. That is what the composite id of {@link ClanCardItemId} is for.
+   *
+   * An item a Spy effect took off a pile is secret the same way a hand is: whoever took it sees it, and nobody
+   * else does. That is the whole of the effect, so it needs an entry for each of the 3 piles it can look into.
    */
   hidingStrategies = {
     [MaterialType.ActionTile]: {
-      [LocationType.ActionTileDeck]: hideItemId
+      [LocationType.ActionTileDeck]: hideItemId,
+      [LocationType.SpiedItem]: hideItemIdToOthers
     },
     [MaterialType.MilitaryVictoryToken]: {
-      [LocationType.MilitaryVictoryDeck]: hideItemId
+      [LocationType.MilitaryVictoryDeck]: hideItemId,
+      [LocationType.SpiedItem]: hideItemIdToOthers
     },
     [MaterialType.ClanCard]: {
       [LocationType.PlayerDeck]: hideFront,
-      [LocationType.PlayerHand]: hideFrontToOthers
+      [LocationType.PlayerHand]: hideFrontToOthers,
+      [LocationType.SpiedItem]: hideFrontToOthers
     }
   }
 

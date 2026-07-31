@@ -43,9 +43,9 @@ export class MulliganRule extends SimultaneousRule<number, MaterialType, Locatio
     return this.material(MaterialType.ClanCard).location(LocationType.PlayerHand).player(player)
   }
 
-  /** Always drawn from the lowest x, which is the top of the pile the DeckLocator draws. */
+  /** deck() draws from the highest x, which is the top of the pile the DeckLocator stacks. */
   deck(player: number) {
-    return this.material(MaterialType.ClanCard).location(LocationType.PlayerDeck).player(player).sort((card) => card.location.x!)
+    return this.material(MaterialType.ClanCard).location(LocationType.PlayerDeck).player(player).deck()
   }
 
   /** The setup is over. The first round begins, and the first player is the active one. */

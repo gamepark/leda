@@ -40,11 +40,8 @@ export class ChooseActionRule extends PlayerTurnRule<number, MaterialType, Locat
     return [this.startPlayerTurn(RuleId.ActivateZone, this.player)]
   }
 
-  /** The pile is drawn from the lowest x, which is the top of the stack the DeckLocator draws. */
   get deck() {
-    return this.material(MaterialType.ActionTile)
-      .location(LocationType.ActionTileDeck)
-      .sort((tile) => tile.location.x!)
+    return this.material(MaterialType.ActionTile).location(LocationType.ActionTileDeck).deck()
   }
 
   get revealedTile(): ActionTileId | undefined {

@@ -43,5 +43,8 @@ export enum RuleId {
   UpgradeTile,
 
   /** A Flip effect: the player turns one of their Deserts back onto its front, where it can be activated again. */
-  FlipDesert
+  FlipDesert,
+
+  /** A Spy effect: the player looks at the top of a pile of their choice, then puts it back on top or under. */
+  Spy
 }

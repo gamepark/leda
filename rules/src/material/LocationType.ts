@@ -47,5 +47,12 @@ export enum LocationType {
   PlayerFood,
 
   /** The Shark tokens their owner has not placed on a card yet. */
-  PlayerSharkSupply
+  PlayerSharkSupply,
+
+  /**
+   * The item a player took off the top of a pile with a Spy effect, to look at it before putting it back.
+   * Never holds more than one item, and only for as long as the player takes to decide. Its owner sees its face,
+   * and nobody else does, which is what makes the look a secret one.
+   */
+  SpiedItem
 }

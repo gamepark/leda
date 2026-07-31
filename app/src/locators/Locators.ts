@@ -1,7 +1,7 @@
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
-import { DeckLocator, HandLocator, ListLocator, Locator, MaterialContext, PileLocator } from '@gamepark/react-game'
-import { Location } from '@gamepark/rules-api'
+import { DeckLocator, HandLocator, ItemContext, ListLocator, Locator, MaterialContext, PileLocator } from '@gamepark/react-game'
+import { Coordinates, Location, MaterialItem } from '@gamepark/rules-api'
 import { sharkTokenWidth } from '../material/SharkTokenDescription'
 import { tileSize } from '../material/TileDescription'
 
@@ -67,6 +67,51 @@ class PlayerGridLocator extends Locator {
       x: playerSide(location.player, context) * playerGridX + (location.x! - 1.5) * gridStep,
       y: gridRowY(location.y!)
     }
+  }
+}
+
+/** The 2 piles of the middle column, named so that the Spy effect can send an item back where it came from. */
+const actionTileDeck = { x: 0, y: -18 }
+const militaryVictoryDeck = { x: 0, y: -1.5 }
+
+/**
+ * Where the panel of a player sits, near the bottom corner of their side of the screen. The panels are html laid
+ * over the table rather than material on it, so these 2 anchors are eyeballed at the default zoom: they are only
+ * ever used to send an item towards a panel, never to line anything up with one.
+ */
+const panelX = 34
+const panelTop = 13.2
+
+/**
+ * The item a Spy effect took off a pile, lifted over everything for as long as its owner looks at it.
+ *
+ * The player who is looking reads it where they took it, on top of the pile it comes from: nothing moves, and
+ * their eyes are already there. Their opponent, who only sees its back, sees it travel to the panel of the player
+ * looking at it, which is what says who is doing the looking: a card ends up half hidden under the panel, the
+ * smaller items of the 2 other piles just above it.
+ */
+class SpiedItemLocator extends Locator {
+  getItemCoordinates(item: MaterialItem<number, LocationType>, context: ItemContext<number, MaterialType, LocationType>) {
+    const player = item.location.player!
+    if (player === context.player) return { ...pileCoordinates(context.type, player, context), z: 10 }
+    const { height = 0 } = context.material[context.type]?.getSize(item.id) ?? {}
+    return {
+      x: playerSide(player, context) * panelX,
+      y: context.type === MaterialType.ClanCard ? panelTop : panelTop - height / 2 - 0.3,
+      z: 10
+    }
+  }
+}
+
+/** Where the pile an item was taken from sits, so that looking at one of its items moves nothing. */
+const pileCoordinates = (type: MaterialType, player: number, context: MaterialContext): Partial<Coordinates> => {
+  switch (type) {
+    case MaterialType.ActionTile:
+      return actionTileDeck
+    case MaterialType.MilitaryVictoryToken:
+      return militaryVictoryDeck
+    default:
+      return { x: playerSide(player, context) * sideColumnX, y: gridRowY(3) }
   }
 }
 
@@ -159,7 +204,7 @@ export const Locators: Partial<Record<LocationType, Locator<number, MaterialType
    * The Food reserve, the widest item of the column, is kept high enough to stay beside the grids rather than
    * beside the hands: that is what lets the hands come closer to the middle of the table.
    */
-  [LocationType.ActionTileDeck]: new DeckLocator({ coordinates: { x: 0, y: -18 } }),
+  [LocationType.ActionTileDeck]: new DeckLocator({ coordinates: actionTileDeck }),
   [LocationType.ActionTileRevealed]: new ListLocator({ coordinates: { x: 0, y: -12.5 }, gap: { y: 4.4 }, maxCount: 4 }),
 
   /**
@@ -169,5 +214,7 @@ export const Locators: Partial<Record<LocationType, Locator<number, MaterialType
   [LocationType.FoodSupply]: new PileLocator({ coordinates: { x: 0, y: 5.2 }, radius: 0.8 }),
 
   /** Only 5 of the 18 tokens are rendered: a deeper stack costs DOM nodes without showing anything more. */
-  [LocationType.MilitaryVictoryDeck]: new DeckLocator({ coordinates: { x: 0, y: -1.5 }, limit: 5 })
+  [LocationType.MilitaryVictoryDeck]: new DeckLocator({ coordinates: militaryVictoryDeck, limit: 5 }),
+
+  [LocationType.SpiedItem]: new SpiedItemLocator()
 }

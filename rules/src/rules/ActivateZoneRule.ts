@@ -98,9 +98,9 @@ export class ActivateZoneRule extends PlayerTurnRule<number, MaterialType, Locat
     }
   }
 
-  /** Always drawn from the lowest x, which is the top of the pile the DeckLocator draws. */
+  /** deck() draws from the highest x, which is the top of the pile the DeckLocator stacks. */
   get deck() {
-    return this.material(MaterialType.ClanCard).location(LocationType.PlayerDeck).player(this.player).sort((card) => card.location.x!)
+    return this.material(MaterialType.ClanCard).location(LocationType.PlayerDeck).player(this.player).deck()
   }
 
   /**

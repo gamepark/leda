@@ -2,7 +2,7 @@ import { CustomMove, getEnumValues, isCustomMoveType, MaterialMove, PlayerTurnRu
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { tileAt } from '../material/PlayerGrid'
-import { isPermanent, TileEffect, tileEffects } from '../material/TileEffect'
+import { isPermanent, TileEffect, TileEffects, tileEffects } from '../material/TileEffect'
 import { TileId } from '../material/TileId'
 import { activableCells } from './activation'
 import { CustomMoveType } from './CustomMoveType'
@@ -18,12 +18,12 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  */
 export class ActivateZoneRule extends PlayerTurnRule<number, MaterialType, LocationType> {
   /**
-   * Each player activates the zone on their own, so what the previous one resolved is forgotten here.
-   * A zone can hold nothing to activate at all, 4 Deserts for instance, in which case the player is skipped
-   * on the spot: a rule that offers no move would leave the game waiting for a player with nothing to play.
+   * A zone can hold nothing to activate at all, 4 Deserts for instance, in which case the player is skipped on
+   * the spot: a rule that offers no move would leave the game waiting for a player with nothing to play.
+   * This also runs when an effect that opened a rule of its own hands the player back, hence nothing reset here:
+   * what they already activated is remembered per player, and emptied when the round starts.
    */
   onRuleStart(): Move[] {
-    this.memorize<XYCoordinates[]>(Memory.ActivatedCells, [])
     return this.nextStep()
   }
 
@@ -40,23 +40,37 @@ export class ActivateZoneRule extends PlayerTurnRule<number, MaterialType, Locat
     const cell = move.data
     if (cell === undefined) return []
     // Remembered before the effects are built, so that what is left to activate is read against this square done.
-    this.memorize<XYCoordinates[]>(Memory.ActivatedCells, (cells) => [...cells, cell])
-    return [...this.activate(cell), ...this.nextStep()]
+    this.memorize<XYCoordinates[]>(Memory.ActivatedCells, (cells) => [...cells, cell], this.player)
+    const effects = this.effectsOn(cell)
+    const moves = this.activate(cell, effects)
+    // An Upgrade is a choice, so the square hands over to the rule that offers it, and the sequence stops there:
+    // that rule hands the player back to this one, whose onRuleStart reads what is left to activate.
+    if (effects[TileEffect.Upgrade]) return [...moves, this.startRule(RuleId.UpgradeTile)]
+    return [...moves, ...this.nextStep()]
+  }
+
+  /** What the tile on a square gives, on the face it currently shows. */
+  effectsOn(cell: XYCoordinates): TileEffects {
+    const item = this.tileOn(cell).getItem<TileId>()
+    return item === undefined ? {} : tileEffects(item.id, item.location.rotation === true)
   }
 
   /**
    * Everything a square gives, in the order the effects are numbered, which is the order the rulebook reads them
    * in. A temporary tile is turned into a Desert once its effect has been resolved.
    */
-  activate(cell: XYCoordinates): Move[] {
-    const tile = tileAt(this.material(MaterialType.Tile), this.player, cell)
+  activate(cell: XYCoordinates, effects: TileEffects): Move[] {
+    const tile = this.tileOn(cell)
     const item = tile.getItem<TileId>()
     if (item === undefined) return []
-    const flipped = item.location.rotation === true
-    const effects = tileEffects(item.id, flipped)
     const moves = getEnumValues(TileEffect).flatMap((effect) => this.resolve(effect, effects[effect] ?? 0))
-    if (!flipped && !isPermanent(item.id)) moves.push(tile.moveItem({ ...item.location, rotation: true }))
+    if (item.location.rotation !== true && !isPermanent(item.id)) moves.push(tile.moveItem({ ...item.location, rotation: true }))
     return moves
+  }
+
+  /** The tile on a square of the grid of the player who is activating. */
+  tileOn(cell: XYCoordinates) {
+    return tileAt(this.material(MaterialType.Tile), this.player, cell)
   }
 
   /** One effect of a tile, applied as many times as the tile gives it. */
@@ -71,9 +85,12 @@ export class ActivateZoneRule extends PlayerTurnRule<number, MaterialType, Locat
         // No item stands for a military symbol: they are only counted, until the conflict hands out the tokens.
         this.memorize<number>(Memory.MilitarySymbols, (symbols) => symbols + quantity, this.player)
         return []
+      case TileEffect.Upgrade:
+        // Turning a tile over is a choice, so it is a rule of its own, which onCustomMove hands over to.
+        return []
       default:
-        // TODO: Upgrade flips a permanent tile of the player's choice, and the special activation depends on the
-        // clan they play. Both are resolved on the spot, as the square they come from is activated.
+        // TODO: the special activation depends on the clan the player took. It is resolved on the spot, as the
+        // square it comes from is activated, and not once every other square has been.
         return []
     }
   }

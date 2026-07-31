@@ -4,8 +4,7 @@ import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { cellOf } from '@gamepark/leda/material/PlayerGrid'
 import { TileId } from '@gamepark/leda/material/TileId'
-import { roundZone } from '@gamepark/leda/rules/activation'
-import { RuleId } from '@gamepark/leda/rules/RuleId'
+import { isActivationPhase, roundZone } from '@gamepark/leda/rules/activation'
 import { CardDescription, ItemContext } from '@gamepark/react-game'
 import { MaterialItem } from '@gamepark/rules-api'
 import PermanentDrawFront from '../images/tiles/recto/permanent-draw.jpg'
@@ -84,12 +83,13 @@ export class TileDescription extends CardDescription<number, MaterialType, Locat
   }
 
   /**
-   * Once the zone is picked, it shines in both grids until both players have activated it.
+   * Once the zone is picked, it shines in both grids until both players have activated it, the rules an effect
+   * opens along the way included: the phase is not over, and the player has to keep seeing where they are.
    * Unlike the css below, this is read by the parent of the item on every render, so it is refreshed for every
    * square as soon as the rules move on, and not only for the squares whose own item changed.
    */
   highlight(item: MaterialItem<number, LocationType, TileId>, context: ItemContext<number, MaterialType, LocationType>) {
-    if (context.rules.game.rule?.id !== RuleId.ActivateZone || item.location.type !== LocationType.PlayerGrid) return undefined
+    if (!isActivationPhase(context.rules) || item.location.type !== LocationType.PlayerGrid) return undefined
     const zone = roundZone(context.rules)
     return zone !== undefined && zoneContains(zone, cellOf(item.location))
   }

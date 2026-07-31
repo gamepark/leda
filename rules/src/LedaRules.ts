@@ -15,6 +15,7 @@ import { ChooseActionRule } from './rules/ChooseActionRule'
 import { ChooseClanRule } from './rules/ChooseClanRule'
 import { MulliganRule } from './rules/MulliganRule'
 import { RuleId } from './rules/RuleId'
+import { UpgradeTileRule } from './rules/UpgradeTileRule'
 
 /**
  * This class implements the rules of the board game.
@@ -28,7 +29,8 @@ export class LedaRules
     [RuleId.ChooseClan]: ChooseClanRule,
     [RuleId.Mulligan]: MulliganRule,
     [RuleId.ChooseAction]: ChooseActionRule,
-    [RuleId.ActivateZone]: ActivateZoneRule
+    [RuleId.ActivateZone]: ActivateZoneRule,
+    [RuleId.UpgradeTile]: UpgradeTileRule
   }
 
   /**

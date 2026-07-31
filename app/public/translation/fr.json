@@ -24,6 +24,10 @@
     "activate-zone": {
       "you": "Activez les cases de la zone, dans l'ordre de votre choix",
       "player": "{player} active les cases de la zone"
+    },
+    "upgrade-tile": {
+      "you": "Améliorez une de vos tuiles permanentes",
+      "player": "{player} améliore une de ses tuiles permanentes"
     }
   }
 }

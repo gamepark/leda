@@ -22,5 +22,11 @@ export enum RuleId {
    * Still phase 1: a player activates every square of the chosen zone in their own grid, if possible and in the
    * order of their choice. The active player of the round goes first, then their opponent does the same.
    */
-  ActivateZone
+  ActivateZone,
+
+  /**
+   * An Upgrade effect the player just activated: they turn one of their permanent tiles over, onto its upgraded
+   * side, then go back to activating the rest of the zone.
+   */
+  UpgradeTile
 }

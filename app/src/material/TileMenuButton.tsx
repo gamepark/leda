@@ -3,6 +3,7 @@ import { RuleId } from '@gamepark/leda/rules/RuleId'
 import { usePlayerId, useRules } from '@gamepark/react-game'
 import { ActivateTileButton } from './ActivateTileButton'
 import { ChooseActionTileButton } from './ChooseActionTileButton'
+import { UpgradeTileButton } from './UpgradeTileButton'
 
 export type TileButtonProps = {
   /** Index of the tile in the game state, which is stable, unlike the item a stale render would carry. */
@@ -28,6 +29,8 @@ export const TileMenuButton = ({ index }: { index: number }) => {
       return <ChooseActionTileButton index={index} rules={rules} player={me} />
     case RuleId.ActivateZone:
       return <ActivateTileButton index={index} rules={rules} player={me} />
+    case RuleId.UpgradeTile:
+      return <UpgradeTileButton index={index} rules={rules} player={me} />
     default:
       return null
   }

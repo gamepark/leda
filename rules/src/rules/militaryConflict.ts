@@ -1,6 +1,7 @@
 import { MaterialRules } from '@gamepark/rules-api'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
+import { militaryVictorySymbols, MilitaryVictoryTokenId } from '../material/MilitaryVictoryTokenId'
 import { Memory } from './Memory'
 
 /** All these helpers need, which a part of the rules and the MaterialRules instance of the app both satisfy. */
@@ -19,3 +20,16 @@ export const conflictWinner = (rules: Rules): number | undefined => {
   const winners = players.filter((player) => militarySymbols(rules, player) === most)
   return winners.length === 1 ? winners[0] : undefined
 }
+
+/**
+ * The Victory symbols a player controls: what the tokens they won during the conflicts are worth, added up.
+ * Unlike the military symbols above, they are never lost, and they are what decides who opens a new cycle of
+ * rounds (see {@link EndOfRoundRule}).
+ */
+export const victorySymbols = (rules: Rules, player: number): number =>
+  rules
+    .material(MaterialType.MilitaryVictoryToken)
+    .location(LocationType.PlayerMilitaryVictory)
+    .player(player)
+    .getItems<MilitaryVictoryTokenId>()
+    .reduce((symbols, token) => symbols + militaryVictorySymbols(token.id!), 0)

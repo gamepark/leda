@@ -29,6 +29,9 @@ export enum MilitaryVictoryTokenId {
   Draw
 }
 
+/** How many Victory symbols a token is worth: every token shows 1, and one of them shows 2. */
+export const militaryVictorySymbols = (token: MilitaryVictoryTokenId): number => (token === MilitaryVictoryTokenId.DoubleVictory ? 2 : 1)
+
 /** How many copies of each token are in the pile. */
 const militaryVictoryTokenQuantities: Record<MilitaryVictoryTokenId, number> = {
   [MilitaryVictoryTokenId.Victory]: 3,

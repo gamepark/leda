@@ -15,7 +15,7 @@ export class ChooseActionRule extends PlayerTurnRule<number, MaterialType, Locat
   /**
    * Revealing is not a choice, so it happens as the rule starts rather than as a move of the player.
    * This is also where a round begins, hence the two counters that are reset here.
-   * TODO: once the 4th Action tile has been revealed, all 5 are shuffled back into the pile.
+   * The pile never runs out: the end of the 4th round shuffles the tiles back into it (see {@link EndOfRoundRule}).
    */
   onRuleStart(): MaterialMove<number, MaterialType, LocationType>[] {
     this.memorize(Memory.RoundPlayer, this.player)

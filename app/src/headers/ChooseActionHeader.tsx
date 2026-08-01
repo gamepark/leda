@@ -5,7 +5,7 @@ import { MaterialMoveBuilder } from '@gamepark/rules-api'
 import { clearSelectionMoves, selectedZone } from '../material/actionZoneSelection'
 
 /**
- * The player selects the squares to activate in their grid (see {@link ActionZoneTileButton}), then validates.
+ * The player selects the squares to activate in their grid (see {@link ChooseActionTileButton}), then validates.
  * The button stays disabled until the selection designates one zone: before that, none of the moves the rules
  * offer is the one the player means.
  */

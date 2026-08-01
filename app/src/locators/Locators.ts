@@ -1,5 +1,6 @@
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
+import { actionTileRoundPlayer } from '@gamepark/leda/rules/round'
 import { DeckLocator, HandLocator, ItemContext, ListLocator, Locator, MaterialContext, PileLocator } from '@gamepark/react-game'
 import { Coordinates, Location, MaterialItem } from '@gamepark/rules-api'
 import { sharkTokenWidth } from '../material/SharkTokenDescription'
@@ -75,6 +76,15 @@ const actionTileDeck = { x: 0, y: -18 }
 const militaryVictoryDeck = { x: 0, y: -1.5 }
 
 /**
+ * The revealed Action tiles are laid out in 2 columns of 2, under the pile they come from: one column on each
+ * side of the middle of the table, and the tiles of the 3rd and 4th rounds under those of the first 2.
+ * The columns are close enough to leave the middle column as narrow as it was when they were stacked.
+ */
+const revealedActionTileX = 1.4
+const revealedActionTileY = -12.5
+const revealedActionTileRow = 4.4
+
+/**
  * Where the panel of a player sits, near the bottom corner of their side of the screen. The panels are html laid
  * over the table rather than material on it, so these 2 anchors are eyeballed at the default zoom: they are only
  * ever used to send an item towards a panel, never to line anything up with one.
@@ -112,6 +122,22 @@ const pileCoordinates = (type: MaterialType, player: number, context: MaterialCo
       return militaryVictoryDeck
     default:
       return { x: playerSide(player, context) * sideColumnX, y: gridRowY(3) }
+  }
+}
+
+/**
+ * The Action tiles revealed since the last shuffle, each on the side of the player who was the active one on the
+ * round it was revealed: the first tile on the side of the player who opened the first of these rounds, the next
+ * one facing it, and so on. Nothing of that is in the rules, which only number the tiles in the order they were
+ * revealed: who a tile belongs to is read off that order and the active player of the current round.
+ */
+class RevealedActionTileLocator extends Locator {
+  getCoordinates(location: Location, context: MaterialContext) {
+    const index = location.x ?? 0
+    return {
+      x: playerSide(actionTileRoundPlayer(context.rules, index), context) * revealedActionTileX,
+      y: revealedActionTileY + Math.floor(index / 2) * revealedActionTileRow
+    }
   }
 }
 
@@ -198,14 +224,14 @@ export const Locators: Partial<Record<LocationType, Locator<number, MaterialType
   [LocationType.PlayerHand]: new PlayerHandLocator(),
 
   /**
-   * The middle column, one item wide, read from top to bottom: the pile of Action tiles, the tiles revealed since
-   * the last shuffle, the Food reserve, and the pile of Military Victory tokens.
-   * The revealed tiles are stacked vertically rather than in a row, which is what keeps this column narrow.
+   * The middle column, read from top to bottom: the pile of Action tiles, the tiles revealed since the last
+   * shuffle, the Food reserve, and the pile of Military Victory tokens. Everything but the revealed tiles is one
+   * item wide, and the 2 columns those form are narrow enough to fit between the grids all the same.
    * The Food reserve, the widest item of the column, is kept high enough to stay beside the grids rather than
    * beside the hands: that is what lets the hands come closer to the middle of the table.
    */
   [LocationType.ActionTileDeck]: new DeckLocator({ coordinates: actionTileDeck }),
-  [LocationType.ActionTileRevealed]: new ListLocator({ coordinates: { x: 0, y: -12.5 }, gap: { y: 4.4 }, maxCount: 4 }),
+  [LocationType.ActionTileRevealed]: new RevealedActionTileLocator(),
 
   /**
    * The Food reserve holds no real item: the app displays a fixed pile of 20 (see the static item of the Food

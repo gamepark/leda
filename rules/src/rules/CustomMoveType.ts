@@ -12,5 +12,11 @@ export enum CustomMoveType {
   ChooseAction,
 
   /** A player activates one square of the zone in their grid. The data is its {@link XYCoordinates}. */
-  ActivateSquare
+  ActivateSquare,
+
+  /**
+   * A player resolves a special activation that leaves them a choice, which only the Pandas have for now.
+   * The data is the {@link PandaSpecialActivation} they picked.
+   */
+  ChooseSpecialActivation
 }

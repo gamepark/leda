@@ -18,6 +18,7 @@ import { FlipDesertRule } from './rules/FlipDesertRule'
 import { MilitaryConflictRule } from './rules/MilitaryConflictRule'
 import { ChooseClanRule } from './rules/ChooseClanRule'
 import { MulliganRule } from './rules/MulliganRule'
+import { PandaSpecialActivationRule } from './rules/PandaSpecialActivationRule'
 import { RuleId } from './rules/RuleId'
 import { SpyRule } from './rules/SpyRule'
 import { UpgradeTileRule } from './rules/UpgradeTileRule'
@@ -39,7 +40,8 @@ export class LedaRules
     [RuleId.EndOfRound]: EndOfRoundRule,
     [RuleId.UpgradeTile]: UpgradeTileRule,
     [RuleId.FlipDesert]: FlipDesertRule,
-    [RuleId.Spy]: SpyRule
+    [RuleId.Spy]: SpyRule,
+    [RuleId.PandaSpecialActivation]: PandaSpecialActivationRule
   }
 
   /**

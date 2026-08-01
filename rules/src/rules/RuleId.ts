@@ -46,5 +46,8 @@ export enum RuleId {
   FlipDesert,
 
   /** A Spy effect: the player looks at the top of a pile of their choice, then puts it back on top or under. */
-  Spy
+  Spy,
+
+  /** The special activation of the Pandas: the player picks between gaining 1 Food and gaining 1 Awakening. */
+  PandaSpecialActivation
 }

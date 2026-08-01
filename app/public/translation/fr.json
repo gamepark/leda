@@ -45,6 +45,10 @@
     "spy-return": {
       "you": "Remettez cet élément sur ou sous sa pile",
       "player": "{player} remet l'élément dans sa pile"
+    },
+    "panda-special-activation": {
+      "you": "Activation spéciale : <food>Nourriture</food> ou <awakening>Éveil</awakening>",
+      "player": "{player} résout son activation spéciale"
     }
   }
 }

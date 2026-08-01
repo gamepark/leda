@@ -1,4 +1,5 @@
 import { CustomMove, getEnumValues, isCustomMoveType, MaterialMove, PlayerTurnRule, XYCoordinates } from '@gamepark/rules-api'
+import { Clan } from '../Clan'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { tileAt } from '../material/PlayerGrid'
@@ -8,6 +9,7 @@ import { activableCells } from './activation'
 import { CustomMoveType } from './CustomMoveType'
 import { Memory } from './Memory'
 import { RuleId } from './RuleId'
+import { playerClan, specialActivationChoices, specialActivationEffects } from './specialActivation'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
@@ -43,13 +45,25 @@ export class ActivateZoneRule extends PlayerTurnRule<number, MaterialType, Locat
     this.memorize<XYCoordinates[]>(Memory.ActivatedCells, (cells) => [...cells, cell], this.player)
     const effects = this.effectsOn(cell)
     const moves = this.activate(cell, effects)
-    // An Upgrade is a choice, so the square hands over to the rule that offers it, and the sequence stops there:
-    // that rule hands the player back to this one, whose onRuleStart reads what is left to activate.
-    if (effects[TileEffect.Upgrade]) {
+    // An effect that is a choice hands over to the rule that offers it, and the sequence stops there: that rule
+    // hands the player back to this one, whose onRuleStart reads what is left to activate.
+    const choice = this.choice(effects)
+    if (choice !== undefined) {
       this.memorize(Memory.NextRule, RuleId.ActivateZone)
-      return [...moves, this.startRule(RuleId.UpgradeTile)]
+      return [...moves, this.startRule(choice)]
     }
     return [...moves, ...this.nextStep()]
+  }
+
+  /**
+   * The rule a square opens to ask the player something, if it has one. No tile gives both an Upgrade and a
+   * special activation, so the two never have to wait for one another.
+   */
+  choice(effects: TileEffects): RuleId | undefined {
+    if (effects[TileEffect.Upgrade]) return RuleId.UpgradeTile
+    const clan = this.clan
+    if (effects[TileEffect.SpecialActivation] && clan !== undefined) return specialActivationChoices[clan]
+    return undefined
   }
 
   /** What the tile on a square gives, on the face it currently shows. */
@@ -91,11 +105,31 @@ export class ActivateZoneRule extends PlayerTurnRule<number, MaterialType, Locat
       case TileEffect.Upgrade:
         // Turning a tile over is a choice, so it is a rule of its own, which onCustomMove hands over to.
         return []
+      case TileEffect.SpecialActivation:
+        return this.resolveSpecialActivation(quantity)
       default:
-        // TODO: the special activation depends on the clan the player took. It is resolved on the spot, as the
-        // square it comes from is activated, and not once every other square has been.
         return []
     }
+  }
+
+  /**
+   * A special activation, worth what the Victory condition card of the clan of the player says: the Cats draw a
+   * card, the Sharks gain 2 military symbols. It is resolved on the spot, as the square it comes from is
+   * activated, and not once every other square has been.
+   *
+   * A clan whose special activation is a choice gains nothing here: it is a rule of its own, which onCustomMove
+   * hands over to, exactly like an Upgrade. The recursion stops of its own accord, since what a special activation
+   * gives is anything but another one (see {@link SpecialActivationEffects}).
+   */
+  resolveSpecialActivation(quantity: number): Move[] {
+    if (this.clan === undefined) return []
+    const effects: TileEffects = specialActivationEffects[this.clan] ?? {}
+    return getEnumValues(TileEffect).flatMap((effect) => this.resolve(effect, (effects[effect] ?? 0) * quantity))
+  }
+
+  /** The clan of the player who is activating, which their special activation depends on. */
+  get clan(): Clan | undefined {
+    return playerClan(this, this.player)
   }
 
   /** deck() draws from the highest x, which is the top of the pile the DeckLocator stacks. */

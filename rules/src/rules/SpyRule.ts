@@ -2,7 +2,7 @@ import { MaterialMove } from '@gamepark/rules-api'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { EffectRule } from './EffectRule'
-import { pileTop, putBackMoves, spiedItem, spiedPiles } from './spy'
+import { pileTop, putBackMoves, spiablePiles, spiedItem } from './spy'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
@@ -15,7 +15,10 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  * into, and nothing more, exactly as they would around a table.
  */
 export class SpyRule extends EffectRule {
-  /** Every pile empty at once would leave nothing to look at, and a rule with no move would hang the game. */
+  /**
+   * No pile worth looking into leaves nothing to do, and a rule with no move would hang the game: both other
+   * piles empty while the Action tiles are down to their last one (see {@link spiablePiles}).
+   */
   onRuleStart(): Move[] {
     return this.getPlayerMoves().length > 0 ? [] : this.resume()
   }
@@ -26,7 +29,7 @@ export class SpyRule extends EffectRule {
   }
 
   lookMoves(): Move[] {
-    return spiedPiles.flatMap((pile) => pileTop(this, this.player, pile).moveItems({ type: LocationType.SpiedItem, player: this.player }))
+    return spiablePiles(this, this.player).flatMap((pile) => pileTop(this, this.player, pile).moveItems({ type: LocationType.SpiedItem, player: this.player }))
   }
 
   /** The player makes 2 moves: taking an item, then putting it back. The second one is the end of the effect. */

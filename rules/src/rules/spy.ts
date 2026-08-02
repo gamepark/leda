@@ -31,15 +31,31 @@ export const spiedItem = (rules: Rules): SpiedItem | undefined => {
   return undefined
 }
 
-/** The first item of a pile: the one on top of the stack, which is also the one that will be drawn next. */
-export const pileTop = (rules: Rules, player: number, pile: SpiedPile) => {
+/** The whole of a pile, the deck of the player for the one pile that belongs to someone. */
+const pileItems = (rules: Rules, player: number, pile: SpiedPile) => {
   const material = rules.material(pile.type).location(pile.pile)
-  return (pile.owned ? material.player(player) : material).deck().limit(1)
+  return pile.owned ? material.player(player) : material
 }
+
+/** The first item of a pile: the one on top of the stack, which is also the one that will be drawn next. */
+export const pileTop = (rules: Rules, player: number, pile: SpiedPile) => pileItems(rules, player, pile).deck().limit(1)
+
+/**
+ * The piles a Spy effect may look into.
+ *
+ * The Action tiles are left out once their deck is down to its last one: the 4 others are face up between the
+ * players, so everyone already knows which tile is left, and there is nothing to look at.
+ *
+ * The 2 other piles stay open however little they hold, even down to their last item. The look tells the player
+ * which token or which card it is, which they have no other way of knowing, and that is worth an effect on its
+ * own: only the choice of where to put it back becomes a formality, since an empty pile has no top and no bottom.
+ */
+export const spiablePiles = (rules: Rules, player: number): readonly SpiedPile[] =>
+  spiedPiles.filter((pile) => pileItems(rules, player, pile).length > (pile.type === MaterialType.ActionTile ? 1 : 0))
 
 /** The pile an item is on top of, when a Spy effect could take it from there. Read by the app to place its button. */
 export const spiablePile = (rules: Rules, player: number, type: MaterialType, index: number): SpiedPile | undefined =>
-  spiedPiles.find((pile) => pile.type === type && pileTop(rules, player, pile).getIndexes().includes(index))
+  spiablePiles(rules, player).find((pile) => pile.type === type && pileTop(rules, player, pile).getIndexes().includes(index))
 
 /**
  * Where the item the player is holding may go back: on top of its pile, which is the end of its sequence, hence

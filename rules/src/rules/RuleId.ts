@@ -30,6 +30,19 @@ export enum RuleId {
    */
   MilitaryConflict,
 
+  /**
+   * Phase 3 of a round, the organisation: both players organise their grid, the active player of the round first.
+   * A step of its own because the conflict may hand the game over to whoever won the token, who is not always the
+   * player who organises first: this rule has no player, and starts the turn of the one who does.
+   */
+  StartOrganisation,
+
+  /**
+   * Still phase 3: a player plays one clan card from their hand onto a square of their grid, or swaps 2 of their
+   * squares and gains 1 Food for having done so.
+   */
+  Organisation,
+
   /** The round is over: the player who was not the active one becomes the active player. */
   EndOfRound,
 

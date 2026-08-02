@@ -29,7 +29,7 @@ export class MilitaryConflictRule extends MaterialRulesPart<number, MaterialType
   /** The token is drawn face down, so its effect can only be read once the move that reveals it has been played. */
   onRuleStart(): Move[] {
     const winner = conflictWinner(this)
-    if (winner === undefined || !this.deck.length) return [this.startRule(RuleId.EndOfRound)]
+    if (winner === undefined || !this.deck.length) return [this.startRule(RuleId.StartOrganisation)]
     return this.deck.limit(1).moveItems({ type: LocationType.PlayerMilitaryVictory, player: winner })
   }
 
@@ -40,10 +40,12 @@ export class MilitaryConflictRule extends MaterialRulesPart<number, MaterialType
     const token = this.material(MaterialType.MilitaryVictoryToken).getItem<MilitaryVictoryTokenId>(move.itemIndex)
     const choice = tokenChoices[token.id]
     if (choice !== undefined) {
-      this.memorize(Memory.NextRule, RuleId.EndOfRound)
+      // The organisation is resumed rather than the turn of a player: whoever won the token is not always the
+      // player who organises first (see {@link StartOrganisationRule}).
+      this.memorize(Memory.NextRule, RuleId.StartOrganisation)
       return [this.startPlayerTurn(choice, player)]
     }
-    return [...this.resolve(token.id, player), this.startRule(RuleId.EndOfRound)]
+    return [...this.resolve(token.id, player), this.startRule(RuleId.StartOrganisation)]
   }
 
   /** What a token gives beyond the Victory symbols printed on it, when it gives it on its own. */

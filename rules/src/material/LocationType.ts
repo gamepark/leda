@@ -19,14 +19,20 @@ export enum LocationType {
   FoodSupply,
 
   /**
-   * A player's 4x4 grid, addressed by x and y in 0..3.
-   * Holds the tiles and everything stacked on them: clan cards are played onto a tile (front or Desert
-   * face, upgraded or not) or onto another clan card, and Shark tokens are placed on Shark cards.
-   * Keeping a whole cell under one location is what makes the two rules that move things around work:
-   * swapping two cells carries the cards along with their tile, and Shark "Pack" adjacency is read
-   * straight off x and y.
+   * A player's 4x4 grid, addressed by x and y in 0..3. Holds the 16 tiles of that player, and nothing else:
+   * what is played onto a square sits on the tile of the square rather than on the square (see {@link PlayedCard}),
+   * which is what lets the organisation swap 2 squares by moving the 2 tiles alone.
+   * Shark "Pack" adjacency is read straight off x and y.
    */
   PlayerGrid,
+
+  /**
+   * A clan card played onto a square of a player's grid, on the tile of that square: face up, whatever the tile
+   * shows, and covering whatever was played there before.
+   * Its parent is the tile item, not the square, so that a card follows its tile when 2 squares are swapped: on
+   * the table it is dragged along with it, and in the game state it simply never moves.
+   */
+  PlayedCard,
 
   /** A player's clan deck, face down beside the grid. */
   PlayerDeck,

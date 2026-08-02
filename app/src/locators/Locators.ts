@@ -1,8 +1,9 @@
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { actionTileRoundPlayer } from '@gamepark/leda/rules/round'
-import { DeckLocator, HandLocator, ItemContext, ListLocator, Locator, MaterialContext, PileLocator } from '@gamepark/react-game'
+import { DeckLocator, HandLocator, ItemContext, ListLocator, Locator, MaterialContext, ParentFace, PileLocator } from '@gamepark/react-game'
 import { Coordinates, Location, MaterialItem } from '@gamepark/rules-api'
+import { FoodSupplyDescription } from '../material/FoodSupplyDescription'
 import { sharkTokenWidth } from '../material/SharkTokenDescription'
 import { tileSize } from '../material/TileDescription'
 
@@ -141,6 +142,45 @@ class RevealedActionTileLocator extends Locator {
   }
 }
 
+/**
+ * A clan card played onto a square, laid on the tile of that square rather than on the square itself: the tile is
+ * the parent item of its location, which is what makes a card follow it when 2 squares are swapped, dragged along
+ * with it while the drag lasts and placed by it once it is over.
+ * Several cards may pile up on one square, each covering the one before: they are laid in the order they were
+ * played, a card thickness above one another.
+ */
+class PlayedCardLocator extends Locator {
+  parentItemType = MaterialType.Tile
+
+  /** A card is played on the square, not on a face of its tile: it stays there once the tile is turned over. */
+  parentFace = ParentFace.Up
+
+  getItemCoordinates(item: MaterialItem<number, LocationType>, context: ItemContext<number, MaterialType, LocationType>) {
+    const thickness = context.material[context.type]?.getThickness(item, context) ?? 0
+    return { z: this.cardsUnder(item, context) * thickness }
+  }
+
+  cardsUnder(item: MaterialItem<number, LocationType>, context: ItemContext<number, MaterialType, LocationType>): number {
+    const cards = context.rules.material(MaterialType.ClanCard).location(LocationType.PlayedCard).parent(item.location.parent)
+    return cards.getIndexes().filter((index) => index < context.index).length
+  }
+
+  /** How high a card sits depends on how many are already on its square, which is not part of its own location. */
+  getPositionDependencies(location: Location, context: MaterialContext) {
+    return this.countItems(location, context)
+  }
+}
+
+/**
+ * The Food reserve. Its location is declared so that it is always on the table, since it is what carries the
+ * button of an organisation (see {@link FoodSupplyDescription}): the reserve holds no item of the game state.
+ */
+class FoodSupplyLocator extends PileLocator {
+  location = { type: LocationType.FoodSupply }
+  locationDescription = new FoodSupplyDescription()
+  radius = 2
+}
+
 /** Something of a player placed at a fixed spot of their column, mirrored between the 2 players. */
 class PlayerSpotLocator extends Locator {
   constructor(
@@ -208,6 +248,7 @@ class PlayerHandLocator extends HandLocator {
 
 export const Locators: Partial<Record<LocationType, Locator<number, MaterialType, LocationType>>> = {
   [LocationType.PlayerGrid]: new PlayerGridLocator(),
+  [LocationType.PlayedCard]: new PlayedCardLocator(),
 
   /** The side column, each spot lined up with a row of the grid. */
   [LocationType.PlayerVictoryCondition]: new PlayerSpotLocator(sideColumnX, gridRowY(0)),
@@ -237,7 +278,7 @@ export const Locators: Partial<Record<LocationType, Locator<number, MaterialType
    * The Food reserve holds no real item: the app displays a fixed pile of 20 (see the static item of the Food
    * description), because the reserve is unlimited and not modelled in the rules.
    */
-  [LocationType.FoodSupply]: new PileLocator({ coordinates: { x: 0, y: 5.2 }, radius: 0.8 }),
+  [LocationType.FoodSupply]: new FoodSupplyLocator({ coordinates: { x: 0, y: 5.2 }, radius: 0.8 }),
 
   /** Only 5 of the 18 tokens are rendered: a deeper stack costs DOM nodes without showing anything more. */
   [LocationType.MilitaryVictoryDeck]: new DeckLocator({ coordinates: militaryVictoryDeck, limit: 5 }),

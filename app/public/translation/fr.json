@@ -4,6 +4,13 @@
     "on-top": "Sur la pile",
     "under": "Sous la pile"
   },
+  "organisation": {
+    "food": {
+      "explain": "Vous pouvez échanger la position de 2 cartes, et ensuite gagner 1 <food/>. Vous n'êtes pas obligé d'échanger pour prendre 1 <food/>.",
+      "cancel": "Annuler",
+      "take": "Juste prendre 1"
+    }
+  },
   "clan": {
     "1": "Chats",
     "2": "Pandas",
@@ -29,6 +36,10 @@
     "activate-zone": {
       "you": "Activez les cases de la zone, dans l'ordre de votre choix",
       "player": "{player} active les cases de la zone"
+    },
+    "organisation": {
+      "you": "Jouez une carte ou échangez 2 cartes et gagnez 1 <food/>",
+      "player": "{player} joue une carte ou échange 2 cartes et gagne 1 <food/>"
     },
     "upgrade-tile": {
       "you": "Améliorez une de vos tuiles permanentes",

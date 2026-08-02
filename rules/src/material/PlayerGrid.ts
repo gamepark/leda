@@ -10,8 +10,8 @@ import { MaterialType } from './MaterialType'
 
 export const sameCell = (a: XYCoordinates, b: XYCoordinates): boolean => a.x === b.x && a.y === b.y
 
-/** The square a location stands on. */
-export const cellOf = (location: Location): XYCoordinates => ({ x: location.x!, y: location.y! })
+/** The square a location stands on. Partial, so that the location a move is heading to can be read the same way. */
+export const cellOf = (location: Partial<Location>): XYCoordinates => ({ x: location.x!, y: location.y! })
 
 /** The 16 tiles of a player's grid. */
 export const gridTiles = (tiles: Material<number, MaterialType, LocationType>, player: number) => tiles.location(LocationType.PlayerGrid).player(player)

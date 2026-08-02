@@ -18,9 +18,11 @@ import { FlipDesertRule } from './rules/FlipDesertRule'
 import { MilitaryConflictRule } from './rules/MilitaryConflictRule'
 import { ChooseClanRule } from './rules/ChooseClanRule'
 import { MulliganRule } from './rules/MulliganRule'
+import { OrganisationRule } from './rules/OrganisationRule'
 import { PandaSpecialActivationRule } from './rules/PandaSpecialActivationRule'
 import { RuleId } from './rules/RuleId'
 import { SpyRule } from './rules/SpyRule'
+import { StartOrganisationRule } from './rules/StartOrganisationRule'
 import { UpgradeTileRule } from './rules/UpgradeTileRule'
 
 /**
@@ -37,6 +39,8 @@ export class LedaRules
     [RuleId.ChooseAction]: ChooseActionRule,
     [RuleId.ActivateZone]: ActivateZoneRule,
     [RuleId.MilitaryConflict]: MilitaryConflictRule,
+    [RuleId.StartOrganisation]: StartOrganisationRule,
+    [RuleId.Organisation]: OrganisationRule,
     [RuleId.EndOfRound]: EndOfRoundRule,
     [RuleId.UpgradeTile]: UpgradeTileRule,
     [RuleId.FlipDesert]: FlipDesertRule,
@@ -92,6 +96,17 @@ export class LedaRules
       [LocationType.PlayerDeck]: new PositiveSequenceStrategy(),
       [LocationType.PlayerHand]: new PositiveSequenceStrategy()
     }
+  }
+
+  /**
+   * Two tiles of a grid can show the same face, and the 2 tiles of a swap sit on the same square for as long as
+   * the first half of the move lasts (see {@link OrganisationRule}): without this they would merge into a single
+   * item with a quantity of 2, which would take with it the index the cards played on the square point to.
+   * Everything else keeps the default: the Food and the Shark tokens are counted rather than laid out one by one,
+   * and what is hidden cannot merge anyway.
+   */
+  itemsCanMerge(type: MaterialType): boolean {
+    return type !== MaterialType.Tile && super.itemsCanMerge(type)
   }
 
   giveTime(): number {

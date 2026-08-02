@@ -1,7 +1,9 @@
+import { css } from '@emotion/react'
 import { Clan } from '@gamepark/leda/Clan'
 import { ClanCardId, ClanCardItemId } from '@gamepark/leda/material/ClanCardId'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
+import { organisingPlayer } from '@gamepark/leda/rules/organisation'
 import { CardDescription, ItemContext, MaterialContext } from '@gamepark/react-game'
 import { MaterialItem } from '@gamepark/rules-api'
 import CatBack from '../images/cards/cat/back.jpg'
@@ -128,4 +130,31 @@ export class ClanCardDescription extends CardDescription<number, MaterialType, L
     if (item.location.type !== LocationType.PlayerDeck || item.location.player !== context.player) return
     return <SpyPileButton type={MaterialType.ClanCard} index={context.index} />
   }
+
+  /**
+   * While a player organises their grid, the cards they played on it let the pointer through: a square is taken
+   * by dragging its tile, which is exactly what these cards cover, and dropped onto a square just the same.
+   * Only for as long as the phase lasts, so that a card is clickable again, help dialog included, as soon as
+   * there is nothing to drag underneath it.
+   */
+  getItemExtraCss(item: MaterialItem<number, LocationType, ClanCardItemId>, context: ItemContext<number, MaterialType, LocationType>) {
+    return this.coversATileToDrag(item, context) ? letTheTileThrough : undefined
+  }
+
+  /**
+   * Such a card shines like the tile it covers, which is what says the square can be dragged: the framework lights
+   * up what can be moved, and the card itself has no move of its own, only the tile underneath does.
+   */
+  highlight(item: MaterialItem<number, LocationType, ClanCardItemId>, context: ItemContext<number, MaterialType, LocationType>) {
+    return this.coversATileToDrag(item, context) || undefined
+  }
+
+  /** Whether the card is played on a square of the grid its owner is organising, hence on a tile they may swap. */
+  coversATileToDrag(item: MaterialItem<number, LocationType, ClanCardItemId>, context: ItemContext<number, MaterialType, LocationType>): boolean {
+    return item.location.type === LocationType.PlayedCard && organisingPlayer(context.rules) === item.location.player
+  }
 }
+
+const letTheTileThrough = css`
+  pointer-events: none;
+`

@@ -3,6 +3,7 @@ import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { CardDescription } from '@gamepark/react-game'
 import CatVictoryCondition from '../images/cards/cat/victory-condition.jpg'
+import PandaVictoryCondition from '../images/cards/panda/victory-condition.jpg'
 import ScorpionVictoryCondition from '../images/cards/scorpion/victory-condition.jpg'
 import SharkVictoryCondition from '../images/cards/shark/victory-condition.jpg'
 import { tileSize } from './TileDescription'
@@ -17,10 +18,10 @@ export class VictoryConditionCardDescription extends CardDescription<number, Mat
   height = tileSize
   borderRadius = 0.5
 
-  /** The Pandas are missing: they have no card image yet, and playableClans keeps them out of the choice. */
-  images = {
-    [Clan.Cat]: CatVictoryCondition,
+  images: Record<Clan, string> = {
+    [Clan.Panda]: PandaVictoryCondition,
     [Clan.Shark]: SharkVictoryCondition,
+    [Clan.Cat]: CatVictoryCondition,
     [Clan.Scorpion]: ScorpionVictoryCondition
-  } as Record<Clan, string>
+  }
 }

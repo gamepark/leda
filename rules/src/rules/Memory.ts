@@ -24,9 +24,8 @@ export enum Memory {
 
   /**
    * The Awakenings a player gathered with the special activation of the Pandas, as a count.
-   * TODO: nothing spends them yet, since the Panda cards do not exist (see {@link ClanCardId}). Only the counter
-   * is kept for now, and it is never reset: an Awakening is not lost at the end of a round, unlike the military
-   * symbols above.
+   * TODO: nothing spends them yet (see {@link pandaCards}). Only the counter is kept for now, and it is never
+   * reset: an Awakening is not lost at the end of a round, unlike the military symbols above.
    */
   Awakenings
 }

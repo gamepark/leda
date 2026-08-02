@@ -1,8 +1,7 @@
-import { MaterialRules } from '@gamepark/rules-api'
 import { Clan } from '../Clan'
-import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { TileEffect, TileEffects } from '../material/TileEffect'
+import { Rules } from '../Rules'
 import { Memory } from './Memory'
 import { RuleId } from './RuleId'
 
@@ -11,9 +10,6 @@ import { RuleId } from './RuleId'
  * condition card reads "1 crystal = ...". The rules resolve it here, and the app reads the same tables to tell
  * what a square is about to give.
  */
-
-/** All these helpers need, which a part of the rules and the MaterialRules instance of the app both satisfy. */
-type Rules = Pick<MaterialRules<number, MaterialType, LocationType>, 'game' | 'material'>
 
 /** The clan a player took, read off their Victory condition card, which is what marks a clan as taken. */
 export const playerClan = (rules: Rules, player: number): Clan | undefined =>
@@ -49,5 +45,9 @@ export enum PandaSpecialActivation {
   Awakening
 }
 
-/** The Awakenings a player has gathered. Nothing spends them yet: the Panda material does not exist. */
+/**
+ * The Awakenings a player has gathered, which they need 7 of to win with the Pandas.
+ * TODO: an Awakening is only counted here. What it does, swapping a Panda on the grid for one of the next level,
+ * is not implemented (see {@link PandaLevel}), so the Silver and Gold Pandas never reach the grid.
+ */
 export const awakenings = (rules: Rules, player: number): number => rules.game.memory[Memory.Awakenings]?.[player] ?? 0

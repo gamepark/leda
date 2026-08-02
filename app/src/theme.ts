@@ -23,13 +23,11 @@ export const copperLight = '#e9cfb2'
 export const ink = '#231f20'
 export const deepBlue = '#004670'
 
-/**
- * The color of each clan, sampled on the back of its cards, and the gold of the emblem printed on it.
- * The Pandas are missing: their cards are absent from the assets.
- */
-export const clanColors: Partial<Record<Clan, string>> = {
-  [Clan.Cat]: '#623c91',
+/** The color of each clan, sampled on the back of its cards, and the gold of the emblem printed on it. */
+export const clanColors: Record<Clan, string> = {
+  [Clan.Panda]: '#62c558',
   [Clan.Shark]: '#0090cf',
+  [Clan.Cat]: '#623c91',
   [Clan.Scorpion]: '#f0921e'
 }
 

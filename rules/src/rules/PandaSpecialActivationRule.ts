@@ -12,8 +12,8 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  * The special activation of the Pandas: 1 Food or 1 Awakening, whichever the player prefers. Both are always
  * available, so this rule never has to hand the game back without asking anything, unlike the other effects.
  *
- * TODO: an Awakening is only counted here (see {@link Memory.Awakenings}). What it is spent on is on the Panda
- * cards, which do not exist yet.
+ * TODO: an Awakening is only counted here (see {@link Memory.Awakenings}). Winning with 7 of them, and what an
+ * Awakening actually does to the Pandas on the grid, are both waiting on card effects (see {@link PandaLevel}).
  */
 export class PandaSpecialActivationRule extends EffectRule {
   getPlayerMoves(): Move[] {

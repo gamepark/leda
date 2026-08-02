@@ -20,6 +20,18 @@ import CatSearchRing from '../images/cards/cat/cat-search-ring.jpg'
 import CatSpendRingForToken from '../images/cards/cat/cat-spend-ring-for-token.jpg'
 import CatSpyAndDraw from '../images/cards/cat/cat-spy-and-draw.jpg'
 import CatUpgradeCardOrActivateTile from '../images/cards/cat/cat-upgrade-card-or-activate-tile.jpg'
+import PandaBack from '../images/cards/panda/back.jpg'
+import PandaDrawAndSpecialActivation from '../images/cards/panda/panda-draw-and-special-activation.jpg'
+import PandaDrawOrMilitary from '../images/cards/panda/panda-draw-or-military.jpg'
+import PandaFoodAndDiscount from '../images/cards/panda/panda-food-and-discount.jpg'
+import PandaFoodAndSpy from '../images/cards/panda/panda-food-and-spy.jpg'
+import PandaFoodOrMilitary from '../images/cards/panda/panda-food-or-military.jpg'
+import PandaKing from '../images/cards/panda/panda-king.jpg'
+import PandaMilitaryAndUpgrade from '../images/cards/panda/panda-military-and-upgrade.jpg'
+import PandaMilitary from '../images/cards/panda/panda-military.jpg'
+import PandaQueen from '../images/cards/panda/panda-queen.jpg'
+import PandaSpyAndDiscount from '../images/cards/panda/panda-spy-and-discount.jpg'
+import PandaUpgrade from '../images/cards/panda/panda-upgrade.jpg'
 import ScorpionBack from '../images/cards/scorpion/back.jpg'
 import ScorpionActivateDesert from '../images/cards/scorpion/scorpion-activate-desert.jpg'
 import ScorpionDiscountPerDesertPair from '../images/cards/scorpion/scorpion-discount-per-desert-pair.jpg'
@@ -49,13 +61,11 @@ import { SpiedItemButtons } from './SpiedItemButtons'
 import { SpyPileButton } from './SpyPileButton'
 import { tileSize } from './TileDescription'
 
-/**
- * All the cards of a clan share one back, the emblem of that clan, including their Victory condition card.
- * The Pandas are missing: their cards are absent from the assets, and playableClans keeps them out of the choice.
- */
-export const clanBacks: Partial<Record<Clan, string>> = {
-  [Clan.Cat]: CatBack,
+/** All the cards of a clan share one back, the emblem of that clan, including their Victory condition card. */
+export const clanBacks: Record<Clan, string> = {
+  [Clan.Panda]: PandaBack,
   [Clan.Shark]: SharkBack,
+  [Clan.Cat]: CatBack,
   [Clan.Scorpion]: ScorpionBack
 }
 
@@ -69,6 +79,28 @@ export class ClanCardDescription extends CardDescription<number, MaterialType, L
   borderRadius = 0.5
 
   images = {
+    [ClanCardId.PandaDrawAndSpecialActivation]: PandaDrawAndSpecialActivation,
+    [ClanCardId.PandaUpgrade]: PandaUpgrade,
+    [ClanCardId.PandaFoodOrMilitary]: PandaFoodOrMilitary,
+    [ClanCardId.PandaFoodAndDiscount]: PandaFoodAndDiscount,
+    [ClanCardId.PandaDrawOrMilitary]: PandaDrawOrMilitary,
+    [ClanCardId.PandaFoodAndSpy]: PandaFoodAndSpy,
+    [ClanCardId.PandaMilitary]: PandaMilitary,
+    [ClanCardId.PandaMilitaryAndUpgrade]: PandaMilitaryAndUpgrade,
+    [ClanCardId.PandaSpyAndDiscount]: PandaSpyAndDiscount,
+    [ClanCardId.PandaKing]: PandaKing,
+    [ClanCardId.PandaQueen]: PandaQueen,
+    [ClanCardId.SharkUpgrade]: SharkUpgrade,
+    [ClanCardId.SharkSpyOrTriggerToken]: SharkSpyOrTriggerToken,
+    [ClanCardId.SharkPackRedrawToken]: SharkPackRedrawToken,
+    [ClanCardId.SharkMilitary]: SharkMilitary,
+    [ClanCardId.SharkMilitaryAndDraw]: SharkMilitaryAndDraw,
+    [ClanCardId.SharkMilitaryPerToken]: SharkMilitaryPerToken,
+    [ClanCardId.SharkPackDrawToken]: SharkPackDrawToken,
+    [ClanCardId.SharkFoodOrDiscount]: SharkFoodOrDiscount,
+    [ClanCardId.SharkFoodPerToken]: SharkFoodPerToken,
+    [ClanCardId.SharkPackPlaceToken]: SharkPackPlaceToken,
+    [ClanCardId.SharkPackSpy]: SharkPackSpy,
     [ClanCardId.CatCopyOpponentCard]: CatCopyOpponentCard,
     [ClanCardId.CatSearchRing]: CatSearchRing,
     [ClanCardId.CatUpgradeCardOrActivateTile]: CatUpgradeCardOrActivateTile,
@@ -82,17 +114,6 @@ export class ClanCardDescription extends CardDescription<number, MaterialType, L
     [ClanCardId.CatRingEmptyDeck]: CatRingEmptyDeck,
     [ClanCardId.CatRingThreeCatCards]: CatRingThreeCatCards,
     [ClanCardId.CatRingFiveUpgradedTiles]: CatRingFiveUpgradedTiles,
-    [ClanCardId.SharkUpgrade]: SharkUpgrade,
-    [ClanCardId.SharkSpyOrTriggerToken]: SharkSpyOrTriggerToken,
-    [ClanCardId.SharkPackRedrawToken]: SharkPackRedrawToken,
-    [ClanCardId.SharkMilitary]: SharkMilitary,
-    [ClanCardId.SharkMilitaryAndDraw]: SharkMilitaryAndDraw,
-    [ClanCardId.SharkMilitaryPerToken]: SharkMilitaryPerToken,
-    [ClanCardId.SharkPackDrawToken]: SharkPackDrawToken,
-    [ClanCardId.SharkFoodOrDiscount]: SharkFoodOrDiscount,
-    [ClanCardId.SharkFoodPerToken]: SharkFoodPerToken,
-    [ClanCardId.SharkPackPlaceToken]: SharkPackPlaceToken,
-    [ClanCardId.SharkPackSpy]: SharkPackSpy,
     [ClanCardId.ScorpionFoodPerDesertPair]: ScorpionFoodPerDesertPair,
     [ClanCardId.ScorpionMilitaryPerDesertPair]: ScorpionMilitaryPerDesertPair,
     [ClanCardId.ScorpionDrawAndFood]: ScorpionDrawAndFood,

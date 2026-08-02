@@ -4,35 +4,31 @@ import type { Clan } from '../Clan'
  * The clan cards a player draws and then plays onto their grid: 13 for the Cats, 11 for each other clan.
  * The Victory condition card of a clan is not one of them, it is a material type of its own.
  *
- * Ids are numbered `100 * clan + n`, so `Math.floor(id / 100)` gives the Clan a card belongs to, and the Pandas
- * can be added later without renumbering anything. Within a clan, the order is the order of the punchboard.
+ * Ids are numbered `100 * clan + n`, so `Math.floor(id / 100)` gives the Clan a card belongs to. Within a clan,
+ * the order is the order of the punchboard.
  *
  * The cards have no printed name, only icons, so the values are named after what they do. What each of them
  * costs and does is described in {@link clanCardProperties}, card by card, and not here: this enum is only the
  * identity of a card, which is all the app needs to draw it.
  */
 export enum ClanCardId {
-  // Cats. See {@link catCards}.
-  CatCopyOpponentCard = 101,
-  CatSearchRing,
-  CatUpgradeCardOrActivateTile,
-  CatMilitaryOrFoodPerCardInHand,
-  CatSpyAndDraw,
-  CatSpendRingForToken,
-  CatFoodAndMilitary,
-  CatDrawAndFood,
-  CatMilitaryOrUpgrade,
+  // Pandas. See {@link pandaCards}.
+  PandaDrawAndSpecialActivation = 101,
+  PandaUpgrade,
+  PandaFoodOrMilitary,
+  PandaFoodAndDiscount,
+  PandaDrawOrMilitary,
+  PandaFoodAndSpy,
+  PandaMilitary,
+  PandaMilitaryAndUpgrade,
+  PandaSpyAndDiscount,
 
-  /** The 4 Rings, apart in the numbering because they are the win condition of the Cats rather than cards to buy. */
-  CatRingWinConflictByThree = 110,
-  CatRingEmptyDeck,
-  CatRingThreeCatCards,
-  CatRingFiveUpgradedTiles,
-
-  // Pandas: 201 to 211. Their card images are missing from the assets, so their ids are not defined yet.
+  /** The King and the Queen, which the Pandas win the game by having both in play. */
+  PandaKing,
+  PandaQueen,
 
   // Sharks. See {@link sharkCards}.
-  SharkUpgrade = 301,
+  SharkUpgrade = 201,
   SharkSpyOrTriggerToken,
   SharkPackRedrawToken,
   SharkMilitary,
@@ -43,6 +39,23 @@ export enum ClanCardId {
   SharkFoodPerToken,
   SharkPackPlaceToken,
   SharkPackSpy,
+
+  // Cats. See {@link catCards}.
+  CatCopyOpponentCard = 301,
+  CatSearchRing,
+  CatUpgradeCardOrActivateTile,
+  CatMilitaryOrFoodPerCardInHand,
+  CatSpyAndDraw,
+  CatSpendRingForToken,
+  CatFoodAndMilitary,
+  CatDrawAndFood,
+  CatMilitaryOrUpgrade,
+
+  /** The 4 Rings, apart in the numbering because they are the win condition of the Cats rather than cards to buy. */
+  CatRingWinConflictByThree = 310,
+  CatRingEmptyDeck,
+  CatRingThreeCatCards,
+  CatRingFiveUpgradedTiles,
 
   // Scorpions. See {@link scorpionCards}.
   ScorpionFoodPerDesertPair = 401,

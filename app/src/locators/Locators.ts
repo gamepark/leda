@@ -244,6 +244,20 @@ class PlayerHandLocator extends HandLocator {
   getCoordinates(location: Location, context: MaterialContext) {
     return { x: playerSide(location.player, context) * handX, y: handY, z: 5 }
   }
+
+  /**
+   * A card the player cannot see is not hovered at all: the 4 clans have a back each, so the framework leaves the
+   * hover on, but within one hand every card shows the same emblem and there is nothing to look closer at.
+   * Asked of the description rather than compared here, so that what counts as face down is written once.
+   *
+   * The others rise 2 cm above what the framework already does, which straightens the card and doubles its size:
+   * a hand sits at the bottom edge of the table, so a card that only grows in place has its lower half hidden
+   * behind the panel of its owner. Lifted first, before the rest, so that the 2 cm are not doubled by the scale.
+   */
+  getHoverTransform(item: MaterialItem, context: ItemContext) {
+    if (context.material[context.type]?.isFlippedOnTable(item, context)) return []
+    return ['translate(2em, -3em)', ...super.getHoverTransform(item, context)]
+  }
 }
 
 export const Locators: Partial<Record<LocationType, Locator<number, MaterialType, LocationType>>> = {

@@ -45,6 +45,14 @@
       "you": "<awakening/> : Éveillez un Panda",
       "player": "<awakening/> : {player} éveille un Panda"
     },
+    "play-card": {
+      "you": "Jouez une carte de votre main à -{discount} <food/>, ou <decline>renoncez</decline>",
+      "player": "{player} peut jouer une carte de sa main à -{discount} <food/>"
+    },
+    "activate-card": {
+      "you": "Activez une de vos cartes en jeu",
+      "player": "{player} active une de ses cartes en jeu"
+    },
     "organisation": {
       "you": "Jouez une carte ou échangez 2 cartes et gagnez 1 <food/>",
       "player": "{player} joue une carte ou échange 2 cartes et gagne 1 <food/>"

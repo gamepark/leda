@@ -1,11 +1,10 @@
 import { isCreateItemType, isMoveItemType, ItemMove, MaterialMove, PlayerTurnRule } from '@gamepark/rules-api'
 import { ClanCardItemId, revealedFront } from '../material/ClanCardId'
-import { clanCardFoodCost } from '../material/clanCards/cardProperties'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { cellOf, gridTiles, tileAt } from '../material/PlayerGrid'
 import { Memory } from './Memory'
-import { playerFood } from './organisation'
+import { cardFoodCost, playCardMoves } from './organisation'
 import { RuleId } from './RuleId'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
@@ -24,21 +23,11 @@ export class OrganisationRule extends PlayerTurnRule<number, MaterialType, Locat
   }
 
   /**
-   * Playing one card from the hand onto any of the 16 squares of the player's own grid, provided they own the
-   * Food it costs. A card is played on the tile of the square rather than on the square itself, hence the parent
-   * of its location (see {@link LocationType.PlayedCard}).
-   * A card with no Food cost is one that cannot be bought at all: a Ring, or one of the Cat cards paid with
-   * cards from the hand (see {@link clanCardFoodCost}).
+   * Playing one card from the hand onto a square of the player's own grid, which an effect may also let them do
+   * in the middle of their activation, hence the helper they share (see {@link playCardMoves}).
    */
   get playCardMoves(): Move[] {
-    const food = playerFood(this, this.player)
-    const cards = this.material(MaterialType.ClanCard)
-    const parents = this.tiles.getIndexes()
-    return this.hand.getIndexes().flatMap((index) => {
-      const cost = this.foodCost(index)
-      if (cost === undefined || cost > food) return []
-      return parents.map((parent) => cards.index(index).moveItem({ type: LocationType.PlayedCard, player: this.player, parent }))
-    })
+    return playCardMoves(this, this.player)
   }
 
   /**
@@ -50,7 +39,7 @@ export class OrganisationRule extends PlayerTurnRule<number, MaterialType, Locat
    * moved, hence before its id has been filled in (see {@link beforeItemMove}).
    */
   foodCost(index: number, front = this.material(MaterialType.ClanCard).getItem<ClanCardItemId>(index).id?.front): number | undefined {
-    return front === undefined ? undefined : clanCardFoodCost(front, this, this.player)
+    return cardFoodCost(this, this.player, front)
   }
 
   /**

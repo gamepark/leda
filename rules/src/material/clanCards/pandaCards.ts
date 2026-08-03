@@ -1,4 +1,5 @@
 import { ClanCardId } from '../ClanCardId'
+import { Effect } from '../Effect'
 import { ClanCardProperties } from './ClanCardProperties'
 import { PandaLevel } from './PandaLevel'
 
@@ -15,35 +16,73 @@ import { PandaLevel } from './PandaLevel'
  */
 export const pandaCards = {
   /** Draw 1 card and trigger your Special activation. */
-  [ClanCardId.PandaDrawAndSpecialActivation]: { cost: { food: 5 } },
+  [ClanCardId.PandaDrawAndSpecialActivation]: {
+    cost: { food: 5 },
+    effects: { [Effect.Draw]: 1, [Effect.SpecialActivation]: 1 }
+  },
 
   /** Upgrade one of your tiles. */
-  [ClanCardId.PandaUpgrade]: { cost: { food: 5 }, pandaLevel: PandaLevel.Bronze },
+  [ClanCardId.PandaUpgrade]: {
+    cost: { food: 5 },
+    effects: { [Effect.Upgrade]: 1 },
+    pandaLevel: PandaLevel.Bronze
+  },
 
   /** Gain 1 Food OR gain 1 Military. */
-  [ClanCardId.PandaFoodOrMilitary]: { cost: { food: 5 }, pandaLevel: PandaLevel.Bronze },
+  [ClanCardId.PandaFoodOrMilitary]: {
+    cost: { food: 5 },
+    effects: { or: [{ [Effect.Food]: 1 }, { [Effect.Military]: 1 }] },
+    pandaLevel: PandaLevel.Bronze
+  },
 
   /** Gain 1 Food. You may play a Panda card from your hand, reducing its Food cost by 1. */
-  [ClanCardId.PandaFoodAndDiscount]: { cost: { food: 5 }, pandaLevel: PandaLevel.Bronze },
+  [ClanCardId.PandaFoodAndDiscount]: {
+    cost: { food: 5 },
+    effects: { [Effect.Food]: 1, [Effect.PlayCard]: 1 },
+    pandaLevel: PandaLevel.Bronze
+  },
 
   /** Draw 1 card OR gain 1 Military. */
-  [ClanCardId.PandaDrawOrMilitary]: { cost: { food: 5 }, pandaLevel: PandaLevel.Bronze },
+  [ClanCardId.PandaDrawOrMilitary]: {
+    cost: { food: 5 },
+    effects: { or: [{ [Effect.Draw]: 1 }, { [Effect.Military]: 1 }] },
+    pandaLevel: PandaLevel.Bronze
+  },
 
   /** Gain 1 Food. Spy. */
-  [ClanCardId.PandaFoodAndSpy]: { cost: { food: 5 }, pandaLevel: PandaLevel.Bronze },
+  [ClanCardId.PandaFoodAndSpy]: {
+    cost: { food: 5 },
+    effects: { [Effect.Food]: 1, [Effect.Spy]: 1 },
+    pandaLevel: PandaLevel.Bronze
+  },
 
   /** Gain 2 Military. */
-  [ClanCardId.PandaMilitary]: { pandaLevel: PandaLevel.Silver },
+  [ClanCardId.PandaMilitary]: {
+    effects: { [Effect.Military]: 2 },
+    pandaLevel: PandaLevel.Silver
+  },
 
   /** Gain 1 Military. Upgrade one of your tiles. */
-  [ClanCardId.PandaMilitaryAndUpgrade]: { pandaLevel: PandaLevel.Silver },
+  [ClanCardId.PandaMilitaryAndUpgrade]: {
+    effects: { [Effect.Military]: 1, [Effect.Upgrade]: 1 },
+    pandaLevel: PandaLevel.Silver
+  },
 
   /** Spy. You may play a Panda card from your hand, reducing its Food cost by 2. */
-  [ClanCardId.PandaSpyAndDiscount]: { pandaLevel: PandaLevel.Silver },
+  [ClanCardId.PandaSpyAndDiscount]: {
+    effects: { [Effect.Spy]: 1, [Effect.PlayCard]: 2 },
+    pandaLevel: PandaLevel.Silver
+  },
 
   /** Gain 2 Military and draw 1 Military Victory token, resolving its effect. */
-  [ClanCardId.PandaKing]: { pandaLevel: PandaLevel.Gold },
+  [ClanCardId.PandaKing]: {
+    effects: { [Effect.Military]: 2, [Effect.MilitaryVictory]: 1 },
+    pandaLevel: PandaLevel.Gold
+  },
 
   /** Activate one of your Panda cards in play. */
-  [ClanCardId.PandaQueen]: { pandaLevel: PandaLevel.Gold }
+  [ClanCardId.PandaQueen]: {
+    effects: { [Effect.ActivateCard]: 1 },
+    pandaLevel: PandaLevel.Gold
+  }
 } satisfies Partial<Record<ClanCardId, ClanCardProperties>>

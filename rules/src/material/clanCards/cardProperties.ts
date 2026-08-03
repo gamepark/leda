@@ -1,5 +1,6 @@
 import { Rules } from '../../Rules'
 import { ClanCardId } from '../ClanCardId'
+import { EffectSet } from '../Effect'
 import { catCards } from './catCards'
 import { ClanCardProperties } from './ClanCardProperties'
 import { pandaCards } from './pandaCards'
@@ -22,6 +23,12 @@ export const clanCardProperties: Record<ClanCardId, ClanCardProperties> = { ...p
  * Read against the state the player is looking at: a Portal counts the cards in the hand its own card is still
  * part of (see {@link FoodCost}).
  */
+/**
+ * What a card gives when the square it was played on is activated, and nothing at all for the cards whose effects
+ * are not implemented yet: such a card leaves its square with nothing to activate, since it covers its tile.
+ */
+export const clanCardEffects = (card: ClanCardId): EffectSet => clanCardProperties[card].effects ?? {}
+
 export const clanCardFoodCost = (card: ClanCardId, rules: Rules, player: number): number | undefined => {
   const cost = clanCardProperties[card].cost
   if (cost === undefined || !('food' in cost)) return undefined

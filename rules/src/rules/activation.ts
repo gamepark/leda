@@ -1,12 +1,15 @@
 import { MaterialMove, PlayerTurnRule, XYCoordinates } from '@gamepark/rules-api'
 import { ActionZone, actionZoneCells } from '../material/ActionZone'
+import { hasEffect } from '../material/Effect'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { sameCell, tileAt } from '../material/PlayerGrid'
 import { hasTileEffect } from '../material/TileEffect'
 import { TileId } from '../material/TileId'
 import { Rules } from '../Rules'
+import { pendingRules } from './effects'
 import { Memory } from './Memory'
+import { cardEffectsOn } from './playedCards'
 import { RuleId } from './RuleId'
 
 /**
@@ -20,10 +23,10 @@ export const roundZone = (rules: Rules): ActionZone | undefined => rules.game.me
 /**
  * Whether the zone is being activated, the rules an effect opens along the way included: a Military Victory token
  * opens the same ones, so those count only when the activation is what they go back to.
- * Read off the memory rather than off a list of such rules, which every clan card would have to be added to.
+ * Read off the rules waiting rather than off a list of such rules, which every clan card would have to be added to.
  */
 export const isActivationPhase = (rules: Rules): boolean =>
-  rules.game.rule?.id === RuleId.ActivateZone || rules.game.memory[Memory.NextRule] === RuleId.ActivateZone
+  rules.game.rule?.id === RuleId.ActivateZone || pendingRules(rules).includes(RuleId.ActivateZone)
 
 /** The squares of the zone a player has already resolved this round. */
 const activatedCells = (rules: Rules, player: number): XYCoordinates[] => rules.game.memory[Memory.ActivatedCells]?.[player] ?? []
@@ -41,11 +44,13 @@ export const activableCells = (rules: Rules, player: number): XYCoordinates[] =>
 }
 
 /**
- * Whether a square holds anything to resolve. Only the tile is read, even under a card played on it: a card
- * covers the tile of its square on the table, but its own effect is not implemented yet.
- * TODO: activate the topmost card of a square instead of the tile it covers.
+ * Whether a square holds anything to resolve: what the card played on it gives, or what its tile gives when no
+ * card covers it. A card covers the tile of its square, so a card whose effects are not written down yet leaves
+ * its square with nothing to activate (see {@link cardEffectsOn}).
  */
 const isActivable = (rules: Rules, player: number, cell: XYCoordinates): boolean => {
+  const card = cardEffectsOn(rules, player, cell)
+  if (card !== undefined) return hasEffect(card)
   const tile = tileAt(rules.material(MaterialType.Tile), player, cell).getItem<TileId>()
   return tile !== undefined && hasTileEffect(tile.id, tile.location.rotation === true)
 }

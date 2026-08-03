@@ -1,4 +1,5 @@
 import { Rules } from '../../Rules'
+import { EffectSet } from '../Effect'
 import { PandaLevel } from './PandaLevel'
 
 /**
@@ -16,9 +17,17 @@ export type ClanCardProperties = {
    * What playing the card costs its owner during the organisation. Absent for the cards that are never bought:
    * the 4 Cat Rings, played for free as soon as their own condition is met, and the Silver and Gold Pandas,
    * which reach the grid through an Awakening during the activation rather than by being paid for.
-   * TODO: the conditions of the 4 Rings, and the effects of every card.
+   * TODO: the conditions of the 4 Rings.
    */
   cost?: ClanCardCost
+
+  /**
+   * What the card gives when the square it was played on is activated, in the lexicon every effect of the game
+   * shares (see {@link Effect}). A card covers the tile of its square: what it gives is given instead of what the
+   * tile gave, which is why a card with none at all leaves its square with nothing to activate.
+   * TODO: the effects of the Shark, Cat and Scorpion cards.
+   */
+  effects?: EffectSet
 
   /** Only the Pandas have one, and one of them has none at all (see {@link PandaLevel}). */
   pandaLevel?: PandaLevel

@@ -16,11 +16,21 @@ export enum Memory {
   MilitarySymbols,
 
   /**
-   * Where to go once an effect that asks the player to choose is resolved: the rule that was interrupted, or what
-   * comes after the one that opened the choice. Set by whoever opens such a rule, and forgotten as soon as that
-   * rule hands over (see {@link EffectRule}), so that it holds a rule only while one is actually waiting.
+   * The rules waiting to be played, in the order they will be: what the effects of a square asked the player,
+   * then whatever was interrupted to ask it. Every rule that asks something hands over to the first of them once
+   * it is done, and takes it off the list (see {@link EffectRule} and {@link startNextRule}).
+   * A list rather than a single rule, because one card may ask several things: "Spy. You may then play a card".
    */
-  NextRule,
+  NextRules,
+
+  /**
+   * The choices an effect left the player, in the order they will be made (see {@link EffectChoice}). The one
+   * being made is the first, and it is forgotten as soon as it is.
+   */
+  EffectChoices,
+
+  /** The Food the card an effect lets a player play is discounted by (see {@link Effect.PlayCard}). */
+  CardDiscount,
 
   /**
    * The Awakenings a player gathered with the special activation of the Pandas and has not resolved yet, as a

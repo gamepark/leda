@@ -11,16 +11,19 @@ import {
 } from '@gamepark/rules-api'
 import { LocationType } from './material/LocationType'
 import { MaterialType } from './material/MaterialType'
+import { ActivateCardRule } from './rules/ActivateCardRule'
 import { ActivateZoneRule } from './rules/ActivateZoneRule'
 import { AwakeningRule } from './rules/AwakeningRule'
 import { ChooseActionRule } from './rules/ChooseActionRule'
+import { ChooseEffectRule } from './rules/ChooseEffectRule'
 import { EndOfRoundRule } from './rules/EndOfRoundRule'
 import { FlipDesertRule } from './rules/FlipDesertRule'
 import { MilitaryConflictRule } from './rules/MilitaryConflictRule'
+import { MilitaryVictoryRule } from './rules/MilitaryVictoryRule'
 import { ChooseClanRule } from './rules/ChooseClanRule'
 import { MulliganRule } from './rules/MulliganRule'
 import { OrganisationRule } from './rules/OrganisationRule'
-import { PandaSpecialActivationRule } from './rules/PandaSpecialActivationRule'
+import { PlayCardRule } from './rules/PlayCardRule'
 import { RuleId } from './rules/RuleId'
 import { SpyRule } from './rules/SpyRule'
 import { StartOrganisationRule } from './rules/StartOrganisationRule'
@@ -46,7 +49,10 @@ export class LedaRules
     [RuleId.UpgradeTile]: UpgradeTileRule,
     [RuleId.FlipDesert]: FlipDesertRule,
     [RuleId.Spy]: SpyRule,
-    [RuleId.PandaSpecialActivation]: PandaSpecialActivationRule,
+    [RuleId.ChooseEffect]: ChooseEffectRule,
+    [RuleId.PlayCard]: PlayCardRule,
+    [RuleId.ActivateCard]: ActivateCardRule,
+    [RuleId.MilitaryVictory]: MilitaryVictoryRule,
     [RuleId.Awakening]: AwakeningRule
   }
 

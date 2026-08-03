@@ -56,6 +56,7 @@ import SharkPackRedrawToken from '../images/cards/shark/shark-pack-redraw-token.
 import SharkPackSpy from '../images/cards/shark/shark-pack-spy.jpg'
 import SharkSpyOrTriggerToken from '../images/cards/shark/shark-spy-or-trigger-token.jpg'
 import SharkUpgrade from '../images/cards/shark/shark-upgrade.jpg'
+import { PlayedCardMenuButton } from './PlayedCardMenuButton'
 import { isSpiedByOther } from './spiedItem'
 import { SpiedItemButtons } from './SpiedItemButtons'
 import { SpyPileButton } from './SpyPileButton'
@@ -148,6 +149,7 @@ export class ClanCardDescription extends CardDescription<number, MaterialType, L
 
   getItemMenu(item: MaterialItem<number, LocationType, ClanCardItemId>, context: ItemContext<number, MaterialType, LocationType>) {
     if (item.location.type === LocationType.SpiedItem) return <SpiedItemButtons type={MaterialType.ClanCard} />
+    if (item.location.type === LocationType.PlayedCard) return <PlayedCardMenuButton index={context.index} />
     if (item.location.type !== LocationType.PlayerDeck || item.location.player !== context.player) return
     return <SpyPileButton type={MaterialType.ClanCard} index={context.index} />
   }

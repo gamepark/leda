@@ -15,8 +15,14 @@ export enum CustomMoveType {
   ActivateSquare,
 
   /**
-   * A player resolves a special activation that leaves them a choice, which only the Pandas have for now.
-   * The data is the {@link PandaSpecialActivation} they picked.
+   * A player resolves an "OR" effect. The data is the index of the branch they picked, in the choice they are
+   * being offered (see {@link EffectChoice}).
    */
-  ChooseSpecialActivation
+  ChooseEffect,
+
+  /** A player activates one of their clan cards in play. The data is the index of that card. */
+  ActivateCard,
+
+  /** A player turns down what an effect only lets them do: playing a card from their hand, so far. */
+  Decline
 }

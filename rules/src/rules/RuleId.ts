@@ -62,11 +62,17 @@ export enum RuleId {
   /** A Spy effect: the player looks at the top of a pile of their choice, then puts it back on top or under. */
   Spy,
 
-  /**
-   * The special activation of the Pandas: the player picks between gaining 1 Food and gathering 1 Awakening,
-   * which is only written down and resolved once their whole zone is activated (see {@link RuleId.Awakening}).
-   */
-  PandaSpecialActivation,
+  /** An "OR": the player picks which of the branches an effect offers is the one they resolve. */
+  ChooseEffect,
+
+  /** The player may play a clan card from their hand, at the discount the effect that offered it gives. */
+  PlayCard,
+
+  /** The player activates one of their clan cards in play, which gives whatever that card gives. */
+  ActivateCard,
+
+  /** The player draws the first Military Victory token and resolves it, conflict or not. */
+  MilitaryVictory,
 
   /**
    * The Awakenings a player of the Pandas gathered while activating, resolved once their whole zone is done: each

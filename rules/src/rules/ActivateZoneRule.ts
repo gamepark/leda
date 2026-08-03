@@ -1,15 +1,16 @@
-import { CustomMove, getEnumValues, isCustomMoveType, MaterialMove, PlayerTurnRule, XYCoordinates } from '@gamepark/rules-api'
-import { Clan } from '../Clan'
+import { CustomMove, isCustomMoveType, MaterialMove, PlayerTurnRule, XYCoordinates } from '@gamepark/rules-api'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { tileAt } from '../material/PlayerGrid'
-import { isPermanent, TileEffect, TileEffects, tileEffects } from '../material/TileEffect'
+import { isPermanent, tileEffects } from '../material/TileEffect'
 import { TileId } from '../material/TileId'
 import { activableCells, afterActivation } from './activation'
 import { CustomMoveType } from './CustomMoveType'
+import { pendingRules, queueLast, resolveEffects, startNextRule } from './effects'
 import { Memory } from './Memory'
+import { cardEffectsOn } from './playedCards'
 import { RuleId } from './RuleId'
-import { awakenings, playerClan, specialActivationChoices, specialActivationEffects } from './specialActivation'
+import { awakenings } from './specialActivation'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
@@ -41,46 +42,28 @@ export class ActivateZoneRule extends PlayerTurnRule<number, MaterialType, Locat
     if (!isCustomMoveType<CustomMoveType, XYCoordinates>(CustomMoveType.ActivateSquare)(move)) return []
     const cell = move.data
     if (cell === undefined) return []
-    // Remembered before the effects are built, so that what is left to activate is read against this square done.
+    // Remembered before the effects are resolved, so that what is left to activate is read against this square done.
     this.memorize<XYCoordinates[]>(Memory.ActivatedCells, (cells) => [...cells, cell], this.player)
-    const effects = this.effectsOn(cell)
-    const moves = this.activate(cell, effects)
-    // An effect that is a choice hands over to the rule that offers it, and the sequence stops there: that rule
-    // hands the player back to this one, whose onRuleStart reads what is left to activate.
-    const choice = this.choice(effects)
-    if (choice !== undefined) {
-      this.memorize(Memory.NextRule, RuleId.ActivateZone)
-      return [...moves, this.startRule(choice)]
-    }
-    return [...moves, ...this.nextStep()]
+    const moves = this.activate(cell)
+    // What the square asked the player is answered first, and this rule is what takes over once it all is.
+    if (pendingRules(this).length === 0) return [...moves, ...this.nextStep()]
+    queueLast(this, RuleId.ActivateZone)
+    return [...moves, ...startNextRule(this)]
   }
 
   /**
-   * The rule a square opens to ask the player something, if it has one. No tile gives both an Upgrade and a
-   * special activation, so the two never have to wait for one another.
+   * Everything a square gives, which is what the card played on it gives, or what its tile gives when no card
+   * covers it (see {@link cardEffectsOn}).
+   * A temporary tile is turned into a Desert once it has given what it gives. A card is not: it stays face up on
+   * its square and gives the same thing every time that square is activated.
    */
-  choice(effects: TileEffects): RuleId | undefined {
-    if (effects[TileEffect.Upgrade]) return RuleId.UpgradeTile
-    const clan = this.clan
-    if (effects[TileEffect.SpecialActivation] && clan !== undefined) return specialActivationChoices[clan]
-    return undefined
-  }
-
-  /** What the tile on a square gives, on the face it currently shows. */
-  effectsOn(cell: XYCoordinates): TileEffects {
-    const item = this.tileOn(cell).getItem<TileId>()
-    return item === undefined ? {} : tileEffects(item.id, item.location.rotation === true)
-  }
-
-  /**
-   * Everything a square gives, in the order the effects are numbered, which is the order the rulebook reads them
-   * in. A temporary tile is turned into a Desert once its effect has been resolved.
-   */
-  activate(cell: XYCoordinates, effects: TileEffects): Move[] {
+  activate(cell: XYCoordinates): Move[] {
+    const card = cardEffectsOn(this, this.player, cell)
+    if (card !== undefined) return resolveEffects(this, card)
     const tile = this.tileOn(cell)
     const item = tile.getItem<TileId>()
     if (item === undefined) return []
-    const moves = getEnumValues(TileEffect).flatMap((effect) => this.resolve(effect, effects[effect] ?? 0))
+    const moves = resolveEffects(this, tileEffects(item.id, item.location.rotation === true))
     if (item.location.rotation !== true && !isPermanent(item.id)) moves.push(tile.moveItem({ ...item.location, rotation: true }))
     return moves
   }
@@ -88,53 +71,6 @@ export class ActivateZoneRule extends PlayerTurnRule<number, MaterialType, Locat
   /** The tile on a square of the grid of the player who is activating. */
   tileOn(cell: XYCoordinates) {
     return tileAt(this.material(MaterialType.Tile), this.player, cell)
-  }
-
-  /** One effect of a tile, applied as many times as the tile gives it. */
-  resolve(effect: TileEffect, quantity: number): Move[] {
-    if (quantity === 0) return []
-    switch (effect) {
-      case TileEffect.Food:
-        return [this.material(MaterialType.FoodToken).createItem({ location: { type: LocationType.PlayerFood, player: this.player }, quantity })]
-      case TileEffect.Draw:
-        return this.deck.limit(quantity).moveItems({ type: LocationType.PlayerHand, player: this.player })
-      case TileEffect.Military:
-        // No item stands for a military symbol: they are only counted, until the conflict hands out the tokens.
-        this.memorize<number>(Memory.MilitarySymbols, (symbols) => symbols + quantity, this.player)
-        return []
-      case TileEffect.Upgrade:
-        // Turning a tile over is a choice, so it is a rule of its own, which onCustomMove hands over to.
-        return []
-      case TileEffect.SpecialActivation:
-        return this.resolveSpecialActivation(quantity)
-      default:
-        return []
-    }
-  }
-
-  /**
-   * A special activation, worth what the Victory condition card of the clan of the player says: the Cats draw a
-   * card, the Sharks gain 2 military symbols. It is resolved on the spot, as the square it comes from is
-   * activated, and not once every other square has been.
-   *
-   * A clan whose special activation is a choice gains nothing here: it is a rule of its own, which onCustomMove
-   * hands over to, exactly like an Upgrade. The recursion stops of its own accord, since what a special activation
-   * gives is anything but another one (see {@link SpecialActivationEffects}).
-   */
-  resolveSpecialActivation(quantity: number): Move[] {
-    if (this.clan === undefined) return []
-    const effects: TileEffects = specialActivationEffects[this.clan] ?? {}
-    return getEnumValues(TileEffect).flatMap((effect) => this.resolve(effect, (effects[effect] ?? 0) * quantity))
-  }
-
-  /** The clan of the player who is activating, which their special activation depends on. */
-  get clan(): Clan | undefined {
-    return playerClan(this, this.player)
-  }
-
-  /** deck() draws from the highest x, which is the top of the pile the DeckLocator stacks. */
-  get deck() {
-    return this.material(MaterialType.ClanCard).location(LocationType.PlayerDeck).player(this.player).deck()
   }
 
   /**

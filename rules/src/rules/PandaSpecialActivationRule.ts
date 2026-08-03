@@ -9,11 +9,13 @@ import { awakenings, PandaSpecialActivation } from './specialActivation'
 type Move = MaterialMove<number, MaterialType, LocationType>
 
 /**
- * The special activation of the Pandas: 1 Food or 1 Awakening, whichever the player prefers. Both are always
- * available, so this rule never has to hand the game back without asking anything, unlike the other effects.
+ * The special activation of the Pandas: 1 Food or 1 Awakening, whichever the player prefers. The Food is always
+ * there, so this rule never has to hand the game back without asking anything, unlike the other effects.
  *
- * TODO: an Awakening is only counted here (see {@link Memory.Awakenings}). Winning with 7 of them, and what an
- * Awakening actually does to the Pandas on the grid, are both waiting on card effects (see {@link PandaLevel}).
+ * Taking the Food settles it there and then. Taking the Awakening only writes it down: it is resolved once the
+ * whole zone has been activated, and there is no going back on it at that point. It is a bet the player is free to
+ * take and free to lose: an Awakening that cannot be resolved when its turn comes is simply lost, whether the
+ * Pandas for it never came or the player misread what they had (see {@link AwakeningRule}).
  */
 export class PandaSpecialActivationRule extends EffectRule {
   getPlayerMoves(): Move[] {

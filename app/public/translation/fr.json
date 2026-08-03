@@ -11,6 +11,10 @@
       "take": "Juste prendre 1"
     }
   },
+  "awakening": {
+    "explain": "L'effet Éveil se résout après avoir résolu toutes les autres activations.",
+    "close": "Fermer"
+  },
   "clan": {
     "1": "Pandas",
     "2": "Requins",
@@ -37,6 +41,10 @@
       "you": "Activez les cases de la zone, dans l'ordre de votre choix",
       "player": "{player} active les cases de la zone"
     },
+    "awakening": {
+      "you": "<awakening/> : Éveillez un Panda",
+      "player": "<awakening/> : {player} éveille un Panda"
+    },
     "organisation": {
       "you": "Jouez une carte ou échangez 2 cartes et gagnez 1 <food/>",
       "player": "{player} joue une carte ou échange 2 cartes et gagne 1 <food/>"
@@ -56,10 +64,6 @@
     "spy-return": {
       "you": "Remettez cet élément sur ou sous sa pile",
       "player": "{player} remet l'élément dans sa pile"
-    },
-    "panda-special-activation": {
-      "you": "Activation spéciale : <food>Nourriture</food> ou <awakening>Éveil</awakening>",
-      "player": "{player} résout son activation spéciale"
     }
   }
 }

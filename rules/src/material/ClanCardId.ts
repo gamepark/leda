@@ -1,4 +1,7 @@
+import type { MoveItem } from '@gamepark/rules-api'
 import type { Clan } from '../Clan'
+import type { LocationType } from './LocationType'
+import type { MaterialType } from './MaterialType'
 
 /**
  * The clan cards a player draws and then plays onto their grid: 13 for the Cats, 11 for each other clan.
@@ -82,3 +85,14 @@ export type ClanCardItemId = {
   front: ClanCardId
   back: Clan
 }
+
+/**
+ * The card a move is about to play, when it is one the player reading the move was not allowed to see.
+ *
+ * A hand is secret, so on the client of its owner's opponent a card is nothing but the back of its clan, and what
+ * it turns out to be travels with the move that plays it. A hook that runs before the move is applied has to read
+ * it from there: the id of the item itself has not been filled in yet.
+ * Undefined when the move reveals nothing, which is the ordinary case of a card its reader could already see.
+ */
+export const revealedFront = (move: MoveItem<number, MaterialType, LocationType>): ClanCardId | undefined =>
+  (move.reveal?.id as ClanCardItemId | undefined)?.front

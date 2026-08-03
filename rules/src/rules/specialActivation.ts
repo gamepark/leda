@@ -41,13 +41,9 @@ export enum PandaSpecialActivation {
   /** Gain 1 Food, exactly like a Food tile. */
   Food = 1,
 
-  /** Gain 1 Awakening, which is only counted for now (see {@link Memory.Awakenings}). */
+  /** Gain 1 Awakening, written down and resolved once the zone is done (see {@link AwakeningRule}). */
   Awakening
 }
 
-/**
- * The Awakenings a player has gathered, which they need 7 of to win with the Pandas.
- * TODO: an Awakening is only counted here. What it does, swapping a Panda on the grid for one of the next level,
- * is not implemented (see {@link PandaLevel}), so the Silver and Gold Pandas never reach the grid.
- */
+/** The Awakenings a player has gathered and not resolved yet (see {@link Memory.Awakenings}). */
 export const awakenings = (rules: Rules, player: number): number => rules.game.memory[Memory.Awakenings]?.[player] ?? 0

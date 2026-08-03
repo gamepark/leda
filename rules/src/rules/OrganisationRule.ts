@@ -1,5 +1,5 @@
 import { isCreateItemType, isMoveItemType, ItemMove, MaterialMove, PlayerTurnRule } from '@gamepark/rules-api'
-import { ClanCardItemId } from '../material/ClanCardId'
+import { ClanCardItemId, revealedFront } from '../material/ClanCardId'
 import { clanCardFoodCost } from '../material/clanCards/cardProperties'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
@@ -41,9 +41,16 @@ export class OrganisationRule extends PlayerTurnRule<number, MaterialType, Locat
     })
   }
 
-  /** What the card at that index costs its owner in Food, undefined when it cannot be bought with Food. */
-  foodCost(index: number): number | undefined {
-    return clanCardFoodCost(this.material(MaterialType.ClanCard).getItem<ClanCardItemId>(index).id!.front, this, this.player)
+  /**
+   * What the card at that index costs its owner in Food, undefined when it cannot be bought with Food, and
+   * undefined too when nobody here knows which card it is.
+   *
+   * A hand is secret, so on the client of the opponent a card is still nothing but the back of its clan until the
+   * move that plays it is applied. `front` is what the move reveals in that case: this runs before the item is
+   * moved, hence before its id has been filled in (see {@link beforeItemMove}).
+   */
+  foodCost(index: number, front = this.material(MaterialType.ClanCard).getItem<ClanCardItemId>(index).id?.front): number | undefined {
+    return front === undefined ? undefined : clanCardFoodCost(front, this, this.player)
   }
 
   /**
@@ -72,7 +79,7 @@ export class OrganisationRule extends PlayerTurnRule<number, MaterialType, Locat
    */
   beforeItemMove(move: ItemMove<number, MaterialType, LocationType>): Move[] {
     if (isMoveItemType(MaterialType.ClanCard)(move) && move.location.type === LocationType.PlayedCard) {
-      const cost = this.foodCost(move.itemIndex) ?? 0
+      const cost = this.foodCost(move.itemIndex, revealedFront(move)) ?? 0
       return cost > 0 ? [this.food.deleteItem(cost)] : []
     }
     if (!isMoveItemType(MaterialType.Tile)(move)) return []

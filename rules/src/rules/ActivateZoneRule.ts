@@ -5,11 +5,11 @@ import { MaterialType } from '../material/MaterialType'
 import { tileAt } from '../material/PlayerGrid'
 import { isPermanent, TileEffect, TileEffects, tileEffects } from '../material/TileEffect'
 import { TileId } from '../material/TileId'
-import { activableCells } from './activation'
+import { activableCells, afterActivation } from './activation'
 import { CustomMoveType } from './CustomMoveType'
 import { Memory } from './Memory'
 import { RuleId } from './RuleId'
-import { playerClan, specialActivationChoices, specialActivationEffects } from './specialActivation'
+import { awakenings, playerClan, specialActivationChoices, specialActivationEffects } from './specialActivation'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
@@ -138,12 +138,13 @@ export class ActivateZoneRule extends PlayerTurnRule<number, MaterialType, Locat
   }
 
   /**
-   * Nothing happens until the player has activated everything they could. Then their opponent activates the same
-   * zone of their own grid, and once both are done comes the military conflict.
+   * Nothing happens until the player has activated everything they could. Then come the Awakenings they gathered
+   * along the way, which the rulebook puts after all the other activations, and which hand the game over on their
+   * own once they are all resolved (see {@link AwakeningRule}).
    */
   nextStep(): Move[] {
     if (this.activableCells.length > 0) return []
-    if (this.player === this.remind<number>(Memory.RoundPlayer)) return [this.startPlayerTurn(RuleId.ActivateZone, this.nextPlayer)]
-    return [this.startRule(RuleId.MilitaryConflict)]
+    if (awakenings(this, this.player) > 0) return [this.startRule(RuleId.Awakening)]
+    return afterActivation(this)
   }
 }

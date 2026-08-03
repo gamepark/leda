@@ -23,9 +23,10 @@ export enum Memory {
   NextRule,
 
   /**
-   * The Awakenings a player gathered with the special activation of the Pandas, as a count.
-   * TODO: nothing spends them yet (see {@link pandaCards}). Only the counter is kept for now, and it is never
-   * reset: an Awakening is not lost at the end of a round, unlike the military symbols above.
+   * The Awakenings a player gathered with the special activation of the Pandas and has not resolved yet, as a
+   * count. Nothing stands for one on the table: like a military symbol, it is only counted.
+   * It goes back down to 0 within the round that raised it, since every Awakening is resolved as soon as its
+   * owner is done activating their zone (see {@link AwakeningRule}).
    */
   Awakenings
 }

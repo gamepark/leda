@@ -12,6 +12,7 @@ import {
 import { LocationType } from './material/LocationType'
 import { MaterialType } from './material/MaterialType'
 import { ActivateZoneRule } from './rules/ActivateZoneRule'
+import { AwakeningRule } from './rules/AwakeningRule'
 import { ChooseActionRule } from './rules/ChooseActionRule'
 import { EndOfRoundRule } from './rules/EndOfRoundRule'
 import { FlipDesertRule } from './rules/FlipDesertRule'
@@ -45,7 +46,8 @@ export class LedaRules
     [RuleId.UpgradeTile]: UpgradeTileRule,
     [RuleId.FlipDesert]: FlipDesertRule,
     [RuleId.Spy]: SpyRule,
-    [RuleId.PandaSpecialActivation]: PandaSpecialActivationRule
+    [RuleId.PandaSpecialActivation]: PandaSpecialActivationRule,
+    [RuleId.Awakening]: AwakeningRule
   }
 
   /**

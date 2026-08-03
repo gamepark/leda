@@ -1,6 +1,7 @@
 import { RuleId } from '@gamepark/leda/rules/RuleId'
 import { ComponentType } from 'react'
 import { ActivateZoneHeader } from './ActivateZoneHeader'
+import { AwakeningHeader } from './AwakeningHeader'
 import { ChooseActionHeader } from './ChooseActionHeader'
 import { ChooseClanHeader } from './ChooseClanHeader'
 import { FlipDesertHeader } from './FlipDesertHeader'
@@ -17,9 +18,10 @@ export const Headers: Partial<Record<RuleId, ComponentType>> = {
   [RuleId.ActivateZone]: ActivateZoneHeader,
   [RuleId.Organisation]: OrganisationHeader,
 
-  /** The rules an effect opens are not steps of a round, hence apart, like in {@link RuleId}. */
+  /** What no round goes through is apart, like in {@link RuleId}: the rules an effect opens, then those of a clan. */
   [RuleId.UpgradeTile]: UpgradeTileHeader,
   [RuleId.FlipDesert]: FlipDesertHeader,
   [RuleId.Spy]: SpyHeader,
-  [RuleId.PandaSpecialActivation]: PandaSpecialActivationHeader
+  [RuleId.PandaSpecialActivation]: PandaSpecialActivationHeader,
+  [RuleId.Awakening]: AwakeningHeader
 }

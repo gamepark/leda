@@ -1,5 +1,6 @@
-import { XYCoordinates } from '@gamepark/rules-api'
+import { MaterialMove, PlayerTurnRule, XYCoordinates } from '@gamepark/rules-api'
 import { ActionZone, actionZoneCells } from '../material/ActionZone'
+import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { sameCell, tileAt } from '../material/PlayerGrid'
 import { hasTileEffect } from '../material/TileEffect'
@@ -48,3 +49,13 @@ const isActivable = (rules: Rules, player: number, cell: XYCoordinates): boolean
   const tile = tileAt(rules.material(MaterialType.Tile), player, cell).getItem<TileId>()
   return tile !== undefined && hasTileEffect(tile.id, tile.location.rotation === true)
 }
+
+/**
+ * What follows a player being done with phase 1, their Awakenings resolved: their opponent activates the same zone
+ * of their own grid, and once both have, the round moves on to the military conflict.
+ * Shared by the two rules a player may be done in, the activation itself and the Awakenings that close it.
+ */
+export const afterActivation = (rule: PlayerTurnRule<number, MaterialType, LocationType>): MaterialMove<number, MaterialType, LocationType>[] =>
+  rule.player === rule.remind<number>(Memory.RoundPlayer)
+    ? [rule.startPlayerTurn(RuleId.ActivateZone, rule.nextPlayer)]
+    : [rule.startRule(RuleId.MilitaryConflict)]

@@ -47,9 +47,10 @@ export enum RuleId {
   EndOfRound,
 
   /**
-   * The rules below are not steps of a round: an effect opens one to ask the player something, and it hands the
-   * game back to whatever was in progress (see {@link EffectRule}). Anything may open them: a tile that was
-   * activated, a Military Victory token, or a clan card.
+   * The rules below are not steps every round goes through, hence their place after them.
+   * Most are opened by an effect to ask the player something, and hand the game back to whatever was in progress
+   * (see {@link EffectRule}). Anything may open one: a tile that was activated, a Military Victory token, or a
+   * clan card. The last ones belong to a single clan.
    */
 
   /** An Upgrade effect: the player turns one of their permanent tiles over, onto its upgraded side. */
@@ -61,6 +62,17 @@ export enum RuleId {
   /** A Spy effect: the player looks at the top of a pile of their choice, then puts it back on top or under. */
   Spy,
 
-  /** The special activation of the Pandas: the player picks between gaining 1 Food and gaining 1 Awakening. */
-  PandaSpecialActivation
+  /**
+   * The special activation of the Pandas: the player picks between gaining 1 Food and gathering 1 Awakening,
+   * which is only written down and resolved once their whole zone is activated (see {@link RuleId.Awakening}).
+   */
+  PandaSpecialActivation,
+
+  /**
+   * The Awakenings a player of the Pandas gathered while activating, resolved once their whole zone is done: each
+   * of them raises a Panda of the grid to the level above.
+   * A step of phase 1 for that clan alone, hence its place down here rather than after the activation it follows:
+   * what a clan does on its own has no business in the flow every game goes through.
+   */
+  Awakening
 }

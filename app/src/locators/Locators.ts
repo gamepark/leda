@@ -1,5 +1,6 @@
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
+import { SharkSlot } from '@gamepark/leda/material/SharkSlot'
 import { actionTileRoundPlayer } from '@gamepark/leda/rules/round'
 import { DeckLocator, HandLocator, ItemContext, ListLocator, Locator, MaterialContext, ParentFace, PileLocator } from '@gamepark/react-game'
 import { Coordinates, Location, MaterialItem } from '@gamepark/rules-api'
@@ -172,6 +173,40 @@ class PlayedCardLocator extends Locator {
 }
 
 /**
+ * A Shark token placed on a square, on the tile of that square like a card is, so that it follows it when 2
+ * squares are swapped.
+ * It covers one of the 2 effect slots printed across the bottom of the Shark card underneath, which is what the x
+ * of its location says (see {@link SharkSlot}), and it is laid over that card rather than under it.
+ */
+class PlacedSharkTokenLocator extends Locator {
+  parentItemType = MaterialType.Tile
+  parentFace = ParentFace.Up
+
+  getItemCoordinates(item: MaterialItem<number, LocationType>, context: ItemContext<number, MaterialType, LocationType>): Partial<Coordinates> {
+    return { x: item.location.x === SharkSlot.Left ? -sharkSlotX : sharkSlotX, y: sharkSlotY, z: this.cardsUnder(item, context) * cardThickness }
+  }
+
+  cardsUnder(item: MaterialItem<number, LocationType>, context: ItemContext<number, MaterialType, LocationType>): number {
+    return context.rules.material(MaterialType.ClanCard).location(LocationType.PlayedCard).parent(item.location.parent).length
+  }
+
+  /** How high a token sits depends on how many cards are on its square, which is not part of its own location. */
+  getPositionDependencies(location: Location, context: MaterialContext) {
+    return context.rules.material(MaterialType.ClanCard).location(LocationType.PlayedCard).parent(location.parent).length
+  }
+}
+
+/**
+ * Where the 2 effect slots of a Shark card are, read off its artwork: the effect area is the bottom band, split
+ * down the middle, so a slot is centered a quarter of the card away from its middle in both directions.
+ */
+const sharkSlotX = tileSize / 4
+const sharkSlotY = tileSize / 3
+
+/** Cards are 0.05 cm thick, which is what CardDescription counts a pile of them in. */
+const cardThickness = 0.05
+
+/**
  * The Food reserve. Its location is declared so that it is always on the table, since it is what carries the
  * button of an organisation (see {@link FoodSupplyDescription}): the reserve holds no item of the game state.
  */
@@ -263,6 +298,7 @@ class PlayerHandLocator extends HandLocator {
 export const Locators: Partial<Record<LocationType, Locator<number, MaterialType, LocationType>>> = {
   [LocationType.PlayerGrid]: new PlayerGridLocator(),
   [LocationType.PlayedCard]: new PlayedCardLocator(),
+  [LocationType.PlacedSharkToken]: new PlacedSharkTokenLocator(),
 
   /** The side column, each spot lined up with a row of the grid. */
   [LocationType.PlayerVictoryCondition]: new PlayerSpotLocator(sideColumnX, gridRowY(0)),

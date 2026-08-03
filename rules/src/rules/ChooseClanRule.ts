@@ -4,9 +4,7 @@ import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { CustomMoveType } from './CustomMoveType'
 import { RuleId } from './RuleId'
-
-/** The Shark clan comes with 9 tokens of its own. The other clans have no extra material. */
-const sharkTokens = 9
+import { sharkTokens } from './sharkPack'
 
 /** Setup step 6: the starting resources, the same for the 4 clans of this box. */
 const startingHand = 3

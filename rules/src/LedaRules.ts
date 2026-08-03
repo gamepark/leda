@@ -3,8 +3,10 @@ import {
   hideFrontToOthers,
   hideItemId,
   hideItemIdToOthers,
+  ItemMove,
   MaterialGame,
   MaterialMove,
+  PlayMoveContext,
   PositiveSequenceStrategy,
   SecretMaterialRules,
   TimeLimit
@@ -25,6 +27,7 @@ import { MulliganRule } from './rules/MulliganRule'
 import { OrganisationRule } from './rules/OrganisationRule'
 import { PlayCardRule } from './rules/PlayCardRule'
 import { RuleId } from './rules/RuleId'
+import { sharkMoves } from './rules/sharkPack'
 import { SpyRule } from './rules/SpyRule'
 import { StartOrganisationRule } from './rules/StartOrganisationRule'
 import { UpgradeTileRule } from './rules/UpgradeTileRule'
@@ -115,6 +118,23 @@ export class LedaRules
    */
   itemsCanMerge(type: MaterialType): boolean {
     return type !== MaterialType.Tile && super.itemsCanMerge(type)
+  }
+
+  /**
+   * The Pack of the Sharks is a rule of the board and not of any one step of it: a Shark card played takes a
+   * token, and a token whose square stops being surrounded slides back over the effect it was covering, whichever
+   * rule moved the card, the token or the tile under them (see {@link sharkMoves}).
+   * Hence this hook rather than the same call written into every rule that plays a card or swaps 2 squares.
+   *
+   * What the board owes comes first, before what the rule that was playing has to say: a card played is the end of
+   * an organisation, and a round handed over before its tokens are placed would open the next one in the middle of
+   * settling the last.
+   */
+  protected afterItemMove(
+    move: ItemMove<number, MaterialType, LocationType>,
+    context?: PlayMoveContext
+  ): MaterialMove<number, MaterialType, LocationType>[] {
+    return [...sharkMoves(this, move), ...super.afterItemMove(move, context)]
   }
 
   giveTime(): number {

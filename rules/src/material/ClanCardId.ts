@@ -76,6 +76,9 @@ export enum ClanCardId {
   ScorpionPortalBlockMilitaryVictory
 }
 
+/** The clan a card belongs to, which its own value encodes: ids are numbered `100 * clan + n`. */
+export const clanOf = (card: ClanCardId): Clan => Math.floor(card / 100)
+
 /**
  * A clan card is identified by both of its faces. The clan is redundant with the front, which already encodes it,
  * but it has to be a field of its own: hiding a card removes its front, and what is left has to be enough to draw

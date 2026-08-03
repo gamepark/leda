@@ -34,6 +34,14 @@ export enum LocationType {
    */
   PlayedCard,
 
+  /**
+   * A Shark token placed on a square of a player's grid, on the tile of that square like a card is, so that it
+   * follows it when 2 squares are swapped.
+   * Its x is the slot it covers on the Shark card underneath, which is what says whether that card gives its
+   * normal effect or its Pack one (see {@link SharkSlot}).
+   */
+  PlacedSharkToken,
+
   /** A player's clan deck, face down beside the grid. */
   PlayerDeck,
 

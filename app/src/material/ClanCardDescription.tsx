@@ -71,6 +71,59 @@ export const clanBacks: Record<Clan, string> = {
 }
 
 /**
+ * The face of every clan card. Exported as well as used by the description below, so that a dialog offering cards
+ * that are not on the table can draw them (see {@link SearchRingDialog}).
+ */
+export const clanCardFronts: Record<ClanCardId, string> = {
+  [ClanCardId.PandaDrawAndSpecialActivation]: PandaDrawAndSpecialActivation,
+  [ClanCardId.PandaUpgrade]: PandaUpgrade,
+  [ClanCardId.PandaFoodOrMilitary]: PandaFoodOrMilitary,
+  [ClanCardId.PandaFoodAndDiscount]: PandaFoodAndDiscount,
+  [ClanCardId.PandaDrawOrMilitary]: PandaDrawOrMilitary,
+  [ClanCardId.PandaFoodAndSpy]: PandaFoodAndSpy,
+  [ClanCardId.PandaMilitary]: PandaMilitary,
+  [ClanCardId.PandaMilitaryAndUpgrade]: PandaMilitaryAndUpgrade,
+  [ClanCardId.PandaSpyAndDiscount]: PandaSpyAndDiscount,
+  [ClanCardId.PandaKing]: PandaKing,
+  [ClanCardId.PandaQueen]: PandaQueen,
+  [ClanCardId.SharkUpgrade]: SharkUpgrade,
+  [ClanCardId.SharkSpyOrTriggerToken]: SharkSpyOrTriggerToken,
+  [ClanCardId.SharkPackRedrawToken]: SharkPackRedrawToken,
+  [ClanCardId.SharkMilitary]: SharkMilitary,
+  [ClanCardId.SharkMilitaryAndDraw]: SharkMilitaryAndDraw,
+  [ClanCardId.SharkMilitaryPerToken]: SharkMilitaryPerToken,
+  [ClanCardId.SharkPackDrawToken]: SharkPackDrawToken,
+  [ClanCardId.SharkFoodOrDiscount]: SharkFoodOrDiscount,
+  [ClanCardId.SharkFoodPerToken]: SharkFoodPerToken,
+  [ClanCardId.SharkPackPlaceToken]: SharkPackPlaceToken,
+  [ClanCardId.SharkPackSpy]: SharkPackSpy,
+  [ClanCardId.CatCopyOpponentCard]: CatCopyOpponentCard,
+  [ClanCardId.CatSearchRing]: CatSearchRing,
+  [ClanCardId.CatUpgradeCardOrActivateTile]: CatUpgradeCardOrActivateTile,
+  [ClanCardId.CatMilitaryOrFoodPerCardInHand]: CatMilitaryOrFoodPerCardInHand,
+  [ClanCardId.CatSpyAndDraw]: CatSpyAndDraw,
+  [ClanCardId.CatSpendRingForToken]: CatSpendRingForToken,
+  [ClanCardId.CatFoodAndMilitary]: CatFoodAndMilitary,
+  [ClanCardId.CatDrawAndFood]: CatDrawAndFood,
+  [ClanCardId.CatMilitaryOrUpgrade]: CatMilitaryOrUpgrade,
+  [ClanCardId.CatRingWinConflictByThree]: CatRingWinConflictByThree,
+  [ClanCardId.CatRingEmptyDeck]: CatRingEmptyDeck,
+  [ClanCardId.CatRingThreeCatCards]: CatRingThreeCatCards,
+  [ClanCardId.CatRingFiveUpgradedTiles]: CatRingFiveUpgradedTiles,
+  [ClanCardId.ScorpionFoodPerDesertPair]: ScorpionFoodPerDesertPair,
+  [ClanCardId.ScorpionMilitaryPerDesertPair]: ScorpionMilitaryPerDesertPair,
+  [ClanCardId.ScorpionDrawAndFood]: ScorpionDrawAndFood,
+  [ClanCardId.ScorpionDiscountPerDesertPair]: ScorpionDiscountPerDesertPair,
+  [ClanCardId.ScorpionActivateDesert]: ScorpionActivateDesert,
+  [ClanCardId.ScorpionUpgradeAndActivate]: ScorpionUpgradeAndActivate,
+  [ClanCardId.ScorpionFoodAndPortalBonus]: ScorpionFoodAndPortalBonus,
+  [ClanCardId.ScorpionPortalDoubleSpy]: ScorpionPortalDoubleSpy,
+  [ClanCardId.ScorpionPortalFlipOpponentTile]: ScorpionPortalFlipOpponentTile,
+  [ClanCardId.ScorpionPortalSwap]: ScorpionPortalSwap,
+  [ClanCardId.ScorpionPortalBlockMilitaryVictory]: ScorpionPortalBlockMilitaryVictory
+}
+
+/**
  * The clan cards a player draws and plays onto their grid. They are square, like the tiles they are played on.
  * Generated from the ClanCardId enum: an image file is named after the value it belongs to.
  */
@@ -79,54 +132,7 @@ export class ClanCardDescription extends CardDescription<number, MaterialType, L
   height = tileSize
   borderRadius = 0.5
 
-  images = {
-    [ClanCardId.PandaDrawAndSpecialActivation]: PandaDrawAndSpecialActivation,
-    [ClanCardId.PandaUpgrade]: PandaUpgrade,
-    [ClanCardId.PandaFoodOrMilitary]: PandaFoodOrMilitary,
-    [ClanCardId.PandaFoodAndDiscount]: PandaFoodAndDiscount,
-    [ClanCardId.PandaDrawOrMilitary]: PandaDrawOrMilitary,
-    [ClanCardId.PandaFoodAndSpy]: PandaFoodAndSpy,
-    [ClanCardId.PandaMilitary]: PandaMilitary,
-    [ClanCardId.PandaMilitaryAndUpgrade]: PandaMilitaryAndUpgrade,
-    [ClanCardId.PandaSpyAndDiscount]: PandaSpyAndDiscount,
-    [ClanCardId.PandaKing]: PandaKing,
-    [ClanCardId.PandaQueen]: PandaQueen,
-    [ClanCardId.SharkUpgrade]: SharkUpgrade,
-    [ClanCardId.SharkSpyOrTriggerToken]: SharkSpyOrTriggerToken,
-    [ClanCardId.SharkPackRedrawToken]: SharkPackRedrawToken,
-    [ClanCardId.SharkMilitary]: SharkMilitary,
-    [ClanCardId.SharkMilitaryAndDraw]: SharkMilitaryAndDraw,
-    [ClanCardId.SharkMilitaryPerToken]: SharkMilitaryPerToken,
-    [ClanCardId.SharkPackDrawToken]: SharkPackDrawToken,
-    [ClanCardId.SharkFoodOrDiscount]: SharkFoodOrDiscount,
-    [ClanCardId.SharkFoodPerToken]: SharkFoodPerToken,
-    [ClanCardId.SharkPackPlaceToken]: SharkPackPlaceToken,
-    [ClanCardId.SharkPackSpy]: SharkPackSpy,
-    [ClanCardId.CatCopyOpponentCard]: CatCopyOpponentCard,
-    [ClanCardId.CatSearchRing]: CatSearchRing,
-    [ClanCardId.CatUpgradeCardOrActivateTile]: CatUpgradeCardOrActivateTile,
-    [ClanCardId.CatMilitaryOrFoodPerCardInHand]: CatMilitaryOrFoodPerCardInHand,
-    [ClanCardId.CatSpyAndDraw]: CatSpyAndDraw,
-    [ClanCardId.CatSpendRingForToken]: CatSpendRingForToken,
-    [ClanCardId.CatFoodAndMilitary]: CatFoodAndMilitary,
-    [ClanCardId.CatDrawAndFood]: CatDrawAndFood,
-    [ClanCardId.CatMilitaryOrUpgrade]: CatMilitaryOrUpgrade,
-    [ClanCardId.CatRingWinConflictByThree]: CatRingWinConflictByThree,
-    [ClanCardId.CatRingEmptyDeck]: CatRingEmptyDeck,
-    [ClanCardId.CatRingThreeCatCards]: CatRingThreeCatCards,
-    [ClanCardId.CatRingFiveUpgradedTiles]: CatRingFiveUpgradedTiles,
-    [ClanCardId.ScorpionFoodPerDesertPair]: ScorpionFoodPerDesertPair,
-    [ClanCardId.ScorpionMilitaryPerDesertPair]: ScorpionMilitaryPerDesertPair,
-    [ClanCardId.ScorpionDrawAndFood]: ScorpionDrawAndFood,
-    [ClanCardId.ScorpionDiscountPerDesertPair]: ScorpionDiscountPerDesertPair,
-    [ClanCardId.ScorpionActivateDesert]: ScorpionActivateDesert,
-    [ClanCardId.ScorpionUpgradeAndActivate]: ScorpionUpgradeAndActivate,
-    [ClanCardId.ScorpionFoodAndPortalBonus]: ScorpionFoodAndPortalBonus,
-    [ClanCardId.ScorpionPortalDoubleSpy]: ScorpionPortalDoubleSpy,
-    [ClanCardId.ScorpionPortalFlipOpponentTile]: ScorpionPortalFlipOpponentTile,
-    [ClanCardId.ScorpionPortalSwap]: ScorpionPortalSwap,
-    [ClanCardId.ScorpionPortalBlockMilitaryVictory]: ScorpionPortalBlockMilitaryVictory
-  }
+  images = clanCardFronts
 
   /** Indexed by the back of the id, which is the clan. A hidden card keeps it, so its back can still be drawn. */
   backImages = clanBacks

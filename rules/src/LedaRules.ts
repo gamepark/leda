@@ -3,6 +3,7 @@ import {
   hideFrontToOthers,
   hideItemId,
   hideItemIdToOthers,
+  isCustomMoveType,
   ItemMove,
   MaterialGame,
   MaterialMove,
@@ -11,18 +12,24 @@ import {
   SecretMaterialRules,
   TimeLimit
 } from '@gamepark/rules-api'
+import { CustomMoveType } from './rules/CustomMoveType'
 import { LocationType } from './material/LocationType'
 import { MaterialType } from './material/MaterialType'
 import { ActivateAndUpgradeTileRule } from './rules/ActivateAndUpgradeTileRule'
 import { ActivateCardRule } from './rules/ActivateCardRule'
 import { ActivateDesertRule } from './rules/ActivateDesertRule'
+import { ActivateTileRule } from './rules/ActivateTileRule'
 import { ActivateZoneRule } from './rules/ActivateZoneRule'
 import { AwakeningRule } from './rules/AwakeningRule'
 import { ChooseActionRule } from './rules/ChooseActionRule'
 import { ChooseEffectRule } from './rules/ChooseEffectRule'
+import { CopyOpponentCardRule } from './rules/CopyOpponentCardRule'
 import { DowngradeTileRule } from './rules/DowngradeTileRule'
 import { EndOfRoundRule } from './rules/EndOfRoundRule'
 import { FlipDesertRule } from './rules/FlipDesertRule'
+import { RotateCatCardRule } from './rules/RotateCatCardRule'
+import { SearchRingRule } from './rules/SearchRingRule'
+import { SpendRingForTokenRule } from './rules/SpendRingForTokenRule'
 import { SwapSquaresRule } from './rules/SwapSquaresRule'
 import { UpgradeAndActivateTileRule } from './rules/UpgradeAndActivateTileRule'
 import { MilitaryConflictRule } from './rules/MilitaryConflictRule'
@@ -72,6 +79,11 @@ export class LedaRules
     [RuleId.UpgradeAndActivateTile]: UpgradeAndActivateTileRule,
     [RuleId.DowngradeTile]: DowngradeTileRule,
     [RuleId.SwapSquares]: SwapSquaresRule,
+    [RuleId.ActivateTile]: ActivateTileRule,
+    [RuleId.CopyOpponentCard]: CopyOpponentCardRule,
+    [RuleId.SearchRing]: SearchRingRule,
+    [RuleId.SpendRingForToken]: SpendRingForTokenRule,
+    [RuleId.RotateCatCard]: RotateCatCardRule,
     [RuleId.Awakening]: AwakeningRule
   }
 
@@ -151,6 +163,17 @@ export class LedaRules
     context?: PlayMoveContext
   ): MaterialMove<number, MaterialType, LocationType>[] {
     return [...sharkMoves(this, move), ...super.afterItemMove(move, context)]
+  }
+
+  /**
+   * A player searching their deck for a Ring names the Ring and not where it is, since a deck is shuffled and
+   * hidden from its owner too: which card of the pile that is belongs to the server alone, so the client has
+   * nothing to precompute and waits for the answer (see {@link SearchRingRule}).
+   * Everything else is left to the framework, which already knows that a shuffle, or a move revealing a card, is
+   * not for a client to guess.
+   */
+  isUnpredictableMove(move: MaterialMove<number, MaterialType, LocationType>, player: number): boolean {
+    return isCustomMoveType(CustomMoveType.SearchRing)(move) || super.isUnpredictableMove(move, player)
   }
 
   giveTime(): number {

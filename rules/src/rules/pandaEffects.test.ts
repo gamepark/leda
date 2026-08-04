@@ -60,9 +60,12 @@ describe('A card played on a square', () => {
     expect(food(rules)).toBe(0)
   })
 
-  it('leaves nothing to activate when what it gives is not written down yet', () => {
-    // A Cat card, whose effects are still to come: it covers its tile all the same.
-    const rules = new LedaRules(game([ClanCardId.CatFoodAndMilitary]))
+  it('leaves nothing to activate when the face it shows gives nothing', () => {
+    // A Cat card turned onto its second face, which this one leaves blank: it covers its tile all the same, so
+    // its square holds nothing to resolve and is not offered.
+    const state = game([ClanCardId.CatFoodAndMilitary])
+    state.items[MaterialType.ClanCard]![0].location.rotation = true
+    const rules = new LedaRules(state)
     expect(rules.getLegalMoves(1).filter(isCustomMoveType(CustomMoveType.ActivateSquare))).toHaveLength(3)
   })
 

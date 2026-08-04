@@ -38,6 +38,7 @@ export const TileMenuButton = ({ index }: { index: number }) => {
     case RuleId.ActivateZone:
       return <ActivateSquareOnTile index={index} rules={rules} cells={activableCells(rules, me)} />
     case RuleId.ActivateAndUpgradeTile:
+    case RuleId.ActivateTile:
       return <ActivateSquareOnTile index={index} rules={rules} cells={bareCells(rules, me)} />
     case RuleId.ActivateDesert:
       return <ActivateSquareOnTile index={index} rules={rules} cells={visibleDesertCells(rules, me)} />

@@ -1,5 +1,8 @@
 import { MaterialMove, PlayerTurnRule, XYCoordinates } from '@gamepark/rules-api'
+import { Clan } from '../Clan'
 import { ActionZone, actionZoneCells } from '../material/ActionZone'
+import { clanOf } from '../material/ClanCardId'
+import { isRing } from '../material/clanCards/catCards'
 import { hasEffect } from '../material/Effect'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
@@ -9,7 +12,7 @@ import { TileId } from '../material/TileId'
 import { Rules } from '../Rules'
 import { pendingRules, resolveEffects } from './effects'
 import { Memory } from './Memory'
-import { cardEffectsOn } from './playedCards'
+import { cardEffectsOn, topCardIndexOn, topCardOn } from './playedCards'
 import { RuleId } from './RuleId'
 
 /**
@@ -68,6 +71,72 @@ export const activateTile = (rule: PlayerTurnRule<number, MaterialType, Location
   const moves = resolveEffects(rule, tileEffects(tile.id, flipped), { cell: cellOf(tile.location) })
   if (!flipped && !isPermanent(tile.id)) moves.push(tiles.index(index).moveItem({ ...tile.location, rotation: true }))
   return moves
+}
+
+/**
+ * The squares a Cat card copying the opponent may pick: the squares of the zone of the round that hold a card of
+ * that opponent with something to give, whether they have activated it yet or not.
+ * A card whose effects are not written down yet is left out, exactly as it is when a square is activated.
+ */
+export const copiableCells = (rules: Rules, player: number): XYCoordinates[] => {
+  const zone = roundZone(rules)
+  const opponent = rules.game.players.find((other) => other !== player)
+  if (zone === undefined || opponent === undefined) return []
+  return actionZoneCells[zone].filter((cell) => {
+    const effects = cardEffectsOn(rules, opponent, cell)
+    return effects !== undefined && hasEffect(effects)
+  })
+}
+
+/**
+ * The squares a Ring may turn a card over on: the ones whose top card is a Cat card of the player with 2 effects
+ * to alternate between. A Ring is left out, printing one effect and no second one.
+ */
+export const rotatableCells = (rules: Rules, player: number): XYCoordinates[] => {
+  const tiles = rules.material(MaterialType.Tile)
+  return rules
+    .material(MaterialType.ClanCard)
+    .location(LocationType.PlayedCard)
+    .player(player)
+    .getItems()
+    .map((card) => cellOf(tiles.getItem(card.location.parent!).location))
+    .filter((cell) => {
+      const card = topCardOn(rules, player, cell)
+      return card !== undefined && clanOf(card) === Clan.Cat && !isRing(card)
+    })
+}
+
+/**
+ * Everything activating a card gives: what the face it is showing gives, and the half turn a Cat card takes once
+ * it has given it, which is what brings its other effect up for the next activation. Every other clan leaves its
+ * cards exactly as they were, and gives the same thing every time.
+ *
+ * Shared by the 2 rules that activate a card, the zone of the round and a card asking for a card
+ * (see {@link ActivateCardRule}): a Cat card copied by an opponent is not turned over, since what is activated
+ * there is the copy and not the card (see {@link CopyOpponentCardRule}).
+ */
+export const activateCard = (rule: PlayerTurnRule<number, MaterialType, LocationType>, cell: XYCoordinates): MaterialMove<number, MaterialType, LocationType>[] => {
+  const effects = cardEffectsOn(rule, rule.player, cell)
+  if (effects === undefined) return []
+  return [...resolveEffects(rule, effects, { cell }), ...rotateCatCard(rule, rule.player, cell)]
+}
+
+/**
+ * The half turn, for a Cat card with 2 effects and for nothing else: the rotation of the location is which of
+ * them is up. A Ring is left alone, printing one effect and no second one: turning it would leave it blank, and
+ * the Rings are the cards a Cat player is trying to keep on the table.
+ */
+export const rotateCatCard = (
+  rule: PlayerTurnRule<number, MaterialType, LocationType>,
+  player: number,
+  cell: XYCoordinates
+): MaterialMove<number, MaterialType, LocationType>[] => {
+  const card = topCardOn(rule, player, cell)
+  if (card === undefined || clanOf(card) !== Clan.Cat || isRing(card)) return []
+  const index = topCardIndexOn(rule, player, cell)!
+  const cards = rule.material(MaterialType.ClanCard)
+  const rotated = cards.getItem(index).location.rotation === true
+  return [cards.index(index).moveItem((item) => ({ ...item.location, rotation: !rotated }))]
 }
 
 /**

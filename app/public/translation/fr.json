@@ -6,7 +6,7 @@
   },
   "organisation": {
     "food": {
-      "explain": "Vous pouvez échanger la position de 2 cartes, et ensuite gagner 1 <food/>. Vous n'êtes pas obligé d'échanger pour prendre 1 <food/>.",
+      "explain": "Échangez la position de 2 cartes, et ensuite gagner 1 <food/>. Vous n'êtes pas obligé d'échanger pour prendre 1 <food/>.",
       "cancel": "Annuler",
       "take": "Juste prendre 1"
     }
@@ -14,6 +14,9 @@
   "awakening": {
     "explain": "L'effet Éveil se résout après avoir résolu toutes les autres activations.",
     "close": "Fermer"
+  },
+  "search-ring": {
+    "choose": "Choisissez un Anneau de votre pioche"
   },
   "clan": {
     "1": "Pandas",
@@ -46,7 +49,7 @@
       "player": "<awakening/> : {player} éveille un Panda"
     },
     "play-card": {
-      "you": "Jouez une carte de votre main à -{discount} <food/>, ou <decline>renoncez</decline>",
+      "you": "Jouez une carte de votre main à -{discount} <food/> ou <decline>passez</decline>",
       "player": "{player} peut jouer une carte de sa main à -{discount} <food/>"
     },
     "activate-card": {
@@ -104,6 +107,26 @@
     "swap-squares": {
       "you": "Échangez la position de 2 de vos cartes ou tuiles",
       "player": "{player} échange la position de 2 de ses cartes ou tuiles"
+    },
+    "activate-tile": {
+      "you": "Activez une de vos tuiles, améliorée ou non",
+      "player": "{player} active une de ses tuiles"
+    },
+    "copy-opponent-card": {
+      "you": "Copiez l'effet d'une carte de votre adversaire dans la zone",
+      "player": "{player} copie l'effet d'une de vos cartes dans la zone"
+    },
+    "search-ring": {
+      "you": "<reopen>Prenez un Anneau de votre pioche dans votre main</reopen>",
+      "player": "{player} cherche un Anneau dans sa pioche"
+    },
+    "spend-ring-for-token": {
+      "you": "Remettez un Anneau sous votre pioche pour piocher un jeton de Victoire militaire ou <decline>passez</decline>",
+      "player": "{player} peut échanger un Anneau contre un jeton de Victoire militaire"
+    },
+    "rotate-cat-card": {
+      "you": "Pivotez une de vos cartes Chat ou <decline>passez</decline>",
+      "player": "{player} peut pivoter une de ses cartes Chat"
     }
   }
 }

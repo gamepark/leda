@@ -281,6 +281,15 @@ class PlayedCardLocator extends Locator {
     return { z: this.cardsUnder(item, context) * thickness }
   }
 
+  /**
+   * A Cat card prints its 2 effects at opposite ends, the second one upside down, and alternates between them by
+   * taking a half turn as it is activated. That half turn is the rotation of its location, and it is a real half
+   * turn on the table: the effect that is up is the one the right way round for its owner.
+   */
+  getItemRotateZ(item: MaterialItem<number, LocationType>) {
+    return item.location.rotation === true ? 180 : 0
+  }
+
   cardsUnder(item: MaterialItem<number, LocationType>, context: ItemContext<number, MaterialType, LocationType>): number {
     const cards = context.rules.material(MaterialType.ClanCard).location(LocationType.PlayedCard).parent(item.location.parent)
     return cards.getIndexes().filter((index) => index < context.index).length

@@ -18,14 +18,30 @@ import { isPackActive } from './sharkPack'
 const playedCards = (rules: Rules, player: number) => rules.material(MaterialType.ClanCard).location(LocationType.PlayedCard).player(player)
 
 /**
- * The card on top of a square, the only one that counts: cards pile up on a square as they are played, and the
- * one the player sees is the last of them.
+ * The index of the card on top of a square, the only one that counts: cards pile up on a square as they are
+ * played, and the one the player sees is the last of them.
  */
-export const topCardOn = (rules: Rules, player: number, cell: XYCoordinates): ClanCardId | undefined => {
+export const topCardIndexOn = (rules: Rules, player: number, cell: XYCoordinates): number | undefined => {
   const tiles = tileAt(rules.material(MaterialType.Tile), player, cell).getIndexes()
   if (tiles.length === 0) return undefined
   const cards = playedCards(rules, player).parent(tiles[0]).getIndexes()
-  return cards.length === 0 ? undefined : rules.material(MaterialType.ClanCard).getItem<ClanCardItemId>(Math.max(...cards)).id?.front
+  return cards.length === 0 ? undefined : Math.max(...cards)
+}
+
+/** Which card that is. Undefined when the square holds none, and undefined too for a card nobody here may read. */
+export const topCardOn = (rules: Rules, player: number, cell: XYCoordinates): ClanCardId | undefined => {
+  const index = topCardIndexOn(rules, player, cell)
+  return index === undefined ? undefined : rules.material(MaterialType.ClanCard).getItem<ClanCardItemId>(index).id?.front
+}
+
+/**
+ * Which of the 2 effects a Cat card is showing: the second one once the card has been turned half a turn, which
+ * is what activating it does (see {@link activateCard}). Every other clan reads the same thing every time.
+ * The half turn is the rotation of the location, as it is for a tile, and it means the same thing: the face up.
+ */
+const isRotated = (rules: Rules, player: number, cell: XYCoordinates): boolean => {
+  const index = topCardIndexOn(rules, player, cell)
+  return index !== undefined && rules.material(MaterialType.ClanCard).getItem(index).location.rotation === true
 }
 
 /**
@@ -35,7 +51,8 @@ export const topCardOn = (rules: Rules, player: number, cell: XYCoordinates): Cl
  * Every other clan gives what its cards print first, whatever happens around them.
  */
 const clanCardReaders: Partial<Record<Clan, (rules: Rules, player: number, cell: XYCoordinates, card: ClanCardId) => EffectSet>> = {
-  [Clan.Shark]: (rules, player, cell, card) => clanCardEffects(card, isPackActive(rules, player, cell))
+  [Clan.Shark]: (rules, player, cell, card) => clanCardEffects(card, isPackActive(rules, player, cell)),
+  [Clan.Cat]: (rules, player, cell, card) => clanCardEffects(card, isRotated(rules, player, cell))
 }
 
 /**

@@ -1,11 +1,17 @@
+import { faRotate } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { LedaRules } from '@gamepark/leda/LedaRules'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { cellOf, sameCell } from '@gamepark/leda/material/PlayerGrid'
-import { activableCells } from '@gamepark/leda/rules/activation'
+import { activableCells, copiableCells, rotatableCells } from '@gamepark/leda/rules/activation'
+import { CustomMoveType } from '@gamepark/leda/rules/CustomMoveType'
 import { activableCards } from '@gamepark/leda/rules/playedCards'
 import { RuleId } from '@gamepark/leda/rules/RuleId'
 import { usePlayerId, useRules } from '@gamepark/react-game'
+import { MaterialMoveBuilder } from '@gamepark/rules-api'
 import { ActivateSquareButton } from './ActivateSquareButton'
+import { LedaMenuButton } from './LedaMenuButton'
+import { tileButtonPosition } from './tileButtonPosition'
 
 /**
  * The button a card played on a grid carries. A card covers the tile of its square, button included, so the
@@ -26,6 +32,10 @@ export const PlayedCardMenuButton = ({ index }: { index: number }) => {
       return <ActivateCardSquareButton index={index} rules={rules} player={me} />
     case RuleId.ActivateCard:
       return <ActivateCardButton index={index} rules={rules} player={me} />
+    case RuleId.CopyOpponentCard:
+      return <CopyOpponentCardButton index={index} rules={rules} player={me} />
+    case RuleId.RotateCatCard:
+      return <RotateCatCardButton index={index} rules={rules} player={me} />
     default:
       return null
   }
@@ -53,4 +63,33 @@ const ActivateCardButton = ({ index, rules, player }: CardButtonProps) => {
   const cell = cardCell(rules, index)
   if (!activableCards(rules, player).getIndexes().includes(index) || cell === undefined) return null
   return <ActivateSquareButton cell={cell} />
+}
+
+/**
+ * A card of the opponent, when a Cat card is copying one of theirs: the button sits on their grid, which is where
+ * the card being copied is, and the square it names is a square of their grid (see {@link CopyOpponentCardRule}).
+ */
+const CopyOpponentCardButton = ({ index, rules, player }: CardButtonProps) => {
+  const card = rules.material(MaterialType.ClanCard).getItem(index)
+  const opponent = rules.game.players.find((other) => other !== player)
+  const cell = cardCell(rules, index)
+  if (card.location.player !== opponent || cell === undefined) return null
+  if (!copiableCells(rules, player).some((copiable) => sameCell(copiable, cell))) return null
+  return <ActivateSquareButton cell={cell} />
+}
+
+/**
+ * A Cat card of the player, when a Ring offers to turn one of them over. The Rings themselves carry none: they
+ * print one effect and no second one (see {@link RotateCatCardRule}).
+ */
+const RotateCatCardButton = ({ index, rules, player }: CardButtonProps) => {
+  const card = rules.material(MaterialType.ClanCard).getItem(index)
+  const cell = cardCell(rules, index)
+  if (card.location.player !== player || cell === undefined) return null
+  if (!rotatableCells(rules, player).some((rotatable) => sameCell(rotatable, cell))) return null
+  return (
+    <LedaMenuButton {...tileButtonPosition} move={MaterialMoveBuilder.customMove(CustomMoveType.RotateCatCard, cell)}>
+      <FontAwesomeIcon icon={faRotate} />
+    </LedaMenuButton>
+  )
 }

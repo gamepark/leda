@@ -34,6 +34,12 @@ const queueFirst = (rule: AnyRule, ruleIds: RuleId[]) => rule.memorize<RuleId[]>
 /** What takes over once everything the effects asked for has been answered. */
 export const queueLast = (rule: AnyRule, ruleId: RuleId) => rule.memorize<RuleId[]>(Memory.NextRules, (pending: RuleId[] = []) => [...pending, ruleId])
 
+/**
+ * One more rule to ask before anything already waiting, for a rule that turns out to need another one: a Cat card
+ * trading a Ring for a Military Victory token hands the token over to the rule that draws it everywhere else.
+ */
+export const queueFirstRule = (rule: AnyRule, ruleId: RuleId) => queueFirst(rule, [ruleId])
+
 /** Hands the game over to the next rule waiting, which stops waiting. */
 export const startNextRule = (rule: AnyRule): Move[] => {
   const [next, ...rest] = pendingRules(rule)
@@ -153,7 +159,12 @@ const effectRules: Partial<Record<Effect, RuleId>> = {
   [Effect.PlaceSharkToken]: RuleId.PlaceSharkToken,
   [Effect.ActivateDesert]: RuleId.ActivateDesert,
   [Effect.UpgradeAndActivateTile]: RuleId.UpgradeAndActivateTile,
-  [Effect.SwapSquares]: RuleId.SwapSquares
+  [Effect.SwapSquares]: RuleId.SwapSquares,
+  [Effect.ActivateTile]: RuleId.ActivateTile,
+  [Effect.CopyOpponentCard]: RuleId.CopyOpponentCard,
+  [Effect.SearchRing]: RuleId.SearchRing,
+  [Effect.SpendRingForToken]: RuleId.SpendRingForToken,
+  [Effect.RotateCatCard]: RuleId.RotateCatCard
 }
 
 /** The Spies of one effect that have to land on different piles, and the piles they have used so far. */

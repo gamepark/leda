@@ -74,7 +74,22 @@ export enum Effect {
   SwapSquares,
 
   /** No player may win a Military Victory token for the rest of the round. */
-  BlockMilitaryVictory
+  BlockMilitaryVictory,
+
+  /** Activate one of your tiles, on the face it is showing, whether that face is upgraded or not. */
+  ActivateTile,
+
+  /** Copy what one of the cards your opponent has in the zone of the round gives, without activating theirs. */
+  CopyOpponentCard,
+
+  /** Search your deck for a Ring, reveal it, take it into your hand, then shuffle your deck. */
+  SearchRing,
+
+  /** You may put a Ring from your hand back under your deck to draw a Military Victory token and resolve it. */
+  SpendRingForToken,
+
+  /** You may turn one of your Cat cards in play half a turn, onto the other of the 2 effects it prints. */
+  RotateCatCard
 }
 
 /**

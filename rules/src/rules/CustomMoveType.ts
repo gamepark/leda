@@ -32,5 +32,21 @@ export enum CustomMoveType {
    * of shuffling it back, or turning down the card an effect lets them play.
    * The data is the player, for the rules where several may pass at the same time.
    */
-  Pass
+  Pass,
+
+  /**
+   * A player turns one of their Cat cards half a turn, onto the other of the 2 effects it prints. The data is the
+   * {@link XYCoordinates} of its square, like every other card the player designates.
+   * Told apart from activating a square because it is the opposite: the card is turned without being activated,
+   * where an activation turns it as a consequence of what it gave (see {@link RotateCatCardRule}).
+   */
+  RotateCatCard,
+
+  /**
+   * A player takes a Ring out of their own deck. The data is the {@link ClanCardId} of that Ring, and not where it
+   * is in the pile: a deck is shuffled and hidden from its owner too, so which card is where is the server's to
+   * know. Which Rings are still in there is not a secret at all, being what is left once the ones in hand and in
+   * play are counted out, so the player names the one they want (see {@link ringsInDeck}).
+   */
+  SearchRing
 }

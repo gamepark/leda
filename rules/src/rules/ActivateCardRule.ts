@@ -2,10 +2,10 @@ import { CustomMove, isCustomMoveType, MaterialMove, XYCoordinates } from '@game
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { cellOf, sameCell } from '../material/PlayerGrid'
+import { activateCard } from './activation'
 import { CustomMoveType } from './CustomMoveType'
 import { EffectRule } from './EffectRule'
-import { resolveEffects } from './effects'
-import { activableCards, cardEffectsOn } from './playedCards'
+import { activableCards } from './playedCards'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
@@ -41,6 +41,7 @@ export class ActivateCardRule extends EffectRule {
     if (!isCustomMoveType<CustomMoveType, XYCoordinates>(CustomMoveType.ActivateSquare)(move)) return []
     const cell = move.data
     if (cell === undefined || !this.cells.some((activable) => sameCell(activable, cell))) return []
-    return [...resolveEffects(this, cardEffectsOn(this, this.player, cell) ?? {}, { cell }), ...this.resume()]
+    // Activated exactly as its own square would be, half turn of a Cat card included (see {@link activateCard}).
+    return [...activateCard(this, cell), ...this.resume()]
   }
 }

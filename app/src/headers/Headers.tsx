@@ -3,11 +3,13 @@ import { ComponentType } from 'react'
 import { ActivateAndUpgradeTileHeader } from './ActivateAndUpgradeTileHeader'
 import { ActivateCardHeader } from './ActivateCardHeader'
 import { ActivateDesertHeader } from './ActivateDesertHeader'
+import { ActivateTileHeader } from './ActivateTileHeader'
 import { ActivateZoneHeader } from './ActivateZoneHeader'
 import { AwakeningHeader } from './AwakeningHeader'
 import { ChooseActionHeader } from './ChooseActionHeader'
 import { ChooseClanHeader } from './ChooseClanHeader'
 import { ChooseEffectHeader } from './ChooseEffectHeader'
+import { CopyOpponentCardHeader } from './CopyOpponentCardHeader'
 import { DowngradeTileHeader } from './DowngradeTileHeader'
 import { FlipDesertHeader } from './FlipDesertHeader'
 import { MulliganHeader } from './MulliganHeader'
@@ -15,6 +17,9 @@ import { OrganisationHeader } from './OrganisationHeader'
 import { PlaceSharkTokenHeader } from './PlaceSharkTokenHeader'
 import { PlayCardHeader } from './PlayCardHeader'
 import { RedrawMilitaryVictoryHeader } from './RedrawMilitaryVictoryHeader'
+import { RotateCatCardHeader } from './RotateCatCardHeader'
+import { SearchRingHeader } from './SearchRingHeader'
+import { SpendRingForTokenHeader } from './SpendRingForTokenHeader'
 import { SpyHeader } from './SpyHeader'
 import { SwapSquaresHeader } from './SwapSquaresHeader'
 import { UpgradeAndActivateTileHeader } from './UpgradeAndActivateTileHeader'
@@ -43,5 +48,10 @@ export const Headers: Partial<Record<RuleId, ComponentType>> = {
   [RuleId.UpgradeAndActivateTile]: UpgradeAndActivateTileHeader,
   [RuleId.DowngradeTile]: DowngradeTileHeader,
   [RuleId.SwapSquares]: SwapSquaresHeader,
+  [RuleId.ActivateTile]: ActivateTileHeader,
+  [RuleId.CopyOpponentCard]: CopyOpponentCardHeader,
+  [RuleId.SearchRing]: SearchRingHeader,
+  [RuleId.SpendRingForToken]: SpendRingForTokenHeader,
+  [RuleId.RotateCatCard]: RotateCatCardHeader,
   [RuleId.Awakening]: AwakeningHeader
 }

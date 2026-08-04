@@ -105,6 +105,21 @@ export enum RuleId {
   /** The player swaps 2 squares of their grid, with whatever is played on them. */
   SwapSquares,
 
+  /** The player activates one of their tiles, on the face it is showing, and nothing else happens to it. */
+  ActivateTile,
+
+  /** The player copies one of the cards their opponent has in the zone of the round. */
+  CopyOpponentCard,
+
+  /** The player takes a Ring out of their deck and into their hand, then shuffles their deck. */
+  SearchRing,
+
+  /** The player may put a Ring from their hand under their deck, to draw a Military Victory token instead. */
+  SpendRingForToken,
+
+  /** The player may turn one of their Cat cards in play onto its other effect. */
+  RotateCatCard,
+
   /**
    * The Awakenings a player of the Pandas gathered while activating, resolved once their whole zone is done: each
    * of them raises a Panda of the grid to the level above.

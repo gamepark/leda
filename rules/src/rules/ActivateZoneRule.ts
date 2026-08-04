@@ -2,9 +2,9 @@ import { CustomMove, isCustomMoveType, MaterialMove, PlayerTurnRule, XYCoordinat
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { tileAt } from '../material/PlayerGrid'
-import { activableCells, activateTile, afterActivation } from './activation'
+import { activableCells, activateCard, activateTile, afterActivation } from './activation'
 import { CustomMoveType } from './CustomMoveType'
-import { pendingRules, queueLast, resolveEffects, startNextRule } from './effects'
+import { pendingRules, queueLast, startNextRule } from './effects'
 import { Memory } from './Memory'
 import { cardEffectsOn } from './playedCards'
 import { RuleId } from './RuleId'
@@ -52,12 +52,11 @@ export class ActivateZoneRule extends PlayerTurnRule<number, MaterialType, Locat
   /**
    * Everything a square gives, which is what the card played on it gives, or what its tile gives when no card
    * covers it (see {@link cardEffectsOn}).
-   * A temporary tile is turned into a Desert once it has given what it gives. A card is not: it stays face up on
-   * its square and gives the same thing every time that square is activated.
+   * A temporary tile is turned into a Desert once it has given what it gives, and a Cat card takes a half turn
+   * onto its other effect: every other card stays exactly as it was, and gives the same thing every time.
    */
   activate(cell: XYCoordinates): Move[] {
-    const card = cardEffectsOn(this, this.player, cell)
-    if (card !== undefined) return resolveEffects(this, card, { cell })
+    if (cardEffectsOn(this, this.player, cell) !== undefined) return activateCard(this, cell)
     const [tile] = tileAt(this.material(MaterialType.Tile), this.player, cell).getIndexes()
     return tile === undefined ? [] : activateTile(this, tile)
   }

@@ -10,7 +10,7 @@ type AwakeningRuleDialogProps = {
 
 /**
  * What an Awakening waits for, told to a player who wonders why the one they just gained did nothing yet
- * (see {@link AwakeningReminder}).
+ * (see {@link AwakeningButtons}).
  */
 export const AwakeningRuleDialog = ({ open, close }: AwakeningRuleDialogProps) => {
   const { t } = useTranslation()

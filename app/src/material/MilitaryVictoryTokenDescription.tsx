@@ -17,10 +17,18 @@ import { isSpiedByOther } from './spiedItem'
 import { SpiedItemButtons } from './SpiedItemButtons'
 import { SpyPileButton } from './SpyPileButton'
 
+const militaryVictoryTokenRatio = 436 / 409
+
+/** The Military Victory token. */
+export const militaryVictoryToken = {
+  width: 4.36,
+  height: 4.36 / militaryVictoryTokenRatio
+}
+
 /** The 18 Military Victory tokens. */
 export class MilitaryVictoryTokenDescription extends TokenDescription<number, MaterialType, LocationType, MilitaryVictoryTokenId> {
-  width = 4.36
-  ratio = 436 / 409
+  width = militaryVictoryToken.width
+  ratio = militaryVictoryTokenRatio
   transparency = true
 
   images = {

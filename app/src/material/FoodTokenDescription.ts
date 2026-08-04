@@ -3,10 +3,18 @@ import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { TokenDescription } from '@gamepark/react-game'
 import FoodTokenImage from '../images/tokens/food.png'
 
+const foodTokenRatio = 317 / 359
+
+/** The Food token. */
+export const foodToken = {
+  width: 2.45,
+  height: 2.45 / foodTokenRatio
+}
+
 /** Food has no id and no back: in the game state it only ever exists in front of a player. */
 export class FoodTokenDescription extends TokenDescription<number, MaterialType, LocationType> {
-  width = 2.45
-  ratio = 317 / 359
+  width = foodToken.width
+  ratio = foodTokenRatio
   transparency = true
   image = FoodTokenImage
 

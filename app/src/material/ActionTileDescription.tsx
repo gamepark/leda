@@ -13,10 +13,22 @@ import { isSpiedByOther } from './spiedItem'
 import { SpiedItemButtons } from './SpiedItemButtons'
 import { SpyPileButton } from './SpyPileButton'
 
+const actionTileRatio = 389 / 663
+
+/**
+ * The Action tile, and the transparent margin its image carries all around it, where the shadow of the tile is
+ * drawn: 20 px of the 663 it is tall, which is 0.2 cm since the image is at 100 px per centimeter.
+ */
+export const actionTile = {
+  width: 6.63 * actionTileRatio,
+  height: 6.63,
+  margin: (20 / 663) * 6.63
+}
+
 /** The 5 Action tiles. Their shadow is baked into the images, hence the transparency flag. */
 export class ActionTileDescription extends TokenDescription<number, MaterialType, LocationType, ActionTileId> {
-  height = 6.63
-  ratio = 389 / 663
+  height = actionTile.height
+  ratio = actionTileRatio
   borderRadius = 0.2
   transparency = true
 

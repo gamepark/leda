@@ -2,10 +2,12 @@ import { Clan } from '@gamepark/leda/Clan'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { CardDescription } from '@gamepark/react-game'
+import { MaterialItem } from '@gamepark/rules-api'
 import CatVictoryCondition from '../images/cards/cat/victory-condition.jpg'
 import PandaVictoryCondition from '../images/cards/panda/victory-condition.jpg'
 import ScorpionVictoryCondition from '../images/cards/scorpion/victory-condition.jpg'
 import SharkVictoryCondition from '../images/cards/shark/victory-condition.jpg'
+import { AwakeningButtons } from './AwakeningButtons'
 import { tileSize } from './TileDescription'
 
 /**
@@ -23,5 +25,17 @@ export class VictoryConditionCardDescription extends CardDescription<number, Mat
     [Clan.Shark]: SharkVictoryCondition,
     [Clan.Cat]: CatVictoryCondition,
     [Clan.Scorpion]: ScorpionVictoryCondition
+  }
+
+  /**
+   * The card carries the Awakenings of its owner, hanging under it, which is where a player reads what their clan
+   * still owes them. Only the Pandas ever gather any, and the buttons decide on their own whether to show, so the
+   * menu is always mounted (see {@link AwakeningButtons}).
+   */
+  menuAlwaysVisible = true
+
+  getItemMenu(item: MaterialItem<number, LocationType, Clan>) {
+    if (item.location.player === undefined) return
+    return <AwakeningButtons player={item.location.player} />
   }
 }

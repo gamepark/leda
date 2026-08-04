@@ -6,8 +6,11 @@ import { sharkSlotOn } from '@gamepark/leda/rules/sharkPack'
 import { actionTileRoundPlayer } from '@gamepark/leda/rules/round'
 import { DeckLocator, HandLocator, ItemContext, ListLocator, Locator, MaterialContext, ParentFace, PileLocator } from '@gamepark/react-game'
 import { Coordinates, Location, MaterialItem } from '@gamepark/rules-api'
+import { actionTile } from '../material/ActionTileDescription'
 import { FoodSupplyDescription } from '../material/FoodSupplyDescription'
-import { sharkTokenWidth } from '../material/SharkTokenDescription'
+import { foodToken } from '../material/FoodTokenDescription'
+import { militaryVictoryToken } from '../material/MilitaryVictoryTokenDescription'
+import { sharkToken } from '../material/SharkTokenDescription'
 import { tileSize } from '../material/TileDescription'
 
 /**
@@ -17,14 +20,36 @@ import { tileSize } from '../material/TileDescription'
  * side of the table. All the values below are in centimeters, like the sizes of the material.
  */
 
+/** A piece of the table, by what it measures. */
+type Piece = { width: number; height: number }
+
 /** Gap between 2 cells of a player's grid. */
 const gridGap = 0.3
 
 /** Distance between the centers of 2 consecutive cells of a grid. */
 const gridStep = tileSize + gridGap
 
+/** Half the width of a player's 4x4 grid. */
+const gridHalfWidth = (4 * tileSize + 3 * gridGap) / 2
+
+/** Gap between 2 columns of the table, wide enough that nothing of one reads as touching the next. */
+const columnGap = 0.6
+
+/**
+ * The revealed Action tiles are laid out in 2 columns of 2, under the pile they come from: one column on each side
+ * of the middle of the table, and the tiles of the 3rd and 4th rounds under those of the first 2. The 2 columns are
+ * one gap of the grids apart, so that the 4 tiles read as a block of the same kind as a grid.
+ */
+const revealedActionTileX = (actionTile.width - 2 * actionTile.margin + gridGap) / 2
+
+/**
+ * Half the width of the middle column: the 2 columns of revealed Action tiles, which are the widest thing in it,
+ * the piles above and below them being one item wide.
+ */
+const middleColumnHalfWidth = revealedActionTileX + actionTile.width / 2 - actionTile.margin
+
 /** Distance from the center of the table to the center of a player's grid. */
-const playerGridX = 17.4
+const playerGridX = middleColumnHalfWidth + columnGap + gridHalfWidth
 
 /** Vertical center of a player's grid. */
 const playerGridY = -6
@@ -32,24 +57,99 @@ const playerGridY = -6
 /** Vertical center of a row of a player's grid, y being the 0..3 coordinate of the row. */
 const gridRowY = (row: number) => playerGridY + (row - 1.5) * gridStep
 
+/** Top edge of the first row of a player's grid, which is where the middle column starts too. */
+const gridTop = gridRowY(0) - tileSize / 2
+
 /**
  * The column one card wide on the outside of a player's grid. It holds what a player owns and reads often,
  * each aligned with a row of their grid.
  */
-const sideColumnX = playerGridX + (4 * tileSize + 3 * gridGap) / 2 + 0.6 + tileSize / 2
+const sideColumnX = playerGridX + gridHalfWidth + columnGap + tileSize / 2
+
+/** The table is exactly as wide as the 2 player columns, plus a small margin outside of them. */
+export const tableXMax = sideColumnX + tileSize / 2 + 0.9
+
+/** Gap between what the side column holds and what is above or below it. */
+const sideColumnGap = 0.3
 
 /**
- * The Shark tokens start flush with the outer edge of the deck above them rather than centered on it, so the row
- * reads as starting under the deck. Mirrored like everything else, so it is the left edge for the player on the
- * left and the right edge for the player on the right.
+ * The clan card at the top of the side column and the deck at the bottom leave a space between them, which a
+ * player's tokens fill in 2 columns, each centered on one quarter of the card above them: the Shark tokens they
+ * have not placed yet on the first quarter, the Military Victory tokens they have won on the third one.
+ * Both are read from top to bottom, and both keep the same side of the card for the 2 players, like the grids do.
  */
-const sharkRowX = sideColumnX + tileSize / 2 - sharkTokenWidth / 2
+const tokenColumnTop = gridRowY(0) + tileSize / 2 + sideColumnGap
+const tokenColumnBottom = gridRowY(3) - tileSize / 2 - sideColumnGap
+
+/** The quarter of the card above a column of tokens that its tokens are centered on, left of the middle or right. */
+const firstQuarter = -tileSize / 4
+const thirdQuarter = tileSize / 4
+
+/** Where the first token of a column sits, the one right under the clan card. */
+const tokenColumnY = (token: Piece) => tokenColumnTop + token.height / 2
+
+/** The gap that leaves sideColumnGap of empty space between 2 consecutive tokens of a column. */
+const tokenColumnGap = (token: Piece) => token.height + sideColumnGap
+
+/**
+ * How far the last token of a column may get from the first one. A column stops right above the deck however many
+ * tokens it holds: past that they overlap one another instead of the column getting any longer.
+ */
+const tokenColumnHeight = (token: Piece) => tokenColumnBottom - tokenColumnTop - token.height
+
+/**
+ * A column with no room left at all stacks its tokens one on top of the other. Not 0: the framework reads a
+ * maximum gap of 0 as no maximum, and would spread the tokens at their natural gap instead.
+ */
+const stacked = 0.01
+
+/**
+ * A player wins on their 10th Military Victory token, so a column may have to show 9 of them, which is more than
+ * the space between the clan card and the deck can hold. The first 5 go down the third quarter of that space,
+ * tight enough to fill it on their own, and the ones after that go up the first quarter, under the Shark tokens.
+ */
+const militaryVictoryFirstColumn = 5
+
+/** The step between 2 Military Victory tokens. The 2 columns share it, so they read as one series. */
+const militaryVictoryStep = tokenColumnHeight(militaryVictoryToken) / (militaryVictoryFirstColumn - 1)
+
+/**
+ * How far down the space a Military Victory token sits, counted in steps: 0 at the top of either column and
+ * militaryVictoryFirstColumn - 1 at the bottom, since the 2 columns share their steps.
+ */
+const militaryVictoryRow = (y: number) => (y - tokenColumnTop - militaryVictoryToken.height / 2) / militaryVictoryStep
+
+/** How many Military Victory tokens a player has won past the ones the first column holds. */
+const militaryVictoryOverflow = (player: number | undefined, context: MaterialContext) =>
+  Math.max(
+    0,
+    context.rules.material(MaterialType.MilitaryVictoryToken).location(LocationType.PlayerMilitaryVictory).player(player).length -
+      militaryVictoryFirstColumn
+  )
+
+/**
+ * Where the Shark tokens of a player have to stop: right above the Military Victory tokens that have come up into
+ * their column, or at the bottom of the space if their owner has not won 6 of them yet.
+ */
+const sharkColumnBottom = (player: number | undefined, context: MaterialContext) => {
+  const overflow = militaryVictoryOverflow(player, context)
+  if (overflow === 0) return tokenColumnBottom
+  return tokenColumnBottom - militaryVictoryToken.height - (overflow - 1) * militaryVictoryStep - sideColumnGap
+}
+
+/**
+ * The Food a player owns, in a row under their deck, as wide as the side column plus the grid column next to it.
+ * It starts flush with the outer edge of the deck above it rather than centered on it, so the row reads as
+ * starting under the deck. Mirrored like everything else, so it is the left edge for the player on the left.
+ */
+const foodRowX = sideColumnX + tileSize / 2 - foodToken.width / 2
+const foodRowY = 9.8
 
 /**
  * The hand is spread under the grid, in the band the player panel sits in. handX is set so that the outer card of
  * the fan stops right where the panel starts, so it follows the table getting narrower.
  */
-const handX = 14.6
+const handX = 15.8
 const handY = 12.5
 
 /**
@@ -75,25 +175,43 @@ class PlayerGridLocator extends Locator {
   }
 }
 
-/** The 2 piles of the middle column, named so that the Spy effect can send an item back where it came from. */
-const actionTileDeck = { x: 0, y: -18 }
-const militaryVictoryDeck = { x: 0, y: -1.5 }
+/**
+ * The middle column is read from top to bottom: the pile of Action tiles, the 2 rows of tiles revealed since the
+ * last shuffle, the pile of Military Victory tokens, and the Food reserve. It starts level with the first row of
+ * the grids, and each item is laid under the one before it, a gap apart.
+ */
+const middleColumnGap = 0.4
 
 /**
- * The revealed Action tiles are laid out in 2 columns of 2, under the pile they come from: one column on each
- * side of the middle of the table, and the tiles of the 3rd and 4th rounds under those of the first 2.
- * The columns are close enough to leave the middle column as narrow as it was when they were stacked.
+ * Half the height of an Action tile, measured on the tile itself rather than on its image: it is the tile that
+ * has to start level with the first row of the grids, not the transparent margin its image carries around it.
  */
-const revealedActionTileX = 1.4
-const revealedActionTileY = -12.5
-const revealedActionTileRow = 4.4
+const halfActionTile = actionTile.height / 2 - actionTile.margin
+
+/** The 2 piles of the middle column, named so that the Spy effect can send an item back where it came from. */
+const actionTileDeck = { x: 0, y: gridTop + halfActionTile }
+const revealedActionTileY = actionTileDeck.y + 2 * halfActionTile + middleColumnGap
+const revealedActionTileRow = 2 * halfActionTile + middleColumnGap
+const militaryVictoryDeck = {
+  x: 0,
+  y: revealedActionTileY + revealedActionTileRow + halfActionTile + middleColumnGap + militaryVictoryToken.height / 2
+}
+
+/**
+ * The Food reserve closes the column, under the pile of Military Victory tokens. It is a heap scattered around
+ * its center rather than a piece with edges, so where it sits is set by eye instead of being laid out from the
+ * pile above it: the tokens that reach foodSupplyRadius out of the heap are few, and it reads as smaller than it
+ * measures. It still ends above the bottom of the grids.
+ */
+const foodSupplyRadius = 0.8
+const foodSupplyY = 6.07
 
 /**
  * Where the panel of a player sits, near the bottom corner of their side of the screen. The panels are html laid
  * over the table rather than material on it, so these 2 anchors are eyeballed at the default zoom: they are only
  * ever used to send an item towards a panel, never to line anything up with one.
  */
-const panelX = 34
+const panelX = 35.4
 const panelTop = 13.2
 
 /**
@@ -267,17 +385,68 @@ class PlayerRowLocator extends ListLocator {
   gapX = 1.5
 }
 
-/** A pile of a player, mirrored between the 2 players. A pile rather than a row: the side column is one card wide. */
-class PlayerPileLocator extends PileLocator {
+/**
+ * A column of a player, growing downwards from its anchor. The column always reads from top to bottom, whichever
+ * side of the table its owner is on, and so does the side column it sits in: only the anchor is mirrored between
+ * the 2 players, never the offset from it. Like the grids, the 2 side columns are on opposite sides of the table
+ * but they are not mirrored, so a player reads their opponent's the same way they read their own.
+ * maxGap caps how long the column may get: past it the items overlap instead of the column getting longer.
+ */
+class PlayerColumnLocator extends ListLocator {
   constructor(
     private readonly anchorX: number,
+    private readonly offsetX: number,
     private readonly anchorY: number
   ) {
     super()
   }
 
   getCoordinates(location: Location, context: MaterialContext) {
-    return { x: playerSide(location.player, context) * this.anchorX, y: this.anchorY }
+    return { x: playerSide(location.player, context) * this.anchorX + this.offsetX, y: this.anchorY }
+  }
+}
+
+/**
+ * The Shark tokens a player has not placed yet, down the first quarter of the space between their clan card and
+ * their deck. They give way to the Military Victory tokens that come up into that column: the more of those their
+ * owner has won, the more the Shark tokens overlap one another to stay above them.
+ * Once 9 Military Victory tokens are up, less than one token of height is left and the Sharks only stack: at that
+ * point their owner is one token away from winning, so the column is about to be read for the last time.
+ */
+class SharkSupplyLocator extends PlayerColumnLocator {
+  getMaxGap(location: Location, context: MaterialContext) {
+    return { y: Math.max(stacked, sharkColumnBottom(location.player, context) - tokenColumnTop - sharkToken.height) }
+  }
+
+  /** How tight the column is is not read off the Shark tokens alone, so the Military Victory ones are declared. */
+  getPositionDependencies(location: Location, context: MaterialContext) {
+    return [this.countItems(location, context), militaryVictoryOverflow(location.player, context)]
+  }
+}
+
+/**
+ * The Military Victory tokens a player has won: the first ones down the third quarter of the space between their
+ * clan card and their deck, the ones after that up the first quarter, from the bottom.
+ * Each token has a spot of its own, read off the number it was given when it was won (see the location strategy of
+ * PlayerMilitaryVictory), so none of them moves when the next one arrives.
+ *
+ * They are close enough to overlap, and a token always covers the one above it rather than the one below: z
+ * follows y, so a column is lit from the top the way a fanned hand of cards is, in either of the 2 columns and
+ * whichever order the tokens were won in.
+ */
+class MilitaryVictoryLocator extends Locator {
+  getItemCoordinates(item: MaterialItem<number, LocationType>, context: ItemContext<number, MaterialType, LocationType>): Partial<Coordinates> {
+    const index = this.getItemIndex(item, context)
+    const firstColumn = index < militaryVictoryFirstColumn
+    const y = firstColumn
+      ? tokenColumnTop + militaryVictoryToken.height / 2 + index * militaryVictoryStep
+      : tokenColumnBottom - militaryVictoryToken.height / 2 - (index - militaryVictoryFirstColumn) * militaryVictoryStep
+    const thickness = context.material[context.type]?.getThickness(item, context) ?? 0
+    return {
+      x: playerSide(item.location.player, context) * sideColumnX + (firstColumn ? thirdQuarter : firstQuarter),
+      y,
+      z: militaryVictoryRow(y) * thickness
+    }
   }
 }
 
@@ -314,26 +483,31 @@ export const Locators: Partial<Record<LocationType, Locator<number, MaterialType
   [LocationType.PlayedCard]: new PlayedCardLocator(),
   [LocationType.PlacedSharkToken]: new PlacedSharkTokenLocator(),
 
-  /** The side column, each spot lined up with a row of the grid. */
+  /** The side column: the clan card at the top and the deck at the bottom, each lined up with a row of the grid. */
   [LocationType.PlayerVictoryCondition]: new PlayerSpotLocator(sideColumnX, gridRowY(0)),
-  [LocationType.PlayerFood]: Object.assign(new PlayerPileLocator(sideColumnX, gridRowY(1)), { radius: 1.8 }),
-  [LocationType.PlayerMilitaryVictory]: Object.assign(new PlayerPileLocator(sideColumnX, gridRowY(2)), { radius: 1.8 }),
-  [LocationType.PlayerDeck]: Object.assign(new PlayerSpotLocator(sideColumnX, gridRowY(3)), { limit: 5 }),
+  [LocationType.PlayerDeck]: Object.assign(new PlayerSpotLocator(sideColumnX, gridRowY(3)), { limit: 10 }),
 
   /**
-   * The Shark tokens their owner has not placed yet, in a row under their deck, as wide as the side column plus the
-   * grid column next to it. Only in play if someone took the Sharks.
+   * The 2 columns of tokens between the 2, on the quarters of the card above them (see {@link tokenColumnTop}).
+   * The Shark tokens are the supply their owner draws from, and the Military Victory tokens are what they are
+   * racing to collect, so the second ones take the room they need and the first ones give way.
+   * Both are worth reading one by one, unlike the Food: what a Military Victory token does is printed on it, and
+   * the symbols of a whole column are what decides who becomes the active player.
    */
-  [LocationType.PlayerSharkSupply]: Object.assign(new PlayerRowLocator(sharkRowX, 9.8), { gapX: 1.5, maxCount: 9 }),
+  [LocationType.PlayerSharkSupply]: Object.assign(new SharkSupplyLocator(sideColumnX, firstQuarter, tokenColumnY(sharkToken)), {
+    gap: { y: tokenColumnGap(sharkToken) }
+  }),
+  [LocationType.PlayerMilitaryVictory]: new MilitaryVictoryLocator(),
+
+  /** The Food a player owns, in the row under their deck the Shark tokens used to be in. */
+  [LocationType.PlayerFood]: Object.assign(new PlayerRowLocator(foodRowX, foodRowY), { gapX: 1.5, maxCount: 9 }),
 
   [LocationType.PlayerHand]: new PlayerHandLocator(),
 
   /**
-   * The middle column, read from top to bottom: the pile of Action tiles, the tiles revealed since the last
-   * shuffle, the Food reserve, and the pile of Military Victory tokens. Everything but the revealed tiles is one
-   * item wide, and the 2 columns those form are narrow enough to fit between the grids all the same.
-   * The Food reserve, the widest item of the column, is kept high enough to stay beside the grids rather than
-   * beside the hands: that is what lets the hands come closer to the middle of the table.
+   * The middle column, laid out from its top edge downwards (see {@link middleColumnGap}): the pile of Action
+   * tiles, the tiles revealed since the last shuffle, the pile of Military Victory tokens, and the Food reserve.
+   * The column is as wide as the 2 columns of revealed tiles, and the grids are pushed apart to make room for it.
    */
   [LocationType.ActionTileDeck]: new DeckLocator({ coordinates: actionTileDeck }),
   [LocationType.ActionTileRevealed]: new RevealedActionTileLocator(),
@@ -341,8 +515,10 @@ export const Locators: Partial<Record<LocationType, Locator<number, MaterialType
   /**
    * The Food reserve holds no real item: the app displays a fixed pile of 20 (see the static item of the Food
    * description), because the reserve is unlimited and not modelled in the rules.
+   * It is the one item of the column that hangs below the grids, in the band the hands are in: it stays clear of
+   * them because the hands are fanned, so their innermost card is both lower and turned away from it.
    */
-  [LocationType.FoodSupply]: new FoodSupplyLocator({ coordinates: { x: 0, y: 5.2 }, radius: 0.8 }),
+  [LocationType.FoodSupply]: new FoodSupplyLocator({ coordinates: { x: 0, y: foodSupplyY }, radius: foodSupplyRadius }),
 
   /** Only 5 of the 18 tokens are rendered: a deeper stack costs DOM nodes without showing anything more. */
   [LocationType.MilitaryVictoryDeck]: new DeckLocator({ coordinates: militaryVictoryDeck, limit: 5 }),

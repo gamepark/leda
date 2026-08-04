@@ -29,9 +29,7 @@ export const MilitaryVictoryTokenButtons = ({ index }: { index: number }) => {
     case RuleId.RedrawMilitaryVictory:
       // Under the pile, which is x 0: the token traded is not the one drawn right after.
       return (
-        <LedaMenuButton
-          move={rules.material(MaterialType.MilitaryVictoryToken).index(index).moveItem({ type: LocationType.MilitaryVictoryDeck, x: 0 })}
-        >
+        <LedaMenuButton x={2} move={rules.material(MaterialType.MilitaryVictoryToken).index(index).moveItem({ type: LocationType.MilitaryVictoryDeck, x: 0 })}>
           <FontAwesomeIcon icon={faRotate} />
         </LedaMenuButton>
       )

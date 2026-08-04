@@ -9,6 +9,9 @@ type LedaMenuButtonProps = {
 } & ItemButtonProps &
   HTMLAttributes<HTMLButtonElement>
 
+/** How wide the medallion is, in centimeters of the table, for whoever has to leave room for one. */
+export const ledaMenuButtonSize = 2.2
+
 /**
  * The button of an item menu, as a parchment medallion in a copper rim: the frame that runs around the pages of
  * the rulebook, turned into a coin small enough to sit on a 7 cm tile.
@@ -25,8 +28,8 @@ const medallion = css`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.2em;
-  height: 2.2em;
+  width: ${ledaMenuButtonSize}em;
+  height: ${ledaMenuButtonSize}em;
   padding: 0;
   border: 0.12em solid ${copper};
   border-radius: 50%;

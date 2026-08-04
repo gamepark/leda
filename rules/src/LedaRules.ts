@@ -15,12 +15,16 @@ import { LocationType } from './material/LocationType'
 import { MaterialType } from './material/MaterialType'
 import { ActivateAndUpgradeTileRule } from './rules/ActivateAndUpgradeTileRule'
 import { ActivateCardRule } from './rules/ActivateCardRule'
+import { ActivateDesertRule } from './rules/ActivateDesertRule'
 import { ActivateZoneRule } from './rules/ActivateZoneRule'
 import { AwakeningRule } from './rules/AwakeningRule'
 import { ChooseActionRule } from './rules/ChooseActionRule'
 import { ChooseEffectRule } from './rules/ChooseEffectRule'
+import { DowngradeTileRule } from './rules/DowngradeTileRule'
 import { EndOfRoundRule } from './rules/EndOfRoundRule'
 import { FlipDesertRule } from './rules/FlipDesertRule'
+import { SwapSquaresRule } from './rules/SwapSquaresRule'
+import { UpgradeAndActivateTileRule } from './rules/UpgradeAndActivateTileRule'
 import { MilitaryConflictRule } from './rules/MilitaryConflictRule'
 import { MilitaryVictoryRule } from './rules/MilitaryVictoryRule'
 import { ChooseClanRule } from './rules/ChooseClanRule'
@@ -64,6 +68,10 @@ export class LedaRules
     [RuleId.RedrawMilitaryVictory]: RedrawMilitaryVictoryRule,
     [RuleId.TriggerMilitaryVictory]: TriggerMilitaryVictoryRule,
     [RuleId.PlaceSharkToken]: PlaceSharkTokenRule,
+    [RuleId.ActivateDesert]: ActivateDesertRule,
+    [RuleId.UpgradeAndActivateTile]: UpgradeAndActivateTileRule,
+    [RuleId.DowngradeTile]: DowngradeTileRule,
+    [RuleId.SwapSquares]: SwapSquaresRule,
     [RuleId.Awakening]: AwakeningRule
   }
 

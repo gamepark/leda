@@ -1,12 +1,11 @@
 import { CustomMove, isCustomMoveType, MaterialMove, XYCoordinates } from '@gamepark/rules-api'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
-import { cellOf, gridTiles, sameCell, tileAt } from '../material/PlayerGrid'
+import { sameCell, tileAt } from '../material/PlayerGrid'
 import { activateTile } from './activation'
 import { CustomMoveType } from './CustomMoveType'
 import { EffectRule } from './EffectRule'
-import { topCardOn } from './playedCards'
-import { upgradableTiles } from './tileChoices'
+import { bareCells, upgradableTiles } from './tileChoices'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
@@ -34,13 +33,10 @@ export class ActivateAndUpgradeTileRule extends EffectRule {
 
   /**
    * The bare squares of the grid: a Desert may be picked, to be turned over by the upgrade that follows, but a
-   * square holding a card may not, its tile being under that card.
+   * square holding a card may not, its tile being under that card (see {@link bareCells}).
    */
   get cells(): XYCoordinates[] {
-    return gridTiles(this.material(MaterialType.Tile), this.player)
-      .getItems()
-      .map((tile) => cellOf(tile.location))
-      .filter((cell) => topCardOn(this, this.player, cell) === undefined)
+    return bareCells(this, this.player)
   }
 
   onCustomMove(move: CustomMove): Move[] {

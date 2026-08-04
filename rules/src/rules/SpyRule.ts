@@ -1,8 +1,9 @@
-import { MaterialMove } from '@gamepark/rules-api'
+import { ItemMove, MaterialMove } from '@gamepark/rules-api'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { EffectRule } from './EffectRule'
-import { pileTop, putBackMoves, spiablePiles, spiedItem } from './spy'
+import { spentDifferentPileSpy, spyDifferentPiles } from './effects'
+import { pileTop, putBackMoves, SpiedPile, spiablePiles, spiedItem } from './spy'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
@@ -28,12 +29,27 @@ export class SpyRule extends EffectRule {
     return back === undefined ? this.lookMoves() : [back.onTop, back.under]
   }
 
-  lookMoves(): Move[] {
-    return spiablePiles(this, this.player).flatMap((pile) => pileTop(this, this.player, pile).moveItems({ type: LocationType.SpiedItem, player: this.player }))
+  /**
+   * The piles left to look into. All of them, unless a Scorpion Portal bound this Spy to the ones its own other
+   * Spies have not used yet (see {@link Effect.SpyDifferentPiles}).
+   */
+  get piles(): readonly SpiedPile[] {
+    const taken = spyDifferentPiles(this)?.piles ?? []
+    return spiablePiles(this, this.player).filter((pile) => !taken.includes(pile.type))
   }
 
-  /** The player makes 2 moves: taking an item, then putting it back. The second one is the end of the effect. */
-  afterItemMove(): Move[] {
-    return spiedItem(this) === undefined ? this.resume() : []
+  lookMoves(): Move[] {
+    return this.piles.flatMap((pile) => pileTop(this, this.player, pile).moveItems({ type: LocationType.SpiedItem, player: this.player }))
+  }
+
+  /**
+   * The player makes 2 moves: taking an item, then putting it back. The second one is the end of the effect.
+   * Which pile was looked into is read off the item going back rather than remembered: the type of that item is
+   * the pile it belongs to (see {@link spiedPiles}).
+   */
+  afterItemMove(move: ItemMove<number, MaterialType, LocationType>): Move[] {
+    if (spiedItem(this) !== undefined) return []
+    spentDifferentPileSpy(this, move.itemType)
+    return this.resume()
   }
 }

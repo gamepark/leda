@@ -19,6 +19,8 @@ export class ChooseActionRule extends PlayerTurnRule<number, MaterialType, Locat
    */
   onRuleStart(): MaterialMove<number, MaterialType, LocationType>[] {
     this.memorize(Memory.RoundPlayer, this.player)
+    // A Scorpion Portal closes its own round to Military Victory tokens, and only that round.
+    this.memorize(Memory.MilitaryVictoryBlocked, undefined)
     for (const player of this.game.players) {
       this.memorize(Memory.MilitarySymbols, 0, player)
       this.memorize(Memory.ActivatedCells, [], player)

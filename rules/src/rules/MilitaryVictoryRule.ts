@@ -3,7 +3,7 @@ import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { militaryVictoryEffects, MilitaryVictoryTokenId } from '../material/MilitaryVictoryTokenId'
 import { EffectRule } from './EffectRule'
-import { resolveEffects } from './effects'
+import { canWinMilitaryVictory, resolveEffects } from './effects'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
@@ -13,9 +13,13 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  * why this is a rule of its own rather than a part of the conflict.
  */
 export class MilitaryVictoryRule extends EffectRule {
-  /** The token is drawn face down, so what it gives can only be read once the move that reveals it is played. */
+  /**
+   * The token is drawn face down, so what it gives can only be read once the move that reveals it is played.
+   * A Scorpion Portal may have closed the round to Military Victory tokens, in which case there is nothing to
+   * draw, whoever brought the player here (see {@link Effect.BlockMilitaryVictory}).
+   */
   onRuleStart(): Move[] {
-    if (!this.deck.length) return this.resume()
+    if (!this.deck.length || !canWinMilitaryVictory(this)) return this.resume()
     return this.deck.limit(1).moveItems({ type: LocationType.PlayerMilitaryVictory, player: this.player })
   }
 

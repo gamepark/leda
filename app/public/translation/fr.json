@@ -88,6 +88,22 @@
     "spy-return": {
       "you": "Remettez cet élément sur ou sous sa pile",
       "player": "{player} remet l'élément dans sa pile"
+    },
+    "activate-desert": {
+      "you": "Activez l'effet rappelé sur un de vos Déserts",
+      "player": "{player} active l'effet rappelé sur un de ses Déserts"
+    },
+    "upgrade-and-activate-tile": {
+      "you": "Améliorez une de vos tuiles, elle sera activée ensuite",
+      "player": "{player} améliore une de ses tuiles, puis l'active"
+    },
+    "downgrade-tile": {
+      "you": "Retournez une de vos tuiles sur sa face Désert ou non améliorée",
+      "player": "{player} retourne une de ses tuiles sur sa face Désert ou non améliorée"
+    },
+    "swap-squares": {
+      "you": "Échangez la position de 2 de vos cartes ou tuiles",
+      "player": "{player} échange la position de 2 de ses cartes ou tuiles"
     }
   }
 }

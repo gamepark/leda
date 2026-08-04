@@ -53,7 +53,28 @@ export enum Effect {
   TriggerMilitaryVictory,
 
   /** Place one of your Shark tokens on one of your tiles that has none (see {@link sharkPack}). */
-  PlaceSharkToken
+  PlaceSharkToken,
+
+  /** Activate the effect reminded on one of your Deserts. The Desert stays one: nothing is turned over. */
+  ActivateDesert,
+
+  /** Upgrade one of your tiles, then activate that same tile, on the face it shows once upgraded. */
+  UpgradeAndActivateTile,
+
+  /**
+   * Spy, on a pile none of the Spies of the same effect has been used on. The quantity is how many Spies are bound
+   * to each other, which is what tells them apart from Spies gathered from anywhere else (see {@link SpyRule}).
+   */
+  SpyDifferentPiles,
+
+  /** Your opponent turns one of their tiles onto its Desert or non upgraded face, whichever that tile has. */
+  FlipOpponentTile,
+
+  /** Swap 2 squares of your grid, with whatever is played on them. */
+  SwapSquares,
+
+  /** No player may win a Military Victory token for the rest of the round. */
+  BlockMilitaryVictory
 }
 
 /**

@@ -25,7 +25,7 @@ export type ClanCardProperties = {
    * What the card gives when the square it was played on is activated, in the lexicon every effect of the game
    * shares (see {@link Effect}). A card covers the tile of its square: what it gives is given instead of what the
    * tile gave, which is why a card with none at all leaves its square with nothing to activate.
-   * TODO: the effects of the Cat and Scorpion cards.
+   * TODO: the effects of the Cat cards.
    */
   effects?: EffectSet
 

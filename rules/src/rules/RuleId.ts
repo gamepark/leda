@@ -86,6 +86,25 @@ export enum RuleId {
   /** The player places one of their Shark tokens on one of their tiles that has none. */
   PlaceSharkToken,
 
+  /** The player activates the effect reminded on one of their Deserts, which stays a Desert. */
+  ActivateDesert,
+
+  /** The player upgrades one of their tiles, and that same tile is then activated if it can be. */
+  UpgradeAndActivateTile,
+
+  /**
+   * The player turns one of their own tiles onto its worse face: the Desert of a temporary tile, the non upgraded
+   * front of a permanent one.
+   * Named for what the player does and not for the card that asks it, like every other rule here: what opens it is
+   * a Scorpion Portal read as "your opponent flips one of their tiles", and the player answering it is that
+   * opponent (see {@link Effect.FlipOpponentTile}). It is the one rule of the game a player opens for somebody
+   * else to answer, hence the player it hands the game back to being remembered (see {@link Memory.EffectPlayer}).
+   */
+  DowngradeTile,
+
+  /** The player swaps 2 squares of their grid, with whatever is played on them. */
+  SwapSquares,
+
   /**
    * The Awakenings a player of the Pandas gathered while activating, resolved once their whole zone is done: each
    * of them raises a Panda of the grid to the level above.

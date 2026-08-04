@@ -117,6 +117,21 @@ const resolve = (rule: Rule, effect: Effect, quantity: number, asked: Asked, sou
       rule.memorize(Memory.CardDiscount, quantity)
       asked.rules.push(RuleId.PlayCard)
       return []
+    case Effect.SpyDifferentPiles:
+      // What is queued is the ordinary Spy: only the constraint below tells these ones apart (see {@link SpyRule}).
+      rule.memorize<SpyDifferentPiles>(Memory.SpyDifferentPiles, { left: quantity, piles: [] })
+      asked.rules.push(...times(quantity, RuleId.Spy))
+      return []
+    case Effect.FlipOpponentTile:
+      // Named for the card on this side and for the player answering on the other (see {@link RuleId.DowngradeTile}).
+      // The one rule somebody else answers: whose effect it is has to survive until they have.
+      rule.memorize(Memory.EffectPlayer, player)
+      asked.rules.push(...times(quantity, RuleId.DowngradeTile))
+      return []
+    case Effect.BlockMilitaryVictory:
+      // Nothing to ask and nothing to move: the round simply stops handing tokens out (see {@link canWinMilitaryVictory}).
+      rule.memorize(Memory.MilitaryVictoryBlocked, true)
+      return []
     default: {
       const ruleId = effectRules[effect]
       if (ruleId !== undefined) asked.rules.push(...times(quantity, ruleId))
@@ -135,8 +150,34 @@ const effectRules: Partial<Record<Effect, RuleId>> = {
   [Effect.MilitaryVictory]: RuleId.MilitaryVictory,
   [Effect.RedrawMilitaryVictory]: RuleId.RedrawMilitaryVictory,
   [Effect.TriggerMilitaryVictory]: RuleId.TriggerMilitaryVictory,
-  [Effect.PlaceSharkToken]: RuleId.PlaceSharkToken
+  [Effect.PlaceSharkToken]: RuleId.PlaceSharkToken,
+  [Effect.ActivateDesert]: RuleId.ActivateDesert,
+  [Effect.UpgradeAndActivateTile]: RuleId.UpgradeAndActivateTile,
+  [Effect.SwapSquares]: RuleId.SwapSquares
 }
+
+/** The Spies of one effect that have to land on different piles, and the piles they have used so far. */
+export type SpyDifferentPiles = { left: number; piles: MaterialType[] }
+
+/** The constraint the Spies of a Scorpion Portal are under, undefined when the Spy being resolved is free. */
+export const spyDifferentPiles = (rules: Rules): SpyDifferentPiles | undefined => {
+  const constraint: SpyDifferentPiles | undefined = rules.game.memory[Memory.SpyDifferentPiles]
+  return constraint !== undefined && constraint.left > 0 ? constraint : undefined
+}
+
+/**
+ * One of those Spies is done: the pile it used is taken, and the constraint is forgotten once the last of them
+ * has been resolved, so that it never reaches a Spy the same activation gathers from somewhere else.
+ */
+export const spentDifferentPileSpy = (rule: AnyRule, pile: MaterialType) => {
+  const constraint = spyDifferentPiles(rule)
+  if (constraint === undefined) return
+  const left = constraint.left - 1
+  rule.memorize(Memory.SpyDifferentPiles, left > 0 ? { left, piles: [...constraint.piles, pile] } : undefined)
+}
+
+/** Whether a Military Victory token may still be won this round (see {@link Effect.BlockMilitaryVictory}). */
+export const canWinMilitaryVictory = (rules: Rules): boolean => rules.game.memory[Memory.MilitaryVictoryBlocked] !== true
 
 /**
  * The special activation of the clan of the player, worth what their Victory condition card says: the Cats draw,

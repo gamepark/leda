@@ -2,10 +2,11 @@ import { isCreateItemType, isMoveItemType, ItemMove, MaterialMove, PlayerTurnRul
 import { ClanCardItemId, revealedFront } from '../material/ClanCardId'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
-import { cellOf, gridTiles, tileAt } from '../material/PlayerGrid'
+import { cellOf, gridTiles } from '../material/PlayerGrid'
 import { Memory } from './Memory'
 import { cardFoodCost, playCardMoves } from './organisation'
 import { RuleId } from './RuleId'
+import { swapBackMove, swapMoves } from './swap'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
@@ -43,17 +44,12 @@ export class OrganisationRule extends PlayerTurnRule<number, MaterialType, Locat
   }
 
   /**
-   * Swapping 2 squares of the player's own grid, in both directions: the drag says which tile is taken and where
-   * it goes, and {@link beforeItemMove} sends the tile that was there the other way round.
-   * The location of a move is built from the tile itself, so that it keeps the face it shows: whether a tile is
-   * upgraded, or turned onto its Desert side, is the rotation of its location.
+   * Swapping 2 squares of the player's own grid, which a Scorpion Portal also offers in the middle of an
+   * activation, hence the helper they share (see {@link swapMoves}). Here it is worth 1 Food, gained once the
+   * swap is done.
    */
   get swapMoves(): Move[] {
-    const tiles = this.tiles
-    const cells = tiles.getItems().map((tile) => cellOf(tile.location))
-    return tiles
-      .getIndexes()
-      .flatMap((index, position) => cells.filter((_, other) => other !== position).map((cell) => tiles.index(index).moveItem((tile) => ({ ...tile.location, ...cell }))))
+    return swapMoves(this, this.player)
   }
 
   /**
@@ -72,10 +68,8 @@ export class OrganisationRule extends PlayerTurnRule<number, MaterialType, Locat
       return cost > 0 ? [this.food.deleteItem(cost)] : []
     }
     if (!isMoveItemType(MaterialType.Tile)(move)) return []
-    const swapped = tileAt(this.material(MaterialType.Tile), this.player, cellOf(move.location))
-    if (!swapped.length) return []
-    const { x, y } = this.material(MaterialType.Tile).getItem(move.itemIndex).location
-    return [swapped.moveItem((tile) => ({ ...tile.location, x, y })), this.gainFood]
+    const back = swapBackMove(this, this.player, move.itemIndex, cellOf(move.location))
+    return back === undefined ? [] : [back, this.gainFood]
   }
 
   /**

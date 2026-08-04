@@ -1,5 +1,7 @@
+import { visibleDeserts } from '../../rules/tileChoices'
 import { Rules } from '../../Rules'
 import { ClanCardId, ClanCardItemId } from '../ClanCardId'
+import { Effect, EffectQuantity } from '../Effect'
 import { LocationType } from '../LocationType'
 import { MaterialType } from '../MaterialType'
 import { gridTiles } from '../PlayerGrid'
@@ -16,38 +18,96 @@ import { ClanCardProperties, FoodCost } from './ClanCardProperties'
  */
 export const scorpionCards = {
   /** Gain 1 Food per pair of Deserts you own. */
-  [ClanCardId.ScorpionFoodPerDesertPair]: { cost: { food: 3 } },
+  [ClanCardId.ScorpionFoodPerDesertPair]: {
+    cost: { food: 3 },
+    effects: { [Effect.Food]: desertPairs }
+  },
 
   /** Gain 1 Military per pair of Deserts you own. */
-  [ClanCardId.ScorpionMilitaryPerDesertPair]: { cost: { food: 3 } },
+  [ClanCardId.ScorpionMilitaryPerDesertPair]: {
+    cost: { food: 3 },
+    effects: { [Effect.Military]: desertPairs }
+  },
 
   /** Draw 1 card and gain 1 Food. */
-  [ClanCardId.ScorpionDrawAndFood]: { cost: { food: 3 } },
+  [ClanCardId.ScorpionDrawAndFood]: {
+    cost: { food: 3 },
+    effects: { [Effect.Draw]: 1, [Effect.Food]: 1 }
+  },
 
   /** You may play a card from your hand, reducing its cost by 1 Food per pair of Deserts you own. */
-  [ClanCardId.ScorpionDiscountPerDesertPair]: { cost: { food: 3 } },
+  [ClanCardId.ScorpionDiscountPerDesertPair]: {
+    cost: { food: 3 },
+    effects: { [Effect.PlayCard]: desertPairs }
+  },
 
   /** Activate the effect reminded on one of your Deserts. */
-  [ClanCardId.ScorpionActivateDesert]: { cost: { food: 3 } },
+  [ClanCardId.ScorpionActivateDesert]: {
+    cost: { food: 3 },
+    effects: { [Effect.ActivateDesert]: 1 }
+  },
 
   /** Upgrade one of your tiles, then activate it if possible. */
-  [ClanCardId.ScorpionUpgradeAndActivate]: { cost: { food: 4 } },
+  [ClanCardId.ScorpionUpgradeAndActivate]: {
+    cost: { food: 4 },
+    effects: { [Effect.UpgradeAndActivateTile]: 1 }
+  },
 
-  /** Gain 1 Food, then, if you control 1/2/3 Portals: Spy / + gain 1 Military / + activate one of your Deserts. */
-  [ClanCardId.ScorpionFoodAndPortalBonus]: { cost: { food: 2 } },
+  /**
+   * Gain 1 Food, then, if you control 1/2/3 Portals: Spy / + gain 1 Military / + activate one of your Deserts.
+   * The 3 bonuses add up rather than replace one another, hence one threshold each: a Scorpion with 3 Portals in
+   * play gains the Food, Spies, gains the Military and activates a Desert.
+   */
+  [ClanCardId.ScorpionFoodAndPortalBonus]: {
+    cost: { food: 2 },
+    effects: {
+      [Effect.Food]: 1,
+      [Effect.Spy]: withPortals(1),
+      [Effect.Military]: withPortals(2),
+      [Effect.ActivateDesert]: withPortals(3)
+    }
+  },
 
   /** Portal. Spy twice, on 2 different piles. */
-  [ClanCardId.ScorpionPortalDoubleSpy]: { cost: { food: portalCost(cardsInHand) } },
+  [ClanCardId.ScorpionPortalDoubleSpy]: {
+    cost: { food: portalCost(cardsInHand) },
+    effects: { [Effect.SpyDifferentPiles]: 2 }
+  },
 
   /** Portal. Your opponent flips one of their tiles to its Desert or non-upgraded side. */
-  [ClanCardId.ScorpionPortalFlipOpponentTile]: { cost: { food: portalCost(upgradedTiles) } },
+  [ClanCardId.ScorpionPortalFlipOpponentTile]: {
+    cost: { food: portalCost(upgradedTiles) },
+    effects: { [Effect.FlipOpponentTile]: 1 }
+  },
 
   /** Portal. Swap the position of 2 of your cards or tiles. */
-  [ClanCardId.ScorpionPortalSwap]: { cost: { food: portalCost(portalsPlayed) } },
+  [ClanCardId.ScorpionPortalSwap]: {
+    cost: { food: portalCost(portalsPlayed) },
+    effects: { [Effect.SwapSquares]: 1 }
+  },
 
   /** Portal. No player may gain a Military Victory token this round. */
-  [ClanCardId.ScorpionPortalBlockMilitaryVictory]: { cost: { food: portalCost(militaryVictoryTokens) } }
+  [ClanCardId.ScorpionPortalBlockMilitaryVictory]: {
+    cost: { food: portalCost(militaryVictoryTokens) },
+    effects: { [Effect.BlockMilitaryVictory]: 1 }
+  }
 } satisfies Partial<Record<ClanCardId, ClanCardProperties>>
+
+/**
+ * The Deserts a player owns, counted in pairs: half of what most of these cards read the grid for. A Scorpion
+ * spending their temporary tiles is not only losing them, which is what makes the clan work.
+ *
+ * Only the Deserts on the table are counted: a card played on a square covers its tile, and a Desert nobody can
+ * see is a Desert nobody counts (see {@link visibleDeserts}).
+ */
+function desertPairs(rules: Rules, player: number): number {
+  return Math.floor(visibleDeserts(rules, player).length / 2)
+}
+
+/** A bonus a card only gives once its owner controls that many Portals, and gives once and only once. */
+function withPortals(threshold: number): EffectQuantity {
+  return (rules, player) => (portalsPlayed(rules, player) >= threshold ? 1 : 0)
+}
 
 /** The 4 Portals, which are Scorpion cards like the others until they reach the 4 corners of the grid. */
 export const portals: ClanCardId[] = [

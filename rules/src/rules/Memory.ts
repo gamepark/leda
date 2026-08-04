@@ -38,5 +38,26 @@ export enum Memory {
    * It goes back down to 0 within the round that raised it, since every Awakening is resolved as soon as its
    * owner is done activating their zone (see {@link AwakeningRule}).
    */
-  Awakenings
+  Awakenings,
+
+  /**
+   * The Spies that have to land on different piles, as the number of them still bound to each other and the piles
+   * they have already used (see {@link Effect.SpyDifferentPiles}).
+   * Counted down rather than read off the rules waiting, so that a Spy gathered from anywhere else in the same
+   * activation is not caught by the constraint of a Scorpion Portal.
+   */
+  SpyDifferentPiles,
+
+  /**
+   * Whose effect an opponent is being asked to answer, so that the game goes back to them once it is answered
+   * (see {@link DowngradeTileRule}). Every other rule an effect opens is answered by the player it belongs to,
+   * and hands the game over without ever having to name anyone.
+   */
+  EffectPlayer,
+
+  /**
+   * Set by a Scorpion Portal for the rest of the round: no player may win a Military Victory token, neither by
+   * winning the military conflict nor through a card that draws one. Emptied when the next round starts.
+   */
+  MilitaryVictoryBlocked
 }

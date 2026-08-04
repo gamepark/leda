@@ -5,13 +5,17 @@ export enum CustomMoveType {
   /** A player is not happy with their starting hand and puts it back into their deck to draw as many cards again. */
   Mulligan,
 
-  /** A player keeps their starting hand, which ends their part of the setup. */
-  KeepStartingHand,
-
   /** The active player picks one of the zones the revealed Action tile offers. The data is the {@link ActionZone}. */
   ChooseAction,
 
-  /** A player activates one square of the zone in their grid. The data is its {@link XYCoordinates}. */
+  /**
+   * A player designates one square of their grid to activate. The data is its {@link XYCoordinates}.
+   *
+   * What is activated on it is what the rule asking says, the rulebook naming 3 things where the player only ever
+   * does one: the squares of the zone resolve what stands on them, card or tile ({@link ActivateZoneRule}), while
+   * a card may ask for the card of a square ({@link ActivateCardRule}) or for its tile
+   * ({@link ActivateAndUpgradeTileRule}).
+   */
   ActivateSquare,
 
   /**
@@ -20,9 +24,13 @@ export enum CustomMoveType {
    */
   ChooseEffect,
 
-  /** A player activates one of their clan cards in play. The data is the index of that card. */
-  ActivateCard,
+  /** A player resolves again the effect of a Military Victory token they own. The data is its index. */
+  TriggerMilitaryVictory,
 
-  /** A player turns down what an effect only lets them do: playing a card from their hand, so far. */
-  Decline
+  /**
+   * A player passes on what they are only allowed to do, rather than told to: keeping the hand they drew instead
+   * of shuffling it back, or turning down the card an effect lets them play.
+   * The data is the player, for the rules where several may pass at the same time.
+   */
+  Pass
 }

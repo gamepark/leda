@@ -15,7 +15,7 @@ import { SpyPileButton } from './SpyPileButton'
 
 /** The 5 Action tiles. Their shadow is baked into the images, hence the transparency flag. */
 export class ActionTileDescription extends TokenDescription<number, MaterialType, LocationType, ActionTileId> {
-  height = 4
+  height = 6.63
   ratio = 389 / 663
   borderRadius = 0.2
   transparency = true

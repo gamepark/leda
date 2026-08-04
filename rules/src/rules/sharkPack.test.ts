@@ -10,7 +10,7 @@ import { SharkSlot } from '../material/SharkSlot'
 import { TileId } from '../material/TileId'
 import { Memory } from './Memory'
 import { RuleId } from './RuleId'
-import { sharkTokens } from './sharkPack'
+import { sharkSlotOn, sharkTokens } from './sharkPack'
 
 /** A Shark player, their 16 squares empty, their 9 tokens in the supply, and enough Food for the cards given. */
 const game = (hand: ClanCardId[], food = 30): MaterialGame<number, MaterialType, LocationType> => ({
@@ -58,10 +58,14 @@ const playCard = (rules: LedaRules, cell: XYCoordinates) => {
 
 const tokens = (rules: LedaRules) => rules.material(MaterialType.SharkToken).location(LocationType.PlacedSharkToken).player(1)
 
-const slotOn = (rules: LedaRules, cell: XYCoordinates): SharkSlot | undefined =>
-  tokens(rules)
+/** Which slot the token of a square sits on, which is read off the squares around it and not off the token. */
+const slotOn = (rules: LedaRules, cell: XYCoordinates): SharkSlot | undefined => {
+  const tile = tileOn(rules, cell)
+  const hasToken = tokens(rules)
     .getItems()
-    .find((token) => token.location.parent === tileOn(rules, cell))?.location.x
+    .some((token) => token.location.parent === tile)
+  return hasToken ? sharkSlotOn(rules, 1, cell) : undefined
+}
 
 const supply = (rules: LedaRules) => rules.material(MaterialType.SharkToken).location(LocationType.PlayerSharkSupply).player(1).getQuantity()
 
@@ -119,7 +123,12 @@ describe('The Pack', () => {
     playCard(rules, { x: 1, y: 1 })
     playCard(rules, { x: 2, y: 2 })
     // A diagonal is not a neighbour: not one of the 3 has a Pack.
-    expect(tokens(rules).getItems().map((token) => token.location.x)).toEqual([SharkSlot.Right, SharkSlot.Right, SharkSlot.Right])
+    const slots = [
+      { x: 0, y: 0 },
+      { x: 1, y: 1 },
+      { x: 2, y: 2 }
+    ].map((cell) => slotOn(rules, cell))
+    expect(slots).toEqual([SharkSlot.Right, SharkSlot.Right, SharkSlot.Right])
   })
 
   it('falls asleep again when the squares around one are swapped away from it', () => {

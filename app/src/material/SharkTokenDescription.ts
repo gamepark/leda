@@ -3,7 +3,7 @@ import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { TokenDescription } from '@gamepark/react-game'
 import SharkTokenImage from '../images/tokens/shark.png'
 
-export const sharkTokenWidth = 2.4
+export const sharkTokenWidth = 3
 
 /**
  * The 9 Shark tokens, only in play when a player took the Shark clan.

@@ -1,4 +1,5 @@
 import { getEnumValues } from '@gamepark/rules-api'
+import { Effect, Effects } from './Effect'
 
 /**
  * The 18 Military Victory tokens, shuffled face down between the players.
@@ -27,6 +28,19 @@ export enum MilitaryVictoryTokenId {
   StealFood,
   /** x2. 1 Victory symbol, and draw 1 card. */
   Draw
+}
+
+/**
+ * What a token gives beyond the Victory symbols printed on it, in the lexicon every effect of the game shares.
+ * Victory and DoubleVictory are worth their symbols and nothing else, hence nothing here.
+ */
+export const militaryVictoryEffects: Partial<Record<MilitaryVictoryTokenId, Effects>> = {
+  [MilitaryVictoryTokenId.Spy]: { [Effect.Spy]: 1 },
+  [MilitaryVictoryTokenId.FlipDesert]: { [Effect.Flip]: 1 },
+  [MilitaryVictoryTokenId.Upgrade]: { [Effect.Upgrade]: 1 },
+  [MilitaryVictoryTokenId.Food]: { [Effect.Food]: 1 },
+  [MilitaryVictoryTokenId.StealFood]: { [Effect.StealFood]: 1 },
+  [MilitaryVictoryTokenId.Draw]: { [Effect.Draw]: 1 }
 }
 
 /** How many Victory symbols a token is worth: every token shows 1, and one of them shows 2. */

@@ -25,9 +25,17 @@ export type ClanCardProperties = {
    * What the card gives when the square it was played on is activated, in the lexicon every effect of the game
    * shares (see {@link Effect}). A card covers the tile of its square: what it gives is given instead of what the
    * tile gave, which is why a card with none at all leaves its square with nothing to activate.
-   * TODO: the effects of the Shark, Cat and Scorpion cards.
+   * TODO: the effects of the Cat and Scorpion cards.
    */
   effects?: EffectSet
+
+  /**
+   * The second effect the card prints, for the clans whose cards do not always give the same thing: a Shark card
+   * shows its normal effect and its Pack effect, a Cat card its effect 1 and its effect 2.
+   * Which of the 2 is the live one is never written on the card, it is read off the table, and how depends on the
+   * clan: the Sharks cover one of them with a token, the Cats turn the card over (see {@link cardEffectsOn}).
+   */
+  secondEffects?: EffectSet
 
   /** Only the Pandas have one, and one of them has none at all (see {@link PandaLevel}). */
   pandaLevel?: PandaLevel

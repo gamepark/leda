@@ -13,6 +13,7 @@ import {
 } from '@gamepark/rules-api'
 import { LocationType } from './material/LocationType'
 import { MaterialType } from './material/MaterialType'
+import { ActivateAndUpgradeTileRule } from './rules/ActivateAndUpgradeTileRule'
 import { ActivateCardRule } from './rules/ActivateCardRule'
 import { ActivateZoneRule } from './rules/ActivateZoneRule'
 import { AwakeningRule } from './rules/AwakeningRule'
@@ -25,8 +26,11 @@ import { MilitaryVictoryRule } from './rules/MilitaryVictoryRule'
 import { ChooseClanRule } from './rules/ChooseClanRule'
 import { MulliganRule } from './rules/MulliganRule'
 import { OrganisationRule } from './rules/OrganisationRule'
+import { PlaceSharkTokenRule } from './rules/PlaceSharkTokenRule'
 import { PlayCardRule } from './rules/PlayCardRule'
+import { RedrawMilitaryVictoryRule } from './rules/RedrawMilitaryVictoryRule'
 import { RuleId } from './rules/RuleId'
+import { TriggerMilitaryVictoryRule } from './rules/TriggerMilitaryVictoryRule'
 import { sharkMoves } from './rules/sharkPack'
 import { SpyRule } from './rules/SpyRule'
 import { StartOrganisationRule } from './rules/StartOrganisationRule'
@@ -55,7 +59,11 @@ export class LedaRules
     [RuleId.ChooseEffect]: ChooseEffectRule,
     [RuleId.PlayCard]: PlayCardRule,
     [RuleId.ActivateCard]: ActivateCardRule,
+    [RuleId.ActivateAndUpgradeTile]: ActivateAndUpgradeTileRule,
     [RuleId.MilitaryVictory]: MilitaryVictoryRule,
+    [RuleId.RedrawMilitaryVictory]: RedrawMilitaryVictoryRule,
+    [RuleId.TriggerMilitaryVictory]: TriggerMilitaryVictoryRule,
+    [RuleId.PlaceSharkToken]: PlaceSharkTokenRule,
     [RuleId.Awakening]: AwakeningRule
   }
 

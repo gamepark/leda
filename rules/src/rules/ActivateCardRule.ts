@@ -1,12 +1,11 @@
-import { CustomMove, isCustomMoveType, MaterialMove } from '@gamepark/rules-api'
-import { ClanCardItemId } from '../material/ClanCardId'
-import { clanCardEffects } from '../material/clanCards/cardProperties'
+import { CustomMove, isCustomMoveType, MaterialMove, XYCoordinates } from '@gamepark/rules-api'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
+import { cellOf, sameCell } from '../material/PlayerGrid'
 import { CustomMoveType } from './CustomMoveType'
 import { EffectRule } from './EffectRule'
 import { resolveEffects } from './effects'
-import { activableCards } from './playedCards'
+import { activableCards, cardEffectsOn } from './playedCards'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
@@ -15,28 +14,33 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  * if the square it sits on had been activated, and what it asks the player is asked before the Queen hands the
  * game back (see {@link resolveEffects}).
  *
- * Which cards may be picked is read off the grid rather than from anything the Queen carries, so any card of any
- * clan giving the same effect would work the same (see {@link activableCards}).
+ * The player names the square rather than the card, like everywhere else, a card being the only thing a square
+ * ever holds twice (see {@link CustomMoveType.ActivateSquare}). Which cards may be picked is read off the grid
+ * rather than from anything the Queen carries, so any card of any clan giving the same effect would work the same
+ * (see {@link activableCards}).
  */
 export class ActivateCardRule extends EffectRule {
   /** A player whose only card in play is the Queen herself has nothing to activate with her. */
   onRuleStart(): Move[] {
-    return this.cards.length > 0 ? [] : this.resume()
+    return this.cells.length > 0 ? [] : this.resume()
   }
 
   getPlayerMoves(): Move[] {
-    return this.cards.getIndexes().map((index) => this.customMove(CustomMoveType.ActivateCard, index))
+    return this.cells.map((cell) => this.customMove(CustomMoveType.ActivateSquare, cell))
   }
 
-  get cards() {
+  /** The squares of the cards that may be activated, which is where their tile stands. */
+  get cells(): XYCoordinates[] {
+    const tiles = this.material(MaterialType.Tile)
     return activableCards(this, this.player)
+      .getItems()
+      .map((card) => cellOf(tiles.getItem(card.location.parent!).location))
   }
 
   onCustomMove(move: CustomMove): Move[] {
-    if (!isCustomMoveType<CustomMoveType, number>(CustomMoveType.ActivateCard)(move)) return []
-    if (move.data === undefined) return []
-    const front = this.material(MaterialType.ClanCard).getItem<ClanCardItemId>(move.data).id?.front
-    if (front === undefined) return []
-    return [...resolveEffects(this, clanCardEffects(front)), ...this.resume()]
+    if (!isCustomMoveType<CustomMoveType, XYCoordinates>(CustomMoveType.ActivateSquare)(move)) return []
+    const cell = move.data
+    if (cell === undefined || !this.cells.some((activable) => sameCell(activable, cell))) return []
+    return [...resolveEffects(this, cardEffectsOn(this, this.player, cell) ?? {}, { cell }), ...this.resume()]
   }
 }

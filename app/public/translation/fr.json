@@ -53,6 +53,22 @@
       "you": "Activez une de vos cartes en jeu",
       "player": "{player} active une de ses cartes en jeu"
     },
+    "activate-and-upgrade-tile": {
+      "you": "Activez une de vos tuiles, elle sera améliorée si possible",
+      "player": "{player} active une de ses tuiles"
+    },
+    "redraw-military-victory": {
+      "you": "Remettez un de vos jetons sous la pile pour en piocher un nouveau",
+      "player": "{player} remet un de ses jetons sous la pile"
+    },
+    "trigger-military-victory": {
+      "you": "Déclenchez l'effet d'un de vos jetons de Victoire militaire",
+      "player": "{player} déclenche l'effet d'un de ses jetons"
+    },
+    "place-shark-token": {
+      "you": "Placez un pion Requin sur une de vos tuiles qui n'en a pas",
+      "player": "{player} place un pion Requin sur une de ses tuiles"
+    },
     "organisation": {
       "you": "Jouez une carte ou échangez 2 cartes et gagnez 1 <food/>",
       "player": "{player} joue une carte ou échange 2 cartes et gagne 1 <food/>"

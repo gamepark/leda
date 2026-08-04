@@ -1,3 +1,6 @@
+import { XYCoordinates } from '@gamepark/rules-api'
+import { Rules } from '../Rules'
+
 /**
  * What something gives when it is activated, whether it is a tile, a clan card or a Military Victory token.
  * The lexicon of the rulebook names each of them, and one engine resolves them all (see {@link resolveEffects}),
@@ -37,24 +40,55 @@ export enum Effect {
   /** Activate one of your clan cards in play, which gives what that card gives all over again. */
   ActivateCard,
 
+  /** Activate one of your tiles, then upgrade that same tile if it can be. */
+  ActivateAndUpgradeTile,
+
   /** Draw the first Military Victory token and resolve it, exactly as winning a military conflict would. */
-  MilitaryVictory
+  MilitaryVictory,
+
+  /** Put one of the Military Victory tokens you own back under the pile, then draw a new one and resolve it. */
+  RedrawMilitaryVictory,
+
+  /** Resolve the effect of one of the Military Victory tokens you own, all over again. */
+  TriggerMilitaryVictory,
+
+  /** Place one of your Shark tokens on one of your tiles that has none (see {@link sharkPack}). */
+  PlaceSharkToken
 }
 
+/**
+ * How many times an effect applies.
+ *
+ * A number for most, and a formula for what a card reads off the game: "1 Food per pair of Military Victory tokens
+ * you own" is 1 Food, applied as many times as the player has pairs. Written the way the Food cost of a Portal is
+ * (see {@link FoodCost}), and read against the 3 things a card ever looks at: the game, its owner, and the square
+ * it was played on.
+ */
+export type EffectQuantity = number | ((rules: Rules, player: number, cell?: XYCoordinates) => number)
+
 /** What something gives, and how many times each effect applies. */
-export type Effects = Partial<Record<Effect, number>>
+export type Effects = Partial<Record<Effect, EffectQuantity>>
+
+/**
+ * Where a set of effects was reached from, which some of them are read against.
+ *
+ * `from` is the effect it was reached through, when it was reached through one: a special activation is "1 crystal
+ * = 1 Food OR 1 Awakening", and what the crystal is worth is only readable beside the crystal itself.
+ * `cell` is the square that gives them, when a square is what gives them: a Shark card counts the tokens around
+ * its own square.
+ */
+export type EffectSource = {
+  from?: Effect
+  cell?: XYCoordinates
+}
 
 /**
  * An "OR": the player resolves one of these and only one.
  * Common enough to belong to the lexicon rather than to any one clan: the special activation of the Pandas is one,
  * and so are the cards that read "gain 1 Food OR gain 1 military symbol" (see {@link ChooseEffectRule}).
- *
- * `from` is the effect the choice was reached through, when it was reached through one: a special activation is
- * "1 crystal = 1 Food OR 1 Awakening", and what the crystal is worth is only readable beside the crystal itself.
- * Filled in as the choice is offered rather than written down with the branches, since the same branches may be
- * reached in more than one way.
+ * It carries where it was reached from, so that the branches are read against the same thing once picked.
  */
-export type EffectChoice = { or: Effects[]; from?: Effect }
+export type EffectChoice = { or: Effects[] } & EffectSource
 
 /** What anything in the game gives: a set of effects, or a choice between several such sets. */
 export type EffectSet = Effects | EffectChoice

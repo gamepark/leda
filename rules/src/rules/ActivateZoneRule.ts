@@ -2,9 +2,7 @@ import { CustomMove, isCustomMoveType, MaterialMove, PlayerTurnRule, XYCoordinat
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { tileAt } from '../material/PlayerGrid'
-import { isPermanent, tileEffects } from '../material/TileEffect'
-import { TileId } from '../material/TileId'
-import { activableCells, afterActivation } from './activation'
+import { activableCells, activateTile, afterActivation } from './activation'
 import { CustomMoveType } from './CustomMoveType'
 import { pendingRules, queueLast, resolveEffects, startNextRule } from './effects'
 import { Memory } from './Memory'
@@ -59,18 +57,9 @@ export class ActivateZoneRule extends PlayerTurnRule<number, MaterialType, Locat
    */
   activate(cell: XYCoordinates): Move[] {
     const card = cardEffectsOn(this, this.player, cell)
-    if (card !== undefined) return resolveEffects(this, card)
-    const tile = this.tileOn(cell)
-    const item = tile.getItem<TileId>()
-    if (item === undefined) return []
-    const moves = resolveEffects(this, tileEffects(item.id, item.location.rotation === true))
-    if (item.location.rotation !== true && !isPermanent(item.id)) moves.push(tile.moveItem({ ...item.location, rotation: true }))
-    return moves
-  }
-
-  /** The tile on a square of the grid of the player who is activating. */
-  tileOn(cell: XYCoordinates) {
-    return tileAt(this.material(MaterialType.Tile), this.player, cell)
+    if (card !== undefined) return resolveEffects(this, card, { cell })
+    const [tile] = tileAt(this.material(MaterialType.Tile), this.player, cell).getIndexes()
+    return tile === undefined ? [] : activateTile(this, tile)
   }
 
   /**

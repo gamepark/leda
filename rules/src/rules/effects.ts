@@ -1,5 +1,5 @@
-import { getEnumValues, MaterialMove, MaterialRulesPart, PlayerTurnRule } from '@gamepark/rules-api'
-import { Effect, EffectChoice, EffectSet, isEffectChoice } from '../material/Effect'
+import { getEnumValues, MaterialMove, MaterialRulesPart, PlayerTurnRule, XYCoordinates } from '@gamepark/rules-api'
+import { Effect, EffectChoice, EffectQuantity, EffectSet, EffectSource, isEffectChoice } from '../material/Effect'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { Rules } from '../Rules'
@@ -56,27 +56,41 @@ type Asked = { rules: RuleId[]; choices: EffectChoice[] }
 
 /**
  * Everything an effect set gives: the moves for what it gives on its own, and the rules it needs queued for what
- * it has to ask. `from` is the effect this set was reached through, if any (see {@link EffectChoice}).
+ * it has to ask. The source is where the set was reached from, which some effects are read against
+ * (see {@link EffectSource}).
  */
-export const resolveEffects = (rule: Rule, effects: EffectSet, from?: Effect): Move[] => {
+export const resolveEffects = (rule: Rule, effects: EffectSet, source: EffectSource = {}): Move[] => {
   const asked: Asked = { rules: [], choices: [] }
-  const moves = collect(rule, effects, from, asked)
+  const moves = collect(rule, effects, source, asked)
   if (asked.rules.length > 0) queueFirst(rule, asked.rules)
   if (asked.choices.length > 0) rule.memorize(Memory.EffectChoices, [...asked.choices, ...pendingChoices(rule)])
   return moves
 }
 
-const collect = (rule: Rule, effects: EffectSet, from: Effect | undefined, asked: Asked): Move[] => {
+const collect = (rule: Rule, effects: EffectSet, source: EffectSource, asked: Asked): Move[] => {
   if (isEffectChoice(effects)) {
     asked.rules.push(RuleId.ChooseEffect)
-    asked.choices.push({ ...effects, from })
+    // The branches are read against the same source once one of them is picked, hence a choice carrying it.
+    asked.choices.push({ ...effects, ...source })
     return []
   }
-  return getEnumValues(Effect).flatMap((effect) => resolve(rule, effect, effects[effect] ?? 0, asked))
+  return getEnumValues(Effect).flatMap((effect) => resolve(rule, effect, quantityOf(rule, effects[effect], source), asked, source))
 }
 
+/**
+ * How many times an effect applies, which a card may read off the game rather than print (see {@link EffectQuantity}).
+ * The app reads it the same way, to draw as many symbols as an effect is about to give.
+ */
+export const effectQuantity = (rules: Rules, player: number, quantity: EffectQuantity | undefined, cell?: XYCoordinates): number => {
+  if (quantity === undefined) return 0
+  return typeof quantity === 'number' ? quantity : quantity(rules, player, cell)
+}
+
+const quantityOf = (rule: Rule, quantity: EffectQuantity | undefined, source: EffectSource): number =>
+  effectQuantity(rule, rule.player, quantity, source.cell)
+
 /** One effect of a set, applied as many times as it is given. */
-const resolve = (rule: Rule, effect: Effect, quantity: number, asked: Asked): Move[] => {
+const resolve = (rule: Rule, effect: Effect, quantity: number, asked: Asked, source: EffectSource): Move[] => {
   if (quantity <= 0) return []
   const player = rule.player
   switch (effect) {
@@ -96,7 +110,7 @@ const resolve = (rule: Rule, effect: Effect, quantity: number, asked: Asked): Mo
       rule.memorize<number>(Memory.Awakenings, (awakenings = 0) => awakenings + quantity, player)
       return []
     case Effect.SpecialActivation:
-      return specialActivation(rule, quantity, asked)
+      return specialActivation(rule, quantity, asked, source)
     case Effect.PlayCard:
       // The quantity is what the card is discounted by, so a second such effect would overwrite the first: no card
       // gives two, and one that did would have to be read as one discount anyway.
@@ -117,7 +131,11 @@ const effectRules: Partial<Record<Effect, RuleId>> = {
   [Effect.Flip]: RuleId.FlipDesert,
   [Effect.Spy]: RuleId.Spy,
   [Effect.ActivateCard]: RuleId.ActivateCard,
-  [Effect.MilitaryVictory]: RuleId.MilitaryVictory
+  [Effect.ActivateAndUpgradeTile]: RuleId.ActivateAndUpgradeTile,
+  [Effect.MilitaryVictory]: RuleId.MilitaryVictory,
+  [Effect.RedrawMilitaryVictory]: RuleId.RedrawMilitaryVictory,
+  [Effect.TriggerMilitaryVictory]: RuleId.TriggerMilitaryVictory,
+  [Effect.PlaceSharkToken]: RuleId.PlaceSharkToken
 }
 
 /**
@@ -125,10 +143,10 @@ const effectRules: Partial<Record<Effect, RuleId>> = {
  * the Sharks gain 2 military symbols, the Scorpions Spy, the Pandas pick between 1 Food and 1 Awakening.
  * The recursion stops of its own accord: what a special activation gives is anything but another one.
  */
-const specialActivation = (rule: Rule, quantity: number, asked: Asked): Move[] => {
+const specialActivation = (rule: Rule, quantity: number, asked: Asked, source: EffectSource): Move[] => {
   const clan = playerClan(rule, rule.player)
   if (clan === undefined) return []
-  return times(quantity, clan).flatMap(() => collect(rule, specialActivationEffects[clan], Effect.SpecialActivation, asked))
+  return times(quantity, clan).flatMap(() => collect(rule, specialActivationEffects[clan], { ...source, from: Effect.SpecialActivation }, asked))
 }
 
 const times = <T>(quantity: number, value: T): T[] => Array.from({ length: quantity }, () => value)

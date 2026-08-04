@@ -2,9 +2,9 @@ import { css } from '@emotion/react'
 import { LedaRules } from '@gamepark/leda/LedaRules'
 import { Effect, Effects } from '@gamepark/leda/material/Effect'
 import { CustomMoveType } from '@gamepark/leda/rules/CustomMoveType'
-import { pendingChoices } from '@gamepark/leda/rules/effects'
+import { effectQuantity, pendingChoices } from '@gamepark/leda/rules/effects'
 import { PlayMoveButton, usePlayerId, useRules } from '@gamepark/react-game'
-import { getEnumValues, MaterialMoveBuilder } from '@gamepark/rules-api'
+import { getEnumValues, MaterialMoveBuilder, XYCoordinates } from '@gamepark/rules-api'
 import { Fragment } from 'react'
 import { EffectIcon } from './EffectIcon'
 
@@ -20,8 +20,10 @@ export const ChooseEffectHeader = () => {
   const rules = useRules<LedaRules>()
   const me = usePlayerId<number>()
   const choice = rules === undefined ? undefined : pendingChoices(rules)[0]
-  if (choice === undefined) return null
-  const mine = me !== undefined && rules?.getActivePlayer() === me
+  const player = rules?.getActivePlayer()
+  if (rules === undefined || choice === undefined || player === undefined) return null
+  // What the branches give is read for the player being asked, whoever is looking at the table.
+  const icons = (branch: Effects) => <EffectIcons effects={branch} rules={rules} player={player} cell={choice.cell} />
   return (
     <span css={line}>
       {choice.from !== undefined && (
@@ -32,12 +34,12 @@ export const ChooseEffectHeader = () => {
       {choice.or.map((branch, branchIndex) => (
         <Fragment key={branchIndex}>
           {branchIndex > 0 && '/'}
-          {mine ? (
+          {player === me ? (
             <PlayMoveButton move={MaterialMoveBuilder.customMove(CustomMoveType.ChooseEffect, branchIndex)} css={choiceButton}>
-              <EffectIcons effects={branch} />
+              {icons(branch)}
             </PlayMoveButton>
           ) : (
-            <EffectIcons effects={branch} />
+            icons(branch)
           )}
         </Fragment>
       ))}
@@ -45,11 +47,14 @@ export const ChooseEffectHeader = () => {
   )
 }
 
-/** What a branch gives, one symbol per time it gives it: 2 military symbols are 2 crossed swords, as on the cards. */
-const EffectIcons = ({ effects }: { effects: Effects }) => (
+/**
+ * What a branch gives, one symbol per time it gives it: 2 military symbols are 2 crossed swords, as on the cards.
+ * How many times is asked of the rules, since a card may read it off the game rather than print it.
+ */
+const EffectIcons = ({ effects, rules, player, cell }: { effects: Effects; rules: LedaRules; player: number; cell?: XYCoordinates }) => (
   <>
     {getEnumValues(Effect).flatMap((effect) =>
-      Array.from({ length: effects[effect] ?? 0 }, (_, time) => <EffectIcon key={`${effect}-${time}`} effect={effect} />)
+      Array.from({ length: effectQuantity(rules, player, effects[effect], cell) }, (_, time) => <EffectIcon key={`${effect}-${time}`} effect={effect} />)
     )}
   </>
 )

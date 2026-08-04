@@ -16,11 +16,12 @@ export class MulliganRule extends SimultaneousRule<number, MaterialType, Locatio
    * returned for them, so a player cannot mulligan on behalf of the other.
    */
   getActivePlayerLegalMoves(player: number) {
-    return [this.customMove(CustomMoveType.Mulligan, player), this.customMove(CustomMoveType.KeepStartingHand, player)]
+    return [this.customMove(CustomMoveType.Mulligan, player), this.customMove(CustomMoveType.Pass, player)]
   }
 
   onCustomMove(move: CustomMove): MaterialMove<number, MaterialType, LocationType>[] {
-    if (isCustomMoveType<CustomMoveType, number>(CustomMoveType.KeepStartingHand)(move)) return [this.endPlayerTurn(move.data!)]
+    // Passing here is keeping the hand that was drawn, which ends the setup of that player.
+    if (isCustomMoveType<CustomMoveType, number>(CustomMoveType.Pass)(move)) return [this.endPlayerTurn(move.data!)]
     if (!isCustomMoveType<CustomMoveType, number>(CustomMoveType.Mulligan)(move)) return []
     // The hand goes back in one move, so that afterItemMove has a single event to react to. The deck cannot be
     // shuffled here anyway: these consequences are all built before any of them is played, so a shuffle would not

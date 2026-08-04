@@ -18,7 +18,7 @@ export const PlayCardHeader = () => {
       code="play-card"
       values={{ discount: rules === undefined ? 0 : cardDiscount(rules) }}
       components={{ food: <FoodIcon /> }}
-      moves={{ decline: isCustomMoveType(CustomMoveType.Decline) }}
+      moves={{ decline: isCustomMoveType(CustomMoveType.Pass) }}
     />
   )
 }

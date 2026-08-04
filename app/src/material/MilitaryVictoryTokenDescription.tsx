@@ -12,13 +12,14 @@ import MilitaryVictorySpy from '../images/military-victory/spy.png'
 import MilitaryVictoryStealFood from '../images/military-victory/steal-food.png'
 import MilitaryVictoryUpgrade from '../images/military-victory/upgrade.png'
 import MilitaryVictoryVictory from '../images/military-victory/victory.png'
+import { MilitaryVictoryTokenButtons } from './MilitaryVictoryTokenButtons'
 import { isSpiedByOther } from './spiedItem'
 import { SpiedItemButtons } from './SpiedItemButtons'
 import { SpyPileButton } from './SpyPileButton'
 
 /** The 18 Military Victory tokens. */
 export class MilitaryVictoryTokenDescription extends TokenDescription<number, MaterialType, LocationType, MilitaryVictoryTokenId> {
-  width = 2.2
+  width = 4.36
   ratio = 436 / 409
   transparency = true
 
@@ -45,6 +46,7 @@ export class MilitaryVictoryTokenDescription extends TokenDescription<number, Ma
 
   getItemMenu(item: MaterialItem<number, LocationType, MilitaryVictoryTokenId>, context: ItemContext<number, MaterialType, LocationType>) {
     if (item.location.type === LocationType.SpiedItem) return <SpiedItemButtons type={MaterialType.MilitaryVictoryToken} />
+    if (item.location.type === LocationType.PlayerMilitaryVictory) return <MilitaryVictoryTokenButtons index={context.index} />
     if (item.location.type !== LocationType.MilitaryVictoryDeck) return
     return <SpyPileButton type={MaterialType.MilitaryVictoryToken} index={context.index} />
   }

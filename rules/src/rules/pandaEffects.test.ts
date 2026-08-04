@@ -1,4 +1,4 @@
-import { isCustomMoveType, isMoveItemType, MaterialGame, MaterialMove } from '@gamepark/rules-api'
+import { isCustomMoveType, isMoveItemType, MaterialGame, MaterialMove, XYCoordinates } from '@gamepark/rules-api'
 import { describe, expect, it } from 'vitest'
 import { Clan } from '../Clan'
 import { LedaRules } from '../LedaRules'
@@ -61,7 +61,8 @@ describe('A card played on a square', () => {
   })
 
   it('leaves nothing to activate when what it gives is not written down yet', () => {
-    const rules = new LedaRules(game([ClanCardId.SharkMilitary]))
+    // A Cat card, whose effects are still to come: it covers its tile all the same.
+    const rules = new LedaRules(game([ClanCardId.CatFoodAndMilitary]))
     expect(rules.getLegalMoves(1).filter(isCustomMoveType(CustomMoveType.ActivateSquare))).toHaveLength(3)
   })
 
@@ -118,7 +119,7 @@ describe('A card that asks the player several things', () => {
   it('lets the player turn down what they are only allowed to do', () => {
     const rules = new LedaRules(game([ClanCardId.PandaFoodAndDiscount], [ClanCardId.PandaUpgrade], 5))
     activate(rules, 0)
-    playAll(rules, rules.customMove(CustomMoveType.Decline))
+    playAll(rules, rules.customMove(CustomMoveType.Pass))
     expect(food(rules)).toBe(6)
     expect(rules.game.rule?.id).toBe(RuleId.ActivateZone)
   })
@@ -138,8 +139,9 @@ describe('The King and the Queen', () => {
     const rules = new LedaRules(game([ClanCardId.PandaQueen, ClanCardId.PandaMilitary]))
     activate(rules, 0)
     expect(rules.game.rule?.id).toBe(RuleId.ActivateCard)
-    const choices = rules.getLegalMoves(1).filter(isCustomMoveType<CustomMoveType, number>(CustomMoveType.ActivateCard))
-    expect(choices.map((move) => move.data)).toEqual([1])
+    // The square of the other card, the Queen never being offered her own.
+    const choices = rules.getLegalMoves(1).filter(isCustomMoveType<CustomMoveType, XYCoordinates>(CustomMoveType.ActivateSquare))
+    expect(choices.map((move) => move.data)).toEqual([{ x: 1, y: 0 }])
     playAll(rules, choices[0])
     expect(military(rules)).toBe(2)
     expect(rules.game.rule?.id).toBe(RuleId.ActivateZone)

@@ -1,11 +1,13 @@
 import { XYCoordinates } from '@gamepark/rules-api'
-import { ClanCardId, ClanCardItemId } from '../material/ClanCardId'
+import { Clan } from '../Clan'
+import { ClanCardId, ClanCardItemId, clanOf } from '../material/ClanCardId'
 import { clanCardEffects } from '../material/clanCards/cardProperties'
 import { Effect, EffectSet, hasEffect, isEffectChoice } from '../material/Effect'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { tileAt } from '../material/PlayerGrid'
 import { Rules } from '../Rules'
+import { isPackActive } from './sharkPack'
 
 /**
  * The clan cards a player has played onto their grid. What one gives is read here rather than off its tile: a card
@@ -26,10 +28,25 @@ export const topCardOn = (rules: Rules, player: number, cell: XYCoordinates): Cl
   return cards.length === 0 ? undefined : rules.material(MaterialType.ClanCard).getItem<ClanCardItemId>(Math.max(...cards)).id?.front
 }
 
-/** What activating a square gives: what the card on it gives, or what its tile gives when no card covers it. */
+/**
+ * How each clan reads the cards it plays, for the clans whose cards do not always give the same thing: the Sharks
+ * cover one of the 2 effects of a card with a token, and the Cats will turn a card over as they activate it, which
+ * is the same question answered on 2 different things.
+ * Every other clan gives what its cards print first, whatever happens around them.
+ */
+const clanCardReaders: Partial<Record<Clan, (rules: Rules, player: number, cell: XYCoordinates, card: ClanCardId) => EffectSet>> = {
+  [Clan.Shark]: (rules, player, cell, card) => clanCardEffects(card, isPackActive(rules, player, cell))
+}
+
+/**
+ * What activating a square gives: what the card on it gives, or nothing at all when no card covers it, in which
+ * case what the tile gives is what counts.
+ */
 export const cardEffectsOn = (rules: Rules, player: number, cell: XYCoordinates): EffectSet | undefined => {
   const card = topCardOn(rules, player, cell)
-  return card === undefined ? undefined : clanCardEffects(card)
+  if (card === undefined) return undefined
+  const read = clanCardReaders[clanOf(card)]
+  return read === undefined ? clanCardEffects(card) : read(rules, player, cell, card)
 }
 
 /**

@@ -24,10 +24,14 @@ export const clanCardProperties: Record<ClanCardId, ClanCardProperties> = { ...p
  * part of (see {@link FoodCost}).
  */
 /**
- * What a card gives when the square it was played on is activated, and nothing at all for the cards whose effects
- * are not implemented yet: such a card leaves its square with nothing to activate, since it covers its tile.
+ * One of the 2 effects a card may print, and nothing at all for the cards whose effects are not implemented yet:
+ * such a card leaves its square with nothing to activate, since it covers its tile.
+ *
+ * Which of the 2 is the live one belongs to the clan of the card and not to the card itself, so it is asked of
+ * the table rather than of this: `second` is the answer, not the question (see {@link cardEffectsOn}).
  */
-export const clanCardEffects = (card: ClanCardId): EffectSet => clanCardProperties[card].effects ?? {}
+export const clanCardEffects = (card: ClanCardId, second = false): EffectSet =>
+  (second ? clanCardProperties[card].secondEffects : clanCardProperties[card].effects) ?? {}
 
 export const clanCardFoodCost = (card: ClanCardId, rules: Rules, player: number): number | undefined => {
   const cost = clanCardProperties[card].cost

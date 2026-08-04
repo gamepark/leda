@@ -21,6 +21,10 @@ export const conflictWinner = (rules: Rules): number | undefined => {
   return winners.length === 1 ? winners[0] : undefined
 }
 
+/** The Military Victory tokens a player has won, which some cards read and some let them trade. */
+export const ownedMilitaryVictoryTokens = (rules: Rules, player: number) =>
+  rules.material(MaterialType.MilitaryVictoryToken).location(LocationType.PlayerMilitaryVictory).player(player)
+
 /**
  * The Victory symbols a player controls: what the tokens they won during the conflicts are worth, added up.
  * Unlike the military symbols above, they are never lost, and they are what decides who opens a new cycle of

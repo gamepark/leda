@@ -10,7 +10,7 @@ export const MulliganHeader = () => (
   <HeaderText
     code="mulligan"
     moves={{
-      keep: isCustomMoveType(CustomMoveType.KeepStartingHand),
+      keep: isCustomMoveType(CustomMoveType.Pass),
       redraw: isCustomMoveType(CustomMoveType.Mulligan)
     }}
   />

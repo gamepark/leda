@@ -3,11 +3,11 @@ import { ActionZone, actionZoneCells } from '../material/ActionZone'
 import { hasEffect } from '../material/Effect'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
-import { sameCell, tileAt } from '../material/PlayerGrid'
-import { hasTileEffect } from '../material/TileEffect'
+import { cellOf, sameCell, tileAt } from '../material/PlayerGrid'
+import { hasTileEffect, isPermanent, tileEffects } from '../material/TileEffect'
 import { TileId } from '../material/TileId'
 import { Rules } from '../Rules'
-import { pendingRules } from './effects'
+import { pendingRules, resolveEffects } from './effects'
 import { Memory } from './Memory'
 import { cardEffectsOn } from './playedCards'
 import { RuleId } from './RuleId'
@@ -53,6 +53,21 @@ const isActivable = (rules: Rules, player: number, cell: XYCoordinates): boolean
   if (card !== undefined) return hasEffect(card)
   const tile = tileAt(rules.material(MaterialType.Tile), player, cell).getItem<TileId>()
   return tile !== undefined && hasTileEffect(tile.id, tile.location.rotation === true)
+}
+
+/**
+ * Everything activating a tile gives, whichever rule asked for it: what the face it shows gives, and the Desert a
+ * temporary tile becomes once it has given it. A permanent tile keeps its face and can be activated again.
+ * The square is handed to the effects, some of which are read against it (see {@link EffectSource}).
+ */
+export const activateTile = (rule: PlayerTurnRule<number, MaterialType, LocationType>, index: number): MaterialMove<number, MaterialType, LocationType>[] => {
+  const tiles = rule.material(MaterialType.Tile)
+  const tile = tiles.getItem<TileId>(index)
+  if (tile === undefined) return []
+  const flipped = tile.location.rotation === true
+  const moves = resolveEffects(rule, tileEffects(tile.id, flipped), { cell: cellOf(tile.location) })
+  if (!flipped && !isPermanent(tile.id)) moves.push(tiles.index(index).moveItem({ ...tile.location, rotation: true }))
+  return moves
 }
 
 /**

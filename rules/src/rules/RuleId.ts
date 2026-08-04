@@ -71,8 +71,20 @@ export enum RuleId {
   /** The player activates one of their clan cards in play, which gives whatever that card gives. */
   ActivateCard,
 
+  /** The player activates one of their tiles, which is then upgraded if it can be. */
+  ActivateAndUpgradeTile,
+
   /** The player draws the first Military Victory token and resolves it, conflict or not. */
   MilitaryVictory,
+
+  /** The player puts one of the Military Victory tokens they own back under the pile, to draw another one. */
+  RedrawMilitaryVictory,
+
+  /** The player resolves the effect of one of the Military Victory tokens they own, all over again. */
+  TriggerMilitaryVictory,
+
+  /** The player places one of their Shark tokens on one of their tiles that has none. */
+  PlaceSharkToken,
 
   /**
    * The Awakenings a player of the Pandas gathered while activating, resolved once their whole zone is done: each

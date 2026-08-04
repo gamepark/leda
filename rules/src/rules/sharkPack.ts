@@ -3,7 +3,7 @@ import { Clan } from '../Clan'
 import { ClanCardItemId, clanOf } from '../material/ClanCardId'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
-import { cellOf, sameCell } from '../material/PlayerGrid'
+import { cellOf, gridTiles, sameCell } from '../material/PlayerGrid'
 import { SharkSlot } from '../material/SharkSlot'
 import { Rules } from '../Rules'
 
@@ -31,6 +31,18 @@ export const packSize = 2
 export const placedSharkTokens = (rules: Rules, player: number) =>
   rules.material(MaterialType.SharkToken).location(LocationType.PlacedSharkToken).player(player)
 
+/** The Shark tokens a player has not placed yet. */
+export const sharkSupply = (rules: Rules, player: number) =>
+  rules.material(MaterialType.SharkToken).location(LocationType.PlayerSharkSupply).player(player)
+
+/** The squares of a player's grid a token may still be placed on, which are the ones that have none. */
+export const tilesWithoutSharkToken = (rules: Rules, player: number) => {
+  const taken = placedSharkTokens(rules, player)
+    .getItems()
+    .map((token) => token.location.parent)
+  return gridTiles(rules.material(MaterialType.Tile), player).index((index) => !taken.includes(index))
+}
+
 /** The square a placed token stands on, which is the square of the tile it was placed on. */
 const cellOfToken = (rules: Rules, token: MaterialItem<number, LocationType>): XYCoordinates =>
   cellOf(rules.material(MaterialType.Tile).getItem(token.location.parent!).location)
@@ -45,7 +57,13 @@ export const sharkTokenCells = (rules: Rules, player: number): XYCoordinates[] =
 export const adjacentSharkTokens = (rules: Rules, player: number, cell: XYCoordinates): number =>
   sharkTokenCells(rules, player).filter((taken) => areAdjacentSquares(taken, cell)).length
 
-/** Which slot the token of a square belongs on, whether one is there or not. */
+/**
+ * Which slot the token of a square sits on, whether one is there or not.
+ *
+ * Never written down: the slot of a token is what the squares around it say, so it is read here every time rather
+ * than kept in its location and put right after every move. On the table, that is a token sliding over as the
+ * board changes around it, which the app draws by asking this (see {@link PlacedSharkTokenLocator}).
+ */
 export const sharkSlotOn = (rules: Rules, player: number, cell: XYCoordinates): SharkSlot =>
   adjacentSharkTokens(rules, player, cell) >= packSize ? SharkSlot.Left : SharkSlot.Right
 
@@ -56,51 +74,30 @@ export const sharkSlotOn = (rules: Rules, player: number, cell: XYCoordinates): 
 export const isPackActive = (rules: Rules, player: number, cell: XYCoordinates): boolean =>
   sharkTokenCells(rules, player).some((taken) => sameCell(taken, cell)) && sharkSlotOn(rules, player, cell) === SharkSlot.Left
 
-/** Every token that is not on the slot the board puts it on, moved over to the other one. */
-const sharkSlotMoves = (rules: Rules, player: number): Move[] => {
-  const tokens = rules.material(MaterialType.SharkToken)
-  return placedSharkTokens(rules, player)
-    .getIndexes()
-    .flatMap((index) => {
-      const token = tokens.getItem(index)
-      const slot = sharkSlotOn(rules, player, cellOfToken(rules, token))
-      return token.location.x === slot ? [] : [tokens.index(index).moveItem({ ...token.location, x: slot })]
-    })
-}
-
 /**
- * The token a Shark card takes as it is played: one out of the supply, on the right slot, over the Pack effect it
- * cannot use yet. Where it truly belongs is settled right after, when the token itself moves (see {@link sharkMoves}).
+ * The token a Shark card takes as it is played: one out of the supply, onto the square of the card.
  *
  * A square that already has one keeps it. The rulebook has the player discard that token and place a new one,
  * because around a table the token lies on the card and a card just covered the one under it; here it lies on the
- * square, which has not moved. The slot it belongs on has not changed either, the squares around being the same,
- * so taking it back to the supply to put it down again would be the same token making a round trip.
+ * square, which has not moved.
  */
 const playSharkTokenMoves = (rules: Rules, player: number, tile: number): Move[] => {
   if (placedSharkTokens(rules, player).parent(tile).length > 0) return []
-  const supply = rules.material(MaterialType.SharkToken).location(LocationType.PlayerSharkSupply).player(player)
-  return supply.moveItems({ type: LocationType.PlacedSharkToken, player, parent: tile, x: SharkSlot.Right }, 1)
+  return sharkSupply(rules, player).moveItems({ type: LocationType.PlacedSharkToken, player, parent: tile }, 1)
 }
 
 /**
- * What a move does to the Shark tokens: a Shark card played takes one, and anything that moves a token or a tile
- * sends the tokens the board no longer agrees with onto their other slot.
+ * What a move does to the Shark tokens, which is only ever this: a Shark card played takes one out of the supply.
+ * Where each token sits on its card follows the board on its own, nothing having to be moved for it.
  *
  * Read off the move rather than off the rule that played it, and hooked to the game rather than to any one rule
- * (see {@link LedaRules.afterItemMove}): the Pack follows the board, whichever rule changed it.
+ * (see {@link LedaRules.afterItemMove}): a card is played during an organisation, and by an effect in the middle
+ * of an activation.
  */
 export const sharkMoves = (rules: Rules, move: ItemMove<number, MaterialType, LocationType>): Move[] => {
-  if (isMoveItemType(MaterialType.ClanCard)(move) && move.location.type === LocationType.PlayedCard) {
-    const player = move.location.player
-    const front = rules.material(MaterialType.ClanCard).getItem<ClanCardItemId>(move.itemIndex).id?.front
-    if (player === undefined || front === undefined || clanOf(front) !== Clan.Shark) return []
-    return playSharkTokenMoves(rules, player, move.location.parent!)
-  }
-  if (isMoveItemType(MaterialType.SharkToken)(move) || isMoveItemType(MaterialType.Tile)(move)) {
-    const player = move.location.player
-    // Idempotent, which is what keeps a token moved here from setting off another round of the same.
-    return player === undefined ? [] : sharkSlotMoves(rules, player)
-  }
-  return []
+  if (!isMoveItemType(MaterialType.ClanCard)(move) || move.location.type !== LocationType.PlayedCard) return []
+  const player = move.location.player
+  const front = rules.material(MaterialType.ClanCard).getItem<ClanCardItemId>(move.itemIndex).id?.front
+  if (player === undefined || front === undefined || clanOf(front) !== Clan.Shark) return []
+  return playSharkTokenMoves(rules, player, move.location.parent!)
 }

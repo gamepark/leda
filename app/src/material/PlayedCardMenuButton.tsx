@@ -53,9 +53,11 @@ const ActivateSquareButton = ({ index, rules, player }: CardButtonProps) => {
 
 /** The card itself, when the player is being asked which of their cards in play they activate. */
 const ActivateCardButton = ({ index, rules, player }: CardButtonProps) => {
-  if (!activableCards(rules, player).getIndexes().includes(index)) return null
+  const card = rules.material(MaterialType.ClanCard).getItem(index)
+  if (!activableCards(rules, player).getIndexes().includes(index) || card.location.parent === undefined) return null
+  const cell = cellOf(rules.material(MaterialType.Tile).getItem(card.location.parent).location)
   return (
-    <LedaMenuButton {...tileButtonPosition} move={MaterialMoveBuilder.customMove(CustomMoveType.ActivateCard, index)}>
+    <LedaMenuButton {...tileButtonPosition} move={MaterialMoveBuilder.customMove(CustomMoveType.ActivateSquare, cell)}>
       <FontAwesomeIcon icon={faBolt} />
     </LedaMenuButton>
   )

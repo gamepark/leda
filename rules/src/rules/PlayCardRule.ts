@@ -24,7 +24,7 @@ export class PlayCardRule extends EffectRule {
   }
 
   getPlayerMoves(): Move[] {
-    return [...this.playCardMoves, this.customMove(CustomMoveType.Decline)]
+    return [...this.playCardMoves, this.customMove(CustomMoveType.Pass)]
   }
 
   get playCardMoves(): Move[] {
@@ -53,7 +53,7 @@ export class PlayCardRule extends EffectRule {
   }
 
   onCustomMove(move: CustomMove): Move[] {
-    return isCustomMoveType(CustomMoveType.Decline)(move) ? this.resume() : []
+    return isCustomMoveType(CustomMoveType.Pass)(move) ? this.resume() : []
   }
 
   isCardPlayed(move: ItemMove<number, MaterialType, LocationType>): move is MoveItem<number, MaterialType, LocationType> {

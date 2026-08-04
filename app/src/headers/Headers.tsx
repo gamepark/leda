@@ -1,5 +1,6 @@
 import { RuleId } from '@gamepark/leda/rules/RuleId'
 import { ComponentType } from 'react'
+import { ActivateAndUpgradeTileHeader } from './ActivateAndUpgradeTileHeader'
 import { ActivateCardHeader } from './ActivateCardHeader'
 import { ActivateZoneHeader } from './ActivateZoneHeader'
 import { AwakeningHeader } from './AwakeningHeader'
@@ -9,8 +10,11 @@ import { ChooseEffectHeader } from './ChooseEffectHeader'
 import { FlipDesertHeader } from './FlipDesertHeader'
 import { MulliganHeader } from './MulliganHeader'
 import { OrganisationHeader } from './OrganisationHeader'
+import { PlaceSharkTokenHeader } from './PlaceSharkTokenHeader'
 import { PlayCardHeader } from './PlayCardHeader'
+import { RedrawMilitaryVictoryHeader } from './RedrawMilitaryVictoryHeader'
 import { SpyHeader } from './SpyHeader'
+import { TriggerMilitaryVictoryHeader } from './TriggerMilitaryVictoryHeader'
 import { UpgradeTileHeader } from './UpgradeTileHeader'
 
 export const Headers: Partial<Record<RuleId, ComponentType>> = {
@@ -27,5 +31,9 @@ export const Headers: Partial<Record<RuleId, ComponentType>> = {
   [RuleId.ChooseEffect]: ChooseEffectHeader,
   [RuleId.PlayCard]: PlayCardHeader,
   [RuleId.ActivateCard]: ActivateCardHeader,
+  [RuleId.ActivateAndUpgradeTile]: ActivateAndUpgradeTileHeader,
+  [RuleId.RedrawMilitaryVictory]: RedrawMilitaryVictoryHeader,
+  [RuleId.TriggerMilitaryVictory]: TriggerMilitaryVictoryHeader,
+  [RuleId.PlaceSharkToken]: PlaceSharkTokenHeader,
   [RuleId.Awakening]: AwakeningHeader
 }

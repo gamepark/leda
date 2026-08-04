@@ -1,6 +1,8 @@
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
+import { cellOf } from '@gamepark/leda/material/PlayerGrid'
 import { SharkSlot } from '@gamepark/leda/material/SharkSlot'
+import { sharkSlotOn } from '@gamepark/leda/rules/sharkPack'
 import { actionTileRoundPlayer } from '@gamepark/leda/rules/round'
 import { DeckLocator, HandLocator, ItemContext, ListLocator, Locator, MaterialContext, ParentFace, PileLocator } from '@gamepark/react-game'
 import { Coordinates, Location, MaterialItem } from '@gamepark/rules-api'
@@ -174,25 +176,37 @@ class PlayedCardLocator extends Locator {
 
 /**
  * A Shark token placed on a square, on the tile of that square like a card is, so that it follows it when 2
- * squares are swapped.
- * It covers one of the 2 effect slots printed across the bottom of the Shark card underneath, which is what the x
- * of its location says (see {@link SharkSlot}), and it is laid over that card rather than under it.
+ * squares are swapped. It is laid over the cards of its square rather than under them.
+ *
+ * It covers one of the 2 effect slots printed across the bottom of the Shark card underneath, and which one is not
+ * part of its location: the squares around it are what decide, so it is asked of the rules here, and the token
+ * slides from one slot to the other as the board changes around it (see {@link sharkSlotOn}).
  */
 class PlacedSharkTokenLocator extends Locator {
   parentItemType = MaterialType.Tile
   parentFace = ParentFace.Up
 
   getItemCoordinates(item: MaterialItem<number, LocationType>, context: ItemContext<number, MaterialType, LocationType>): Partial<Coordinates> {
-    return { x: item.location.x === SharkSlot.Left ? -sharkSlotX : sharkSlotX, y: sharkSlotY, z: this.cardsUnder(item, context) * cardThickness }
+    return { x: this.slot(item.location, context) === SharkSlot.Left ? -sharkSlotX : sharkSlotX, y: sharkSlotY, z: this.cardsUnder(item.location, context) * cardThickness }
   }
 
-  cardsUnder(item: MaterialItem<number, LocationType>, context: ItemContext<number, MaterialType, LocationType>): number {
-    return context.rules.material(MaterialType.ClanCard).location(LocationType.PlayedCard).parent(item.location.parent).length
+  slot(location: Location, context: MaterialContext): SharkSlot | undefined {
+    if (location.player === undefined || location.parent === undefined) return undefined
+    const tile = context.rules.material(MaterialType.Tile).getItem(location.parent)
+    return tile === undefined ? undefined : sharkSlotOn(context.rules, location.player, cellOf(tile.location))
   }
 
-  /** How high a token sits depends on how many cards are on its square, which is not part of its own location. */
-  getPositionDependencies(location: Location, context: MaterialContext) {
+  cardsUnder(location: Location, context: MaterialContext): number {
     return context.rules.material(MaterialType.ClanCard).location(LocationType.PlayedCard).parent(location.parent).length
+  }
+
+  /**
+   * Neither the slot of a token nor how high it sits is part of its own location: the first is read off the
+   * squares around it, the second off the cards under it. Both are declared here, so that a token is drawn again
+   * when what it depends on moves.
+   */
+  getPositionDependencies(location: Location, context: MaterialContext) {
+    return [this.slot(location, context), this.cardsUnder(location, context)]
   }
 }
 

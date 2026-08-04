@@ -5,7 +5,7 @@ import FoodTokenImage from '../images/tokens/food.png'
 
 /** Food has no id and no back: in the game state it only ever exists in front of a player. */
 export class FoodTokenDescription extends TokenDescription<number, MaterialType, LocationType> {
-  width = 1.9
+  width = 2.45
   ratio = 317 / 359
   transparency = true
   image = FoodTokenImage

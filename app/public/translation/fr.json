@@ -52,6 +52,10 @@
       "you": "Jouez une carte de votre main à -{discount} <food/> ou <decline>passez</decline>",
       "player": "{player} peut jouer une carte de sa main à -{discount} <food/>"
     },
+    "pay-card-cost": {
+      "you": "Mettez {count, plural, one {# carte} other {# cartes}} de votre main sous votre pioche",
+      "player": "{player} met {count, plural, one {# carte} other {# cartes}} de sa main sous sa pioche"
+    },
     "activate-card": {
       "you": "Activez une de vos cartes en jeu",
       "player": "{player} active une de ses cartes en jeu"

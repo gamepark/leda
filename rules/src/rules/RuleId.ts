@@ -43,6 +43,15 @@ export enum RuleId {
    */
   Organisation,
 
+  /**
+   * Still phase 3: the organisation of a player is over. Their opponent organises their own grid, and once both
+   * have, the round ends.
+   * A step of its own because what ends an organisation is not always the last thing its player does: one of the
+   * 3 Cat cards paid with cards from the hand is paid for after it has been played, and what follows a payment
+   * has to be a step that can be waited for (see {@link Memory.NextRules}).
+   */
+  EndOfOrganisation,
+
   /** The round is over: the player who was not the active one becomes the active player. */
   EndOfRound,
 
@@ -67,6 +76,9 @@ export enum RuleId {
 
   /** The player may play a clan card from their hand, at the discount the effect that offered it gives. */
   PlayCard,
+
+  /** The player pays for the card they have just played, with cards of their hand put under their deck. */
+  PayCardCost,
 
   /** The player activates one of their clan cards in play, which gives whatever that card gives. */
   ActivateCard,

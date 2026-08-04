@@ -59,5 +59,13 @@ export enum Memory {
    * Set by a Scorpion Portal for the rest of the round: no player may win a Military Victory token, neither by
    * winning the military conflict nor through a card that draws one. Emptied when the next round starts.
    */
-  MilitaryVictoryBlocked
+  MilitaryVictoryBlocked,
+
+  /**
+   * How many cards the player who has just played one of the 3 Cat cards paid with cards still owes for it, as a
+   * count going down to nothing (see {@link PayCardCostRule}).
+   * Written down when the card is played rather than read off it: what has already been paid would otherwise have
+   * to be counted against a card that is by then one of several on its square.
+   */
+  CardsOwed
 }

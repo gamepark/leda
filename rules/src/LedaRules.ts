@@ -25,6 +25,7 @@ import { ChooseActionRule } from './rules/ChooseActionRule'
 import { ChooseEffectRule } from './rules/ChooseEffectRule'
 import { CopyOpponentCardRule } from './rules/CopyOpponentCardRule'
 import { DowngradeTileRule } from './rules/DowngradeTileRule'
+import { EndOfOrganisationRule } from './rules/EndOfOrganisationRule'
 import { EndOfRoundRule } from './rules/EndOfRoundRule'
 import { FlipDesertRule } from './rules/FlipDesertRule'
 import { RotateCatCardRule } from './rules/RotateCatCardRule'
@@ -37,6 +38,7 @@ import { MilitaryVictoryRule } from './rules/MilitaryVictoryRule'
 import { ChooseClanRule } from './rules/ChooseClanRule'
 import { MulliganRule } from './rules/MulliganRule'
 import { OrganisationRule } from './rules/OrganisationRule'
+import { PayCardCostRule } from './rules/PayCardCostRule'
 import { PlaceSharkTokenRule } from './rules/PlaceSharkTokenRule'
 import { PlayCardRule } from './rules/PlayCardRule'
 import { RedrawMilitaryVictoryRule } from './rules/RedrawMilitaryVictoryRule'
@@ -63,12 +65,14 @@ export class LedaRules
     [RuleId.MilitaryConflict]: MilitaryConflictRule,
     [RuleId.StartOrganisation]: StartOrganisationRule,
     [RuleId.Organisation]: OrganisationRule,
+    [RuleId.EndOfOrganisation]: EndOfOrganisationRule,
     [RuleId.EndOfRound]: EndOfRoundRule,
     [RuleId.UpgradeTile]: UpgradeTileRule,
     [RuleId.FlipDesert]: FlipDesertRule,
     [RuleId.Spy]: SpyRule,
     [RuleId.ChooseEffect]: ChooseEffectRule,
     [RuleId.PlayCard]: PlayCardRule,
+    [RuleId.PayCardCost]: PayCardCostRule,
     [RuleId.ActivateCard]: ActivateCardRule,
     [RuleId.ActivateAndUpgradeTile]: ActivateAndUpgradeTileRule,
     [RuleId.MilitaryVictory]: MilitaryVictoryRule,

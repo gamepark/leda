@@ -95,6 +95,35 @@ const hand = (rules: LedaRules) => rules.material(MaterialType.ClanCard).locatio
 const isRotated = (rules: LedaRules, x: number) =>
   rules.material(MaterialType.ClanCard).location(LocationType.PlayedCard).player(1).parent(x).getItem()!.location.rotation === true
 
+/** The same player and the same material, in the middle of organising their grid rather than activating it. */
+const organisation = (setup: Setup): MaterialGame<number, MaterialType, LocationType> => ({
+  ...game(setup),
+  rule: { id: RuleId.Organisation, player: 1 }
+})
+
+/** The moves that play a card of the hand, whichever square each of them lands on. */
+const playMoves = (rules: LedaRules) =>
+  rules
+    .getLegalMoves(1)
+    .filter(isMoveItemType(MaterialType.ClanCard))
+    .filter((move) => move.location.type === LocationType.PlayedCard)
+
+/** The cards of the hand the player can afford, each offered on all 16 squares of their grid. */
+const playableCards = (rules: LedaRules): ClanCardId[] => {
+  const cards = rules.material(MaterialType.ClanCard)
+  const indexes = new Set(playMoves(rules).map((move) => move.itemIndex))
+  return [...indexes].map((index) => cards.getItem(index)!.id.front)
+}
+
+/** The card at the far end of the player's deck, which is where a card that is spent is put back. */
+const deckBottom = (rules: LedaRules): ClanCardId =>
+  rules
+    .material(MaterialType.ClanCard)
+    .location(LocationType.PlayerDeck)
+    .player(1)
+    .getItems()
+    .reduce((lowest, card) => (card.location.x! < lowest.location.x! ? card : lowest)).id.front
+
 describe('A Cat card', () => {
   it('gives its first effect, then turns half a turn onto its second', () => {
     const rules = new LedaRules(game({ cards: [{ card: ClanCardId.CatMilitaryOrUpgrade, x: 0 }] }))
@@ -291,5 +320,61 @@ describe('A Ring', () => {
     activate(rules, 0)
     // Nothing else to rotate, so the effect is lost, and the Ring stays on the one face it has.
     expect(isRotated(rules, 0)).toBe(false)
+  })
+})
+
+/**
+ * The 3 Cat cards that are paid with cards of the hand instead of Food. The player owns no Food at all in these,
+ * so nothing else of their hand is playable and the price in cards is the only thing being read.
+ */
+describe('A Cat card paid with cards', () => {
+  it('is only offered while the rest of the hand can pay for it', () => {
+    // 3 cards for the first, 1 for the last, and 2 cards left in hand once either of them is played.
+    const holding = [ClanCardId.CatCopyOpponentCard, ClanCardId.CatUpgradeCardOrActivateTile, ClanCardId.CatFoodAndMilitary]
+    const rules = new LedaRules(organisation({ hand: holding }))
+    expect(playableCards(rules)).toEqual([ClanCardId.CatUpgradeCardOrActivateTile, ClanCardId.CatFoodAndMilitary])
+  })
+
+  it('is paid for once it is played, with cards put under the deck, and the organisation ends', () => {
+    const rules = new LedaRules(organisation({ hand: [ClanCardId.CatFoodAndMilitary, ClanCardId.CatDrawAndFood] }))
+    playAll(rules, playMoves(rules)[0])
+    // The card is on its square, and its price is what its owner is now being asked for.
+    expect(rules.game.rule?.id).toBe(RuleId.PayCardCost)
+    expect(rules.material(MaterialType.ClanCard).location(LocationType.PlayedCard).player(1).length).toBe(1)
+
+    const [pay] = rules.getLegalMoves(1).filter(isMoveItemType(MaterialType.ClanCard))
+    playAll(rules, pay)
+    expect(hand(rules).length).toBe(0)
+    expect(deckBottom(rules)).toBe(ClanCardId.CatDrawAndFood)
+    // Nothing is owed any more, and the opponent organises their own grid.
+    expect(rules.game.memory[Memory.CardsOwed]).toBeUndefined()
+    expect(rules.game.rule).toEqual({ id: RuleId.Organisation, player: 2 })
+  })
+
+  it('takes as many cards as it costs, one at a time', () => {
+    const holding = [ClanCardId.CatCopyOpponentCard, ClanCardId.CatDrawAndFood, ClanCardId.CatSpyAndDraw, ClanCardId.CatMilitaryOrUpgrade]
+    const rules = new LedaRules(organisation({ hand: holding }))
+    playAll(rules, playMoves(rules)[0])
+    for (const owed of [3, 2, 1]) {
+      expect(rules.game.rule?.id).toBe(RuleId.PayCardCost)
+      expect(rules.game.memory[Memory.CardsOwed]).toBe(owed)
+      playAll(rules, rules.getLegalMoves(1).filter(isMoveItemType(MaterialType.ClanCard))[0])
+    }
+    expect(hand(rules).length).toBe(0)
+    expect(rules.game.rule).toEqual({ id: RuleId.Organisation, player: 2 })
+  })
+
+  /** The other moment a card is played: in the middle of an activation, which resumes once the card is paid for. */
+  it('is paid for the same way when an effect lets it be played out of turn', () => {
+    const state = organisation({ hand: [ClanCardId.CatFoodAndMilitary, ClanCardId.CatDrawAndFood] })
+    state.rule = { id: RuleId.PlayCard, player: 1 }
+    state.memory[Memory.NextRules] = [RuleId.ActivateZone]
+    const rules = new LedaRules(state)
+    playAll(rules, playMoves(rules)[0])
+    expect(rules.game.rule?.id).toBe(RuleId.PayCardCost)
+    playAll(rules, rules.getLegalMoves(1).filter(isMoveItemType(MaterialType.ClanCard))[0])
+    expect(hand(rules).length).toBe(0)
+    expect(rules.game.rule?.id).toBe(RuleId.ActivateZone)
+    expect(pendingRules(rules)).toEqual([])
   })
 })

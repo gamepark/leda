@@ -14,6 +14,7 @@ import { DowngradeTileHeader } from './DowngradeTileHeader'
 import { FlipDesertHeader } from './FlipDesertHeader'
 import { MulliganHeader } from './MulliganHeader'
 import { OrganisationHeader } from './OrganisationHeader'
+import { PayCardCostHeader } from './PayCardCostHeader'
 import { PlaceSharkTokenHeader } from './PlaceSharkTokenHeader'
 import { PlayCardHeader } from './PlayCardHeader'
 import { RedrawMilitaryVictoryHeader } from './RedrawMilitaryVictoryHeader'
@@ -39,6 +40,7 @@ export const Headers: Partial<Record<RuleId, ComponentType>> = {
   [RuleId.Spy]: SpyHeader,
   [RuleId.ChooseEffect]: ChooseEffectHeader,
   [RuleId.PlayCard]: PlayCardHeader,
+  [RuleId.PayCardCost]: PayCardCostHeader,
   [RuleId.ActivateCard]: ActivateCardHeader,
   [RuleId.ActivateAndUpgradeTile]: ActivateAndUpgradeTileHeader,
   [RuleId.RedrawMilitaryVictory]: RedrawMilitaryVictoryHeader,

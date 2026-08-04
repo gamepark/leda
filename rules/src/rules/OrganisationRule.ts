@@ -3,8 +3,9 @@ import { ClanCardItemId, revealedFront } from '../material/ClanCardId'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { cellOf, gridTiles } from '../material/PlayerGrid'
+import { queueLast } from './effects'
 import { Memory } from './Memory'
-import { cardFoodCost, playCardMoves } from './organisation'
+import { afterOrganisation, cardCardCost, cardFoodCost, playCardMoves } from './organisation'
 import { RuleId } from './RuleId'
 import { swapBackMove, swapMoves } from './swap'
 
@@ -76,11 +77,18 @@ export class OrganisationRule extends PlayerTurnRule<number, MaterialType, Locat
    * Playing a card is the whole organisation of its owner. So is gaining the Food, whether the player swapped 2
    * squares to earn it or simply took it: either way they have been paid for their squares, and there is nothing
    * left for them to do.
+   *
+   * One of the 3 Cat cards paid with cards from the hand still has its price to pay, which its owner is asked for
+   * before their organisation is over (see {@link PayCardCostRule}).
    */
   afterItemMove(move: ItemMove<number, MaterialType, LocationType>): Move[] {
     if (this.gainedOrganisationFood(move)) return this.nextStep()
     if (!isMoveItemType(MaterialType.ClanCard)(move) || move.location.type !== LocationType.PlayedCard) return []
-    return this.nextStep()
+    const owed = cardCardCost(this.material(MaterialType.ClanCard).getItem<ClanCardItemId>(move.itemIndex).id?.front)
+    if (owed === undefined) return this.nextStep()
+    this.memorize(Memory.CardsOwed, owed)
+    queueLast(this, RuleId.EndOfOrganisation)
+    return [this.startRule(RuleId.PayCardCost)]
   }
 
   gainedOrganisationFood(move: ItemMove<number, MaterialType, LocationType>): boolean {
@@ -106,7 +114,6 @@ export class OrganisationRule extends PlayerTurnRule<number, MaterialType, Locat
 
   /** The player who opened the round organises first, then their opponent, and the round is over. */
   nextStep(): Move[] {
-    if (this.player === this.remind<number>(Memory.RoundPlayer)) return [this.startPlayerTurn(RuleId.Organisation, this.nextPlayer)]
-    return [this.startRule(RuleId.EndOfRound)]
+    return afterOrganisation(this)
   }
 }

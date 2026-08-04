@@ -4,8 +4,10 @@ import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { CustomMoveType } from './CustomMoveType'
 import { EffectRule } from './EffectRule'
+import { queueFirstRule } from './effects'
 import { Memory } from './Memory'
-import { cardFoodCost, playCardMoves } from './organisation'
+import { cardCardCost, cardFoodCost, playCardMoves } from './organisation'
+import { RuleId } from './RuleId'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
@@ -47,9 +49,21 @@ export class PlayCardRule extends EffectRule {
     return cost > 0 ? [this.food.deleteItem(cost)] : []
   }
 
-  /** Playing a card is the whole of this rule, and so is turning the chance to play one down. */
+  /**
+   * Playing a card is the whole of this rule, and so is turning the chance to play one down.
+   *
+   * One of the 3 Cat cards paid with cards from the hand still has its price to pay, which is asked before
+   * anything that was already waiting: the activation this interrupted resumes once the card is paid for
+   * (see {@link PayCardCostRule}).
+   */
   afterItemMove(move: ItemMove<number, MaterialType, LocationType>): Move[] {
-    return this.isCardPlayed(move) ? this.resume() : []
+    if (!this.isCardPlayed(move)) return []
+    const owed = cardCardCost(this.material(MaterialType.ClanCard).getItem<ClanCardItemId>(move.itemIndex).id?.front)
+    if (owed !== undefined) {
+      this.memorize(Memory.CardsOwed, owed)
+      queueFirstRule(this, RuleId.PayCardCost)
+    }
+    return this.resume()
   }
 
   onCustomMove(move: CustomMove): Move[] {

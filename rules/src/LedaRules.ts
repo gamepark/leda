@@ -1,4 +1,5 @@
 import {
+  CompetitiveRank,
   hideFront,
   hideFrontToOthers,
   hideItemId,
@@ -7,6 +8,8 @@ import {
   ItemMove,
   MaterialGame,
   MaterialMove,
+  MaterialMoveRandomized,
+  MaterialMoveView,
   PlayMoveContext,
   PositiveSequenceStrategy,
   SecretMaterialRules,
@@ -48,6 +51,7 @@ import { sharkMoves } from './rules/sharkPack'
 import { SpyRule } from './rules/SpyRule'
 import { StartOrganisationRule } from './rules/StartOrganisationRule'
 import { UpgradeTileRule } from './rules/UpgradeTileRule'
+import { gameWinner, hasWon } from './rules/victory'
 
 /**
  * This class implements the rules of the board game.
@@ -55,7 +59,9 @@ import { UpgradeTileRule } from './rules/UpgradeTileRule'
  */
 export class LedaRules
   extends SecretMaterialRules<number, MaterialType, LocationType>
-  implements TimeLimit<MaterialGame<number, MaterialType, LocationType>, MaterialMove<number, MaterialType, LocationType>, number>
+  implements
+    TimeLimit<MaterialGame<number, MaterialType, LocationType>, MaterialMove<number, MaterialType, LocationType>, number>,
+    CompetitiveRank<MaterialGame<number, MaterialType, LocationType>, MaterialMove<number, MaterialType, LocationType>, number>
 {
   rules = {
     [RuleId.ChooseClan]: ChooseClanRule,
@@ -167,6 +173,36 @@ export class LedaRules
     context?: PlayMoveContext
   ): MaterialMove<number, MaterialType, LocationType>[] {
     return [...sharkMoves(this, move), ...super.afterItemMove(move, context)]
+  }
+
+  /**
+   * The end of the game, which belongs to the game and not to any one step of it: a player wins the moment they
+   * meet a condition, and the 5 conditions are met by a token won, a card played, a Shark token placed or 2
+   * squares swapped, in the middle of any step there is (see {@link gameWinner}).
+   *
+   * Hooked to every move rather than to the move that wins, because the winning move is rarely the last one
+   * played: the 9th Shark token is placed by the card that was played, whose other consequence hands the turn to
+   * the opponent, and a game closed before that turn started would be reopened by it. So the game is closed after
+   * every move for as long as it is not, which is over as soon as the moves that were owed run out.
+   *
+   * Never on a move a client is only previewing, which the framework plays and takes back on its own.
+   */
+  play(
+    move: MaterialMoveRandomized<number, MaterialType, LocationType> | MaterialMoveView<number, MaterialType, LocationType>,
+    context?: PlayMoveContext
+  ): MaterialMove<number, MaterialType, LocationType>[] {
+    const consequences = super.play(move, context)
+    if (context?.transient || this.isOver() || gameWinner(this) === undefined) return consequences
+    return [...consequences, this.endGame()]
+  }
+
+  /**
+   * Who won, once the game is over: the player who met one of the conditions, the other one having lost the race.
+   * A rank rather than a score, LEDA having none: the 2 tracks a player runs are not counted in the same thing,
+   * and the game stops at the finishing line rather than being tallied up (see {@link victory}).
+   */
+  rankPlayers(playerA: number, playerB: number): number {
+    return Number(hasWon(this, playerB)) - Number(hasWon(this, playerA))
   }
 
   /**

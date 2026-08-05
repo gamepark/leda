@@ -10,6 +10,15 @@ import { MaterialType } from './MaterialType'
 
 export const sameCell = (a: XYCoordinates, b: XYCoordinates): boolean => a.x === b.x && a.y === b.y
 
+/** The 16 squares of a grid, in reading order. */
+export const gridCells: XYCoordinates[] = [0, 1, 2, 3].flatMap((y) => [0, 1, 2, 3].map((x) => ({ x, y })))
+
+/**
+ * The 4 corner squares, which one of the Action tiles designates as a zone and which are where the Scorpions have
+ * to gather their 4 Portals to win (see {@link ActionZone.Corners} and {@link hasSpecialVictory}).
+ */
+export const gridCorners: XYCoordinates[] = gridCells.filter(({ x, y }) => (x === 0 || x === 3) && (y === 0 || y === 3))
+
 /** The square a location stands on. Partial, so that the location a move is heading to can be read the same way. */
 export const cellOf = (location: Partial<Location>): XYCoordinates => ({ x: location.x!, y: location.y! })
 

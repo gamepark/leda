@@ -32,10 +32,15 @@ type Setup = {
   cards?: { card: ClanCardId; cell: XYCoordinates }[]
   /** The squares that hold something else than a Desert. */
   squares?: { cell: XYCoordinates; square: Square }[]
-  /** The Military Victory tokens their owner has already won, which is what 2 of the Portals are priced on. */
+  /** The Military Victory tokens their owner has already won, which is what one of the Portals is priced on. */
   won?: MilitaryVictoryTokenId[]
-  /** How many cards the player holds, the price of the third Portal being read off their hand. */
-  hand?: number
+  /**
+   * The cards the player holds: which ones when a test is about to play one of them, or simply how many, the
+   * price of one of the Portals being read off the hand it is still part of.
+   */
+  hand?: ClanCardId[] | number
+  /** The Food the player owns, which is what they pay the cards they play with. */
+  food?: number
   /** The squares of the opponent that hold something else than a Desert. */
   opponentSquares?: { cell: XYCoordinates; square: Square }[]
 }
@@ -61,12 +66,16 @@ const grid = (player: number, squares: { cell: XYCoordinates; square: Square }[]
     [0, 1, 2, 3].map((x) => tileOf(squares.find(({ cell }) => cell.x === x && cell.y === y)?.square ?? 'desert', player, x, y))
   )
 
+/** A hand given as a number is that many cards worth nothing in particular, which any card of the clan is. */
+const handOf = (hand: ClanCardId[] | number): ClanCardId[] =>
+  typeof hand === 'number' ? Array.from({ length: hand }, () => ClanCardId.ScorpionDrawAndFood) : hand
+
 /**
  * A Scorpion player, their grid covered with Deserts so that nothing but the cards gives anything, and the zone
  * of the round set on row 1, which is where the cards below are played.
  * The opponent has a grid of their own, since one of the Portals has them turn one of its tiles over.
  */
-const game = ({ cards = [], squares = [], won = [], hand = 0, opponentSquares = [] }: Setup): MaterialGame<number, MaterialType, LocationType> => ({
+const game = ({ cards = [], squares = [], won = [], hand = 0, food = 0, opponentSquares = [] }: Setup): MaterialGame<number, MaterialType, LocationType> => ({
   players: [1, 2],
   rule: { id: RuleId.ActivateZone, player: 1 },
   memory: {
@@ -86,9 +95,10 @@ const game = ({ cards = [], squares = [], won = [], hand = 0, opponentSquares = 
         id: { front: card, back: Clan.Scorpion },
         location: { type: LocationType.PlayedCard, player: 1, parent: index(cell) }
       })),
-      ...Array.from({ length: hand }, (_, x) => ({ id: { front: ClanCardId.ScorpionDrawAndFood, back: Clan.Scorpion }, location: { type: LocationType.PlayerHand, player: 1, x } })),
+      ...handOf(hand).map((front, x) => ({ id: { front, back: Clan.Scorpion }, location: { type: LocationType.PlayerHand, player: 1, x } })),
       { id: { back: Clan.Scorpion }, location: { type: LocationType.PlayerDeck, player: 1, x: 0 } }
     ],
+    [MaterialType.FoodToken]: food > 0 ? [{ location: { type: LocationType.PlayerFood, player: 1 }, quantity: food }] : [],
     [MaterialType.MilitaryVictoryToken]: [
       ...won.map((id, x) => ({ id, location: { type: LocationType.PlayerMilitaryVictory, player: 1, x } })),
       { id: MilitaryVictoryTokenId.Food, location: { type: LocationType.MilitaryVictoryDeck, x: 0 } }
@@ -346,5 +356,79 @@ describe('The Scorpion Portals', () => {
     expect(rules.game.memory[Memory.MilitaryVictoryBlocked]).toBe(true)
     playAll(rules, rules.startRule(RuleId.MilitaryConflict))
     expect(rules.material(MaterialType.MilitaryVictoryToken).location(LocationType.PlayerMilitaryVictory).length).toBe(0)
+  })
+})
+
+/**
+ * Every Portal costs 9 Food minus a counter of its own, so that the win condition of the Scorpions gets cheaper
+ * the further along its owner is. What each of them counts is read off the game while the card is still in hand.
+ */
+describe('The price of a Scorpion Portal', () => {
+  /** The same player and the same material, organising their grid rather than activating it. */
+  const organisation = (setup: Setup): MaterialGame<number, MaterialType, LocationType> => ({
+    ...game(setup),
+    rule: { id: RuleId.Organisation, player: 1 }
+  })
+
+  /** The moves that play that card of the hand, which are the 16 squares of the grid or nothing at all. */
+  const playMoves = (rules: LedaRules, card: ClanCardId) => {
+    const cards = rules.material(MaterialType.ClanCard)
+    return rules
+      .getLegalMoves(1)
+      .filter(isMoveItemType(MaterialType.ClanCard))
+      .filter((move) => move.location.type === LocationType.PlayedCard && cards.getItem(move.itemIndex).id.front === card)
+  }
+
+  /**
+   * What the card is worth, read the way a player reads it: the least Food they can own and still be offered to
+   * play it. 10 when nothing under 10 Food buys it, which no price of the game ever is.
+   */
+  const price = (card: ClanCardId, setup: Setup = {}, others = 0): number => {
+    const hand = [card, ...handOf(others)]
+    for (let food = 0; food <= 9; food++) {
+      if (playMoves(new LedaRules(organisation({ ...setup, hand, food })), card).length > 0) return food
+    }
+    return 10
+  }
+
+  it('costs 9 minus the cards of the hand it is still part of', () => {
+    // Alone in hand, the card being counted before it is played and not after.
+    expect(price(ClanCardId.ScorpionPortalDoubleSpy)).toBe(8)
+    expect(price(ClanCardId.ScorpionPortalDoubleSpy, {}, 2)).toBe(6)
+  })
+
+  it('costs 9 minus the upgraded tiles of its owner', () => {
+    // A grid of Deserts, which are turned over too and count for nothing: only an upgraded permanent tile does.
+    expect(price(ClanCardId.ScorpionPortalFlipOpponentTile)).toBe(9)
+    const upgraded = elsewhere.slice(0, 2).map((cell) => ({ cell, square: 'upgraded' as const }))
+    expect(price(ClanCardId.ScorpionPortalFlipOpponentTile, { squares: upgraded })).toBe(7)
+  })
+
+  it('costs 9 minus the Portals its owner has already played', () => {
+    expect(price(ClanCardId.ScorpionPortalSwap)).toBe(9)
+    const inPlay = [ClanCardId.ScorpionPortalDoubleSpy, ClanCardId.ScorpionPortalBlockMilitaryVictory].map((card, position) => ({
+      card,
+      cell: elsewhere[position]
+    }))
+    expect(price(ClanCardId.ScorpionPortalSwap, { cards: inPlay })).toBe(7)
+  })
+
+  it('costs 9 minus the Military Victory tokens its owner has won', () => {
+    expect(price(ClanCardId.ScorpionPortalBlockMilitaryVictory)).toBe(9)
+    const won = [MilitaryVictoryTokenId.Food, MilitaryVictoryTokenId.Food, MilitaryVictoryTokenId.Food]
+    expect(price(ClanCardId.ScorpionPortalBlockMilitaryVictory, { won })).toBe(6)
+  })
+
+  it('is free rather than owed once its counter has passed 9', () => {
+    // 10 cards in hand, the Portal included, which would price it at -1.
+    expect(price(ClanCardId.ScorpionPortalDoubleSpy, {}, 9)).toBe(0)
+  })
+
+  it('is paid for out of the Food of its owner as it is played', () => {
+    const rules = new LedaRules(organisation({ hand: [ClanCardId.ScorpionPortalDoubleSpy], food: 9 }))
+    playAll(rules, playMoves(rules, ClanCardId.ScorpionPortalDoubleSpy)[0])
+    // 8 Food for a Portal alone in hand, and the organisation of the player is over.
+    expect(food(rules)).toBe(1)
+    expect(rules.game.rule).toEqual({ id: RuleId.Organisation, player: 2 })
   })
 })

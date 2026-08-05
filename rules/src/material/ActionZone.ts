@@ -2,7 +2,7 @@ import { Material, XYCoordinates } from '@gamepark/rules-api'
 import { ActionTileId } from './ActionTileId'
 import { LocationType } from './LocationType'
 import { MaterialType } from './MaterialType'
-import { sameCell } from './PlayerGrid'
+import { gridCorners, sameCell } from './PlayerGrid'
 
 /**
  * The zones of 4 squares an Action tile may designate. Rows and columns are numbered like the rulebook does,
@@ -48,12 +48,7 @@ export const actionZoneCells: Record<ActionZone, XYCoordinates[]> = {
   [ActionZone.TopRightSquare]: square(2, 0),
   [ActionZone.BottomLeftSquare]: square(0, 2),
   [ActionZone.BottomRightSquare]: square(2, 2),
-  [ActionZone.Corners]: [
-    { x: 0, y: 0 },
-    { x: 3, y: 0 },
-    { x: 0, y: 3 },
-    { x: 3, y: 3 }
-  ],
+  [ActionZone.Corners]: gridCorners,
   [ActionZone.Center]: square(1, 1)
 }
 

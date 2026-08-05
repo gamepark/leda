@@ -64,6 +64,10 @@
       "you": "Activez une de vos tuiles, elle sera améliorée si possible",
       "player": "{player} active une de ses tuiles"
     },
+    "military-victory": {
+      "you": "Vous remportez le conflit militaire",
+      "player": "{player} remporte le conflit militaire"
+    },
     "redraw-military-victory": {
       "you": "Remettez un de vos jetons sous la pile pour en piocher un nouveau",
       "player": "{player} remet un de ses jetons sous la pile"

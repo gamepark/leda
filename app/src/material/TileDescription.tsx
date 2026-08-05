@@ -1,10 +1,9 @@
 import { css } from '@emotion/react'
-import { zoneContains } from '@gamepark/leda/material/ActionZone'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { cellOf } from '@gamepark/leda/material/PlayerGrid'
 import { TileId } from '@gamepark/leda/material/TileId'
-import { isActivationPhase, roundZone } from '@gamepark/leda/rules/activation'
+import { isActivationPhase, isCellOfActivatedZone } from '@gamepark/leda/rules/activation'
 import { CardDescription, ItemContext } from '@gamepark/react-game'
 import { MaterialItem } from '@gamepark/rules-api'
 import PermanentDrawFront from '../images/tiles/recto/permanent-draw.jpg'
@@ -90,8 +89,7 @@ export class TileDescription extends CardDescription<number, MaterialType, Locat
    */
   highlight(item: MaterialItem<number, LocationType, TileId>, context: ItemContext<number, MaterialType, LocationType>) {
     if (!isActivationPhase(context.rules) || item.location.type !== LocationType.PlayerGrid) return undefined
-    const zone = roundZone(context.rules)
-    return zone !== undefined && zoneContains(zone, cellOf(item.location))
+    return isCellOfActivatedZone(context.rules, cellOf(item.location))
   }
 
   /** A square the active player selected is ringed, in their own grid and in their opponent's. */

@@ -1,6 +1,6 @@
 import { MaterialMove, PlayerTurnRule, XYCoordinates } from '@gamepark/rules-api'
 import { Clan } from '../Clan'
-import { ActionZone, actionZoneCells } from '../material/ActionZone'
+import { ActionZone, actionZoneCells, zoneContains } from '../material/ActionZone'
 import { clanOf } from '../material/ClanCardId'
 import { isRing } from '../material/clanCards/catCards'
 import { hasEffect } from '../material/Effect'
@@ -30,6 +30,16 @@ export const roundZone = (rules: Rules): ActionZone | undefined => rules.game.me
  */
 export const isActivationPhase = (rules: Rules): boolean =>
   rules.game.rule?.id === RuleId.ActivateZone || pendingRules(rules).includes(RuleId.ActivateZone)
+
+/**
+ * Whether a square belongs to the zone being activated, in the grid of either player: what the app shines for as
+ * long as the phase lasts, on the tile of the square and on everything laid over it alike.
+ */
+export const isCellOfActivatedZone = (rules: Rules, cell: XYCoordinates): boolean => {
+  if (!isActivationPhase(rules)) return false
+  const zone = roundZone(rules)
+  return zone !== undefined && zoneContains(zone, cell)
+}
 
 /** The squares of the zone a player has already resolved this round. */
 const activatedCells = (rules: Rules, player: number): XYCoordinates[] => rules.game.memory[Memory.ActivatedCells]?.[player] ?? []

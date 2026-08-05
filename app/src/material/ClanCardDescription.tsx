@@ -3,6 +3,8 @@ import { Clan } from '@gamepark/leda/Clan'
 import { ClanCardId, ClanCardItemId } from '@gamepark/leda/material/ClanCardId'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
+import { cellOf } from '@gamepark/leda/material/PlayerGrid'
+import { isCellOfActivatedZone } from '@gamepark/leda/rules/activation'
 import { organisingPlayer } from '@gamepark/leda/rules/organisation'
 import { CardDescription, ItemContext, MaterialContext } from '@gamepark/react-game'
 import { MaterialItem } from '@gamepark/rules-api'
@@ -171,16 +173,29 @@ export class ClanCardDescription extends CardDescription<number, MaterialType, L
   }
 
   /**
-   * Such a card shines like the tile it covers, which is what says the square can be dragged: the framework lights
-   * up what can be moved, and the card itself has no move of its own, only the tile underneath does.
+   * Such a card shines like the tile it covers, in the 2 cases where what the square carries is what shines and not
+   * the card itself: the tile can be dragged, which is what says the square can be moved and which the framework
+   * lights up on the tile alone, since the card has no move of its own; and the square is one of the zone being
+   * activated, which shines for as long as the phase lasts (see {@link TileDescription.highlight}).
+   * A card covers the whole tile of its square, so without this the zone would only be seen on the bare squares.
    */
   highlight(item: MaterialItem<number, LocationType, ClanCardItemId>, context: ItemContext<number, MaterialType, LocationType>) {
-    return this.coversATileToDrag(item, context) || undefined
+    return this.coversATileToDrag(item, context) || this.coversAnActivatedSquare(item, context) || undefined
   }
 
   /** Whether the card is played on a square of the grid its owner is organising, hence on a tile they may swap. */
   coversATileToDrag(item: MaterialItem<number, LocationType, ClanCardItemId>, context: ItemContext<number, MaterialType, LocationType>): boolean {
     return item.location.type === LocationType.PlayedCard && organisingPlayer(context.rules) === item.location.player
+  }
+
+  /**
+   * Whether the card is played on a square of the zone the players are activating, in either grid. The square is
+   * read off the tile the card is laid on, which is the parent item of its location, and not off the card.
+   */
+  coversAnActivatedSquare(item: MaterialItem<number, LocationType, ClanCardItemId>, context: ItemContext<number, MaterialType, LocationType>): boolean {
+    if (item.location.type !== LocationType.PlayedCard || item.location.parent === undefined) return false
+    const tile = context.rules.material(MaterialType.Tile).getItem(item.location.parent)
+    return tile !== undefined && isCellOfActivatedZone(context.rules, cellOf(tile.location))
   }
 }
 

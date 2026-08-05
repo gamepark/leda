@@ -48,8 +48,8 @@ export const activableCells = (rules: Rules, player: number): XYCoordinates[] =>
 
 /**
  * Whether a square holds anything to resolve: what the card played on it gives, or what its tile gives when no
- * card covers it. A card covers the tile of its square, so a card whose effects are not written down yet leaves
- * its square with nothing to activate (see {@link cardEffectsOn}).
+ * card covers it. A card covers the tile of its square, so a card showing a face that prints nothing leaves its
+ * square with nothing to activate (see {@link cardEffectsOn}).
  */
 const isActivable = (rules: Rules, player: number, cell: XYCoordinates): boolean => {
   const card = cardEffectsOn(rules, player, cell)
@@ -76,7 +76,7 @@ export const activateTile = (rule: PlayerTurnRule<number, MaterialType, Location
 /**
  * The squares a Cat card copying the opponent may pick: the squares of the zone of the round that hold a card of
  * that opponent with something to give, whether they have activated it yet or not.
- * A card whose effects are not written down yet is left out, exactly as it is when a square is activated.
+ * A card showing a face that prints nothing is left out, exactly as it is when a square is activated.
  */
 export const copiableCells = (rules: Rules, player: number): XYCoordinates[] => {
   const zone = roundZone(rules)

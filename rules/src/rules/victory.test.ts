@@ -116,9 +116,10 @@ const play = (rules: LedaRules, card: ClanCardId, cell: XYCoordinates) => {
 }
 
 /**
- * A card put in play straight from the hand, for the 2 ways of doing it that the rules do not offer yet: the
- * Awakening of a Gold Panda, and a Ring, which is played for free as soon as its own condition is met and whose
- * conditions are still to be written (see {@link ClanCardProperties}).
+ * A card put in play straight from the hand, which is the shortcut these tests take to the 2 ways of doing it
+ * that are a step of their own: the Awakening of a Gold Panda and the window a Ring is put in play in. What is
+ * being tested here is the victory a card in play wins, and each of those 2 steps is tested where it belongs
+ * (see {@link AwakeningRule} and {@link rings.test}).
  */
 const playFromHand = (rules: LedaRules, card: ClanCardId, cell: XYCoordinates) => {
   const [index] = rules

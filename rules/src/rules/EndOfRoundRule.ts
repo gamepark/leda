@@ -17,8 +17,6 @@ const roundsPerCycle = 4
  * Once the 4th tile has been revealed the cycle ends: the 5 tiles are shuffled back into a face down pile, and
  * the player who controls the fewest Victory symbols opens the next cycle instead. A tie leaves the players
  * taking turns as usual, which hands the next round to whoever opened the cycle that just ended.
- *
- * TODO: phase 3, the organisation, is played by both players before this.
  */
 export class EndOfRoundRule extends MaterialRulesPart<number, MaterialType, LocationType> {
   onRuleStart(): Move[] {

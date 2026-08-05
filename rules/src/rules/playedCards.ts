@@ -67,8 +67,8 @@ export const cardEffectsOn = (rules: Rules, player: number, cell: XYCoordinates)
 }
 
 /**
- * The cards an "activate one of your cards in play" effect may pick, which the Panda Queen is the only card to
- * give so far. The covered cards are left out, exactly as they are when a square is activated.
+ * The cards an "activate one of your cards in play" effect may pick, which the Panda Queen is the only card of
+ * the box to give. The covered cards are left out, exactly as they are when a square is activated.
  *
  * A card that would activate a card is left out too: with 1 Queen per clan that means the Queen herself, and
  * activating her over and over is not something the rulebook ever asks a player to stop doing.

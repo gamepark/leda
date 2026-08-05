@@ -13,8 +13,11 @@ import { CustomMoveType } from './CustomMoveType'
 import { Memory } from './Memory'
 import { RuleId } from './RuleId'
 
-/** A card of the player in play, on the square of the zone of the round whose x it is given. */
-type Played = { card: ClanCardId; x: number }
+/**
+ * A card of the player in play, on the square of the zone of the round whose x it is given. Showing its blank
+ * second face unless the test asks for the first one, which is the one that gives something when activated.
+ */
+type Played = { card: ClanCardId; x: number; rotated?: boolean }
 
 type Setup = {
   /** The cards the player has on the zone of the round, which is the first row of their grid. */
@@ -90,9 +93,9 @@ const game = ({ cards = [], hand = [], deck = 0, upgraded = 0, symbols = { 1: 0,
     ],
     [MaterialType.ClanCard]: [
       // Played on their square showing their blank second face, so that the zone stays one square long to activate.
-      ...cards.map(({ card, x }) => ({
+      ...cards.map(({ card, x, rotated = true }) => ({
         id: { front: card, back: Clan.Cat },
-        location: { type: LocationType.PlayedCard, player: 1, parent: tileIndex({ x, y: 0 }), rotation: true }
+        location: { type: LocationType.PlayedCard, player: 1, parent: tileIndex({ x, y: 0 }), rotation: rotated }
       })),
       ...hand.map((front, x) => ({ id: { front, back: Clan.Cat }, location: { type: LocationType.PlayerHand, player: 1, x } })),
       ...Array.from({ length: deck }, (_, x) => ({ id: { front: ClanCardId.CatDrawAndFood, back: Clan.Cat }, location: { type: LocationType.PlayerDeck, player: 1, x } }))
@@ -229,6 +232,15 @@ describe('The Blue Ring', () => {
   it('is put in play on an empty deck', () => {
     const rules = new LedaRules(game({ hand: [ClanCardId.CatRingEmptyDeck], deck: 0 }))
     endActivation(rules)
+    expect(offeredRings(rules)).toEqual([ClanCardId.CatRingEmptyDeck])
+  })
+
+  it('is put in play on a deck the activation itself empties', () => {
+    // The last card of the deck is drawn by the very square the player ends their zone on: the deck is empty by
+    // the time they are done activating, which is when the window is opened.
+    const rules = new LedaRules(game({ cards: [{ card: ClanCardId.CatDrawAndFood, x: 1, rotated: false }], hand: [ClanCardId.CatRingEmptyDeck], deck: 1 }))
+    endActivation(rules)
+    expect(rules.material(MaterialType.ClanCard).location(LocationType.PlayerDeck).player(1)).toHaveLength(0)
     expect(offeredRings(rules)).toEqual([ClanCardId.CatRingEmptyDeck])
   })
 

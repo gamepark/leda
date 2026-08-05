@@ -4,7 +4,7 @@ import { MaterialType } from '../material/MaterialType'
 import { tileAt } from '../material/PlayerGrid'
 import { activableCells, activateCard, activateTile, afterActivation } from './activation'
 import { CustomMoveType } from './CustomMoveType'
-import { pendingRules, queueLast, startNextRule } from './effects'
+import { queueLast, startNextRule } from './effects'
 import { Memory } from './Memory'
 import { cardEffectsOn } from './playedCards'
 import { canPlaceRing } from './rings'
@@ -44,8 +44,10 @@ export class ActivateZoneRule extends PlayerTurnRule<number, MaterialType, Locat
     // Remembered before the effects are resolved, so that what is left to activate is read against this square done.
     this.memorize<XYCoordinates[]>(Memory.ActivatedCells, (cells) => [...cells, cell], this.player)
     const moves = this.activate(cell)
-    // What the square asked the player is answered first, and this rule is what takes over once it all is.
-    if (pendingRules(this).length === 0) return [...moves, ...this.nextStep()]
+    // What the square asked the player is answered first, and this rule is what takes over once it all is. It takes
+    // over the same way when the square asked nothing: what it gave is given by moves that are played after this
+    // one, so a step read here would be read on a game the activation has not happened in yet, and the deck the
+    // Blue Ring asks to be empty would still hold the card the square has just drawn (see {@link nextStep}).
     queueLast(this, RuleId.ActivateZone)
     return [...moves, ...startNextRule(this)]
   }

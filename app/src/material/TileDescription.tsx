@@ -4,6 +4,7 @@ import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { cellOf } from '@gamepark/leda/material/PlayerGrid'
 import { TileId } from '@gamepark/leda/material/TileId'
 import { isActivationPhase, isCellOfActivatedZone } from '@gamepark/leda/rules/activation'
+import { swappingPlayer } from '@gamepark/leda/rules/swap'
 import { CardDescription, ItemContext } from '@gamepark/react-game'
 import { MaterialItem, MaterialMoveBuilder } from '@gamepark/rules-api'
 import PermanentDrawFront from '../images/tiles/recto/permanent-draw.jpg'
@@ -86,9 +87,15 @@ export class TileDescription extends CardDescription<number, MaterialType, Locat
    * opens along the way included: the phase is not over, and the player has to keep seeing where they are.
    * Unlike the css below, this is read by the parent of the item on every render, so it is refreshed for every
    * square as soon as the rules move on, and not only for the squares whose own item changed.
+   *
+   * Except while a player is being asked to swap 2 of their squares, which a Scorpion Portal asks in the middle of
+   * that very activation: nothing is said of any square then, in either grid, and what the framework shines on its
+   * own is exactly what is being asked, the squares it has a move for. Saying no here would be saying it of the
+   * whole grid to be swapped as well, and turn that shine off with it (see {@link isCellOfActivatedZone}).
    */
   highlight(item: MaterialItem<number, LocationType, TileId>, context: ItemContext<number, MaterialType, LocationType>) {
     if (!isActivationPhase(context.rules) || item.location.type !== LocationType.PlayerGrid) return undefined
+    if (swappingPlayer(context.rules) !== undefined) return undefined
     return isCellOfActivatedZone(context.rules, cellOf(item.location))
   }
 

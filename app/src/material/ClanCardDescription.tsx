@@ -5,7 +5,7 @@ import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { cellOf } from '@gamepark/leda/material/PlayerGrid'
 import { isCellOfActivatedZone } from '@gamepark/leda/rules/activation'
-import { organisingPlayer } from '@gamepark/leda/rules/organisation'
+import { swappingPlayer } from '@gamepark/leda/rules/swap'
 import { CardDescription, ItemContext, MaterialContext } from '@gamepark/react-game'
 import { MaterialItem } from '@gamepark/rules-api'
 import CatBack from '../images/cards/cat/back.jpg'
@@ -163,10 +163,10 @@ export class ClanCardDescription extends CardDescription<number, MaterialType, L
   }
 
   /**
-   * While a player organises their grid, the cards they played on it let the pointer through: a square is taken
-   * by dragging its tile, which is exactly what these cards cover, and dropped onto a square just the same.
-   * Only for as long as the phase lasts, so that a card is clickable again, help dialog included, as soon as
-   * there is nothing to drag underneath it.
+   * While a player may swap 2 of their squares, the cards they played on their grid let the pointer through: a
+   * square is taken by dragging its tile, which is exactly what these cards cover, and dropped onto a square just
+   * the same. Only for as long as the swap is being asked, so that a card is clickable again, help dialog
+   * included, as soon as there is nothing to drag underneath it.
    */
   getItemExtraCss(item: MaterialItem<number, LocationType, ClanCardItemId>, context: ItemContext<number, MaterialType, LocationType>) {
     return this.coversATileToDrag(item, context) ? letTheTileThrough : undefined
@@ -183,9 +183,15 @@ export class ClanCardDescription extends CardDescription<number, MaterialType, L
     return this.coversATileToDrag(item, context) || this.coversAnActivatedSquare(item, context) || undefined
   }
 
-  /** Whether the card is played on a square of the grid its owner is organising, hence on a tile they may swap. */
+  /**
+   * Whether the card is played on a square the player watching is being asked to swap, hence on a tile they may
+   * drag: while they organise their grid, and while a Scorpion Portal has them swap 2 squares
+   * (see {@link swappingPlayer}). Their own grid and their own screen alone: there is nothing to drag out of a
+   * grid one is only watching, where a card stays clickable and shines no more than the tile it covers.
+   */
   coversATileToDrag(item: MaterialItem<number, LocationType, ClanCardItemId>, context: ItemContext<number, MaterialType, LocationType>): boolean {
-    return item.location.type === LocationType.PlayedCard && organisingPlayer(context.rules) === item.location.player
+    if (item.location.type !== LocationType.PlayedCard || item.location.player !== context.player) return false
+    return swappingPlayer(context.rules) === item.location.player
   }
 
   /**

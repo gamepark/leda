@@ -11,6 +11,7 @@ import { pendingRules, resolveEffects } from './effects'
 import { Memory } from './Memory'
 import { cardEffectsOn } from './playedCards'
 import { RuleId } from './RuleId'
+import { swappingPlayer } from './swap'
 
 /**
  * What a player may still do while the zone is being activated. The app reads it to know which squares and tiles
@@ -31,9 +32,14 @@ export const isActivationPhase = (rules: Rules): boolean =>
 /**
  * Whether a square belongs to the zone being activated, in the grid of either player: what the app shines for as
  * long as the phase lasts, on the tile of the square and on everything laid over it alike.
+ *
+ * Except while a player is being asked to swap 2 of their squares, which a Scorpion Portal asks in the middle of
+ * that very activation (see {@link swappingPlayer}): the zone stops shining, in both grids, so that the only thing
+ * left shining is what may be dragged. What is being asked then is not about the zone, and a table saying
+ * otherwise would point at the 4 squares of it while all 16 may be moved.
  */
 export const isCellOfActivatedZone = (rules: Rules, cell: XYCoordinates): boolean => {
-  if (!isActivationPhase(rules)) return false
+  if (!isActivationPhase(rules) || swappingPlayer(rules) !== undefined) return false
   const zone = roundZone(rules)
   return zone !== undefined && zoneContains(zone, cell)
 }

@@ -8,10 +8,12 @@ import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { MilitaryVictoryTokenId } from '../material/MilitaryVictoryTokenId'
 import { TileId } from '../material/TileId'
+import { isCellOfActivatedZone } from './activation'
 import { CustomMoveType } from './CustomMoveType'
 import { cardDiscount, pendingRules } from './effects'
 import { Memory } from './Memory'
 import { RuleId } from './RuleId'
+import { swappingPlayer } from './swap'
 
 /**
  * What every square of a grid holds when the test does not say otherwise: a Desert, which gives nothing when the
@@ -346,6 +348,26 @@ describe('The Scorpion Portals', () => {
     const corner = rules.material(MaterialType.Tile).location((location) => location.player === 1 && location.x === elsewhere[0].x && location.y === elsewhere[0].y)
     expect(corner.length).toBe(1)
     expect(pendingRules(rules)).toEqual([])
+  })
+
+  /**
+   * What the table reads to let a tile be taken from under the cards played on it, and to shine on the squares
+   * that may be moved rather than on the zone being activated (see {@link swappingPlayer}).
+   */
+  it('has the table offer the whole grid of its owner while it asks', () => {
+    const rules = new LedaRules(game({ cards: [{ card: ClanCardId.ScorpionPortalSwap, cell: played }] }))
+    // Nothing to swap while the zone is simply being activated, and the zone shines.
+    expect(swappingPlayer(rules)).toBeUndefined()
+    expect(isCellOfActivatedZone(rules, played)).toBe(true)
+    activate(rules, played)
+    expect(rules.game.rule?.id).toBe(RuleId.SwapSquares)
+    expect(swappingPlayer(rules)).toBe(1)
+    // The zone stops shining while the swap is asked: the 4 squares of it are not what is being pointed at.
+    expect(isCellOfActivatedZone(rules, played)).toBe(false)
+    // And once the swap is made, the activation goes on where it was.
+    playAll(rules, rules.getLegalMoves(1).filter(isMoveItemType(MaterialType.Tile))[0])
+    expect(swappingPlayer(rules)).toBeUndefined()
+    expect(isCellOfActivatedZone(rules, played)).toBe(true)
   })
 
   it('closes the round to Military Victory tokens, for both players', () => {

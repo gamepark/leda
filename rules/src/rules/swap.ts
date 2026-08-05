@@ -2,6 +2,7 @@ import { MaterialMove, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { cellOf, gridTiles, tileAt } from '../material/PlayerGrid'
+import { RuleId } from './RuleId'
 
 /** All these helpers need, which a part of the rules and the MaterialRules instance of the app both satisfy. */
 type Rules = Pick<MaterialRules<number, MaterialType, LocationType>, 'game' | 'material'>
@@ -17,6 +18,15 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  * other way round. The cards played on a square follow their tile on their own, being parented to it, which is
  * what makes a swap move "cards or tiles" while only ever moving tiles.
  */
+
+/**
+ * The player who may swap 2 of their own squares right now, if any: the one organising their grid, and the one a
+ * Scorpion Portal is asking (see {@link OrganisationRule} and {@link SwapSquaresRule}). The 2 are one and the same
+ * question for the table, which has to let a tile be taken from under the cards played on it and to shine on the
+ * squares that may be moved, and both rules answer a swap with the very same drag.
+ */
+export const swappingPlayer = (rules: Rules): number | undefined =>
+  rules.game.rule?.id === RuleId.Organisation || rules.game.rule?.id === RuleId.SwapSquares ? rules.game.rule.player : undefined
 
 /** Every swap of the grid, in both directions: a tile taken to the square of any other tile. */
 export const swapMoves = (rules: Rules, player: number): Move[] => {

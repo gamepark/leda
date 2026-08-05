@@ -3,7 +3,10 @@ import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { militaryVictoryEffects, MilitaryVictoryTokenId } from '../material/MilitaryVictoryTokenId'
 import { EffectRule } from './EffectRule'
-import { canWinMilitaryVictory, resolveEffects } from './effects'
+import { canWinMilitaryVictory, queueFirstRule, resolveEffects } from './effects'
+import { isMilitaryConflictPhase } from './militaryConflict'
+import { canPlaceRing } from './rings'
+import { RuleId } from './RuleId'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
@@ -23,11 +26,21 @@ export class MilitaryVictoryRule extends EffectRule {
     return this.deck.limit(1).moveItems({ type: LocationType.PlayerMilitaryVictory, player: this.player })
   }
 
+  /**
+   * The token is in front of its winner, and what it gives on its own is gained here. What it asks them comes
+   * after the Rings of the Cats, which is where the Red Ring is put in play: the conflict it asks for has just
+   * been won, and that is the only moment it is ever true (see {@link PlaceRingRule}).
+   *
+   * The conflict of the round and nothing else: a token a card draws in the middle of an activation wins no
+   * conflict, and the Rings of that phase have their own window at the end of it.
+   */
   afterItemMove(move: ItemMove<number, MaterialType, LocationType>): Move[] {
     if (!isMoveItemType(MaterialType.MilitaryVictoryToken)(move)) return []
     if (move.location.type !== LocationType.PlayerMilitaryVictory) return []
     const token = this.material(MaterialType.MilitaryVictoryToken).getItem<MilitaryVictoryTokenId>(move.itemIndex)
-    return [...resolveEffects(this, militaryVictoryEffects[token.id] ?? {}), ...this.resume()]
+    const moves = resolveEffects(this, militaryVictoryEffects[token.id] ?? {})
+    if (isMilitaryConflictPhase(this) && canPlaceRing(this, this.player)) queueFirstRule(this, RuleId.PlaceRing)
+    return [...moves, ...this.resume()]
   }
 
   /** deck() draws from the highest x, which is the top of the pile the DeckLocator stacks. */

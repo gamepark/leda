@@ -131,6 +131,10 @@
     "rotate-cat-card": {
       "you": "Pivotez une de vos cartes Chat ou <decline>passez</decline>",
       "player": "{player} peut pivoter une de ses cartes Chat"
+    },
+    "place-ring": {
+      "you": "Posez un Anneau sur une case de votre plateau ou <decline>passez</decline>",
+      "player": "{player} peut poser un Anneau sur son plateau"
     }
   }
 }

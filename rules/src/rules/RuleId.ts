@@ -138,5 +138,12 @@ export enum RuleId {
    * A step of phase 1 for that clan alone, hence its place down here rather than after the activation it follows:
    * what a clan does on its own has no business in the flow every game goes through.
    */
-  Awakening
+  Awakening,
+
+  /**
+   * The Rings a player of the Cats may put in play for free, each of them under a condition of its own
+   * (see {@link rings}). Where the Awakenings are for the Pandas, a step of phase 1 for that clan alone, and the
+   * one rule that opens a second time in a round: the Red Ring asks for a conflict won, which phase 2 settles.
+   */
+  PlaceRing
 }

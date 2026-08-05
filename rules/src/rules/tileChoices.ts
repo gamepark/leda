@@ -20,6 +20,15 @@ export const upgradableTiles = (rules: Rules, player: number) => {
   return tiles.id<TileId>(isPermanent).rotation<boolean | undefined>((rotation) => rotation !== true)
 }
 
+/**
+ * The tiles of a player already showing their upgraded face, which is what the Orange Ring of the Cats counts.
+ * Covered tiles are counted too: a card hides what a tile gives, and not the fact that it was upgraded.
+ */
+export const upgradedTiles = (rules: Rules, player: number) => {
+  const tiles = gridTiles(rules.material(MaterialType.Tile), player)
+  return tiles.id<TileId>(isPermanent).rotation(true)
+}
+
 /** The Deserts of a player: their temporary tiles, already activated, now showing the back that reminds them. */
 export const deserts = (rules: Rules, player: number) => {
   const tiles = gridTiles(rules.material(MaterialType.Tile), player)

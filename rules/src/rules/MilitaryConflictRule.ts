@@ -19,7 +19,11 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  * always the one who organises first (see {@link StartOrganisationRule}).
  */
 export class MilitaryConflictRule extends MaterialRulesPart<number, MaterialType, LocationType> {
-  /** A Scorpion Portal may have closed the round to Military Victory tokens, and then nobody wins the conflict. */
+  /**
+   * A Scorpion Portal may have closed the round to Military Victory tokens, and then the conflict has no winner at
+   * all: nobody may win one, so there is nothing to win and nothing was won. That is what the Red Ring of the Cats
+   * asks for, so a round closed that way leaves it in the hand of its owner (see {@link ringPlacements}).
+   */
   onRuleStart(): Move[] {
     const winner = conflictWinner(this)
     if (winner === undefined || !this.deck.length || !canWinMilitaryVictory(this)) return [this.startRule(RuleId.StartOrganisation)]

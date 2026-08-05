@@ -140,9 +140,10 @@ export const rotateCatCard = (
 }
 
 /**
- * What follows a player being done with phase 1, their Awakenings resolved: their opponent activates the same zone
- * of their own grid, and once both have, the round moves on to the military conflict.
- * Shared by the two rules a player may be done in, the activation itself and the Awakenings that close it.
+ * What follows a player being done with phase 1, whatever their clan closed it with: their opponent activates the
+ * same zone of their own grid, and once both have, the round moves on to the military conflict.
+ * Shared by the rules a player may be done in: the activation itself, the Awakenings of the Pandas, and the Rings
+ * of the Cats (see {@link AwakeningRule} and {@link PlaceRingRule}).
  */
 export const afterActivation = (rule: PlayerTurnRule<number, MaterialType, LocationType>): MaterialMove<number, MaterialType, LocationType>[] =>
   rule.player === rule.remind<number>(Memory.RoundPlayer)

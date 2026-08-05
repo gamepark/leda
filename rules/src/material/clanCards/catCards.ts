@@ -101,14 +101,20 @@ export const catCards = {
 } satisfies Partial<Record<ClanCardId, ClanCardProperties>>
 
 /** The 4 Rings, which are Cat cards like the others until 3 of them are in play. */
-export const rings: ClanCardId[] = [
+export const rings = [
   ClanCardId.CatRingWinConflictByThree,
   ClanCardId.CatRingEmptyDeck,
   ClanCardId.CatRingThreeCatCards,
   ClanCardId.CatRingFiveUpgradedTiles
-]
+] as const
 
-export const isRing = (card: ClanCardId): boolean => rings.includes(card)
+/**
+ * One of the 4, as a type of its own: each of them is put in play by a condition of its own, and naming them makes
+ * that table exhaustive rather than a lookup that may come back empty (see {@link ringConditions}).
+ */
+export type Ring = (typeof rings)[number]
+
+export const isRing = (card: ClanCardId): card is Ring => (rings as readonly ClanCardId[]).includes(card)
 
 /**
  * The Rings a player still has in their deck, worked out rather than looked up: a deck is shuffled and hidden from

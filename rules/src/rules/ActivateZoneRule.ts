@@ -7,6 +7,7 @@ import { CustomMoveType } from './CustomMoveType'
 import { pendingRules, queueLast, startNextRule } from './effects'
 import { Memory } from './Memory'
 import { cardEffectsOn } from './playedCards'
+import { canPlaceRing } from './rings'
 import { RuleId } from './RuleId'
 import { awakenings } from './specialActivation'
 
@@ -62,13 +63,16 @@ export class ActivateZoneRule extends PlayerTurnRule<number, MaterialType, Locat
   }
 
   /**
-   * Nothing happens until the player has activated everything they could. Then come the Awakenings they gathered
-   * along the way, which the rulebook puts after all the other activations, and which hand the game over on their
-   * own once they are all resolved (see {@link AwakeningRule}).
+   * Nothing happens until the player has activated everything they could. Then comes what their clan does once the
+   * zone is done, which the rulebook puts after all the other activations: the Awakenings the Pandas gathered
+   * along the way, or the Rings the Cats may put in play (see {@link AwakeningRule} and {@link PlaceRingRule}).
+   * Both hand the game over on their own once they are resolved, and no player is ever offered the two: a player
+   * has one clan, and the Awakenings of the other one are never theirs to gather.
    */
   nextStep(): Move[] {
     if (this.activableCells.length > 0) return []
     if (awakenings(this, this.player) > 0) return [this.startRule(RuleId.Awakening)]
+    if (canPlaceRing(this, this.player)) return [this.startRule(RuleId.PlaceRing)]
     return afterActivation(this)
   }
 }

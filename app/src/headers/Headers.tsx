@@ -15,6 +15,7 @@ import { FlipDesertHeader } from './FlipDesertHeader'
 import { MulliganHeader } from './MulliganHeader'
 import { OrganisationHeader } from './OrganisationHeader'
 import { PayCardCostHeader } from './PayCardCostHeader'
+import { PlaceRingHeader } from './PlaceRingHeader'
 import { PlaceSharkTokenHeader } from './PlaceSharkTokenHeader'
 import { PlayCardHeader } from './PlayCardHeader'
 import { RedrawMilitaryVictoryHeader } from './RedrawMilitaryVictoryHeader'
@@ -55,5 +56,6 @@ export const Headers: Partial<Record<RuleId, ComponentType>> = {
   [RuleId.SearchRing]: SearchRingHeader,
   [RuleId.SpendRingForToken]: SpendRingForTokenHeader,
   [RuleId.RotateCatCard]: RotateCatCardHeader,
-  [RuleId.Awakening]: AwakeningHeader
+  [RuleId.Awakening]: AwakeningHeader,
+  [RuleId.PlaceRing]: PlaceRingHeader
 }

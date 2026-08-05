@@ -2,7 +2,7 @@ import { isMoveItemType, ItemMove, MaterialMove } from '@gamepark/rules-api'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { EffectRule } from './EffectRule'
-import { flippableDeserts } from './tileChoices'
+import { visibleDeserts } from './tileChoices'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
@@ -11,7 +11,7 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  * activable again. Only a Military Victory token gives it for now.
  */
 export class FlipDesertRule extends EffectRule {
-  /** "If possible": a player whose temporary tiles all show their front has no Desert to turn back. */
+  /** "If possible": a player whose temporary tiles all show their front, or lie under a card, has no Desert to turn back. */
   onRuleStart(): Move[] {
     return this.deserts.length > 0 ? [] : this.resume()
   }
@@ -21,7 +21,7 @@ export class FlipDesertRule extends EffectRule {
   }
 
   get deserts() {
-    return flippableDeserts(this, this.player)
+    return visibleDeserts(this, this.player)
   }
 
   afterItemMove(move: ItemMove<number, MaterialType, LocationType>): Move[] {

@@ -35,9 +35,6 @@ export const deserts = (rules: Rules, player: number) => {
   return tiles.id<TileId>((tile) => !isPermanent(tile)).rotation(true)
 }
 
-/** What a Flip may turn back: every Desert of the player, a Desert always being worth turning back. */
-export const flippableDeserts = deserts
-
 /**
  * The tiles a card covers. A card covers the tile of its square, so what that tile shows is off the table for as
  * long as the card is there: it is neither counted by what reads the grid nor reached by what activates a square.

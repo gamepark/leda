@@ -2,14 +2,15 @@ import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { cellOf } from '@gamepark/leda/material/PlayerGrid'
 import { SharkSlot } from '@gamepark/leda/material/SharkSlot'
-import { sharkSlotOn } from '@gamepark/leda/rules/sharkPack'
 import { actionTileRoundPlayer } from '@gamepark/leda/rules/round'
+import { sharkSlotOn } from '@gamepark/leda/rules/sharkPack'
 import { DeckLocator, HandLocator, ItemContext, ListLocator, Locator, MaterialContext, ParentFace, PileLocator } from '@gamepark/react-game'
-import { Coordinates, Location, MaterialItem } from '@gamepark/rules-api'
+import { Coordinates, isMoveItem, Location, MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import { actionTile } from '../material/ActionTileDescription'
 import { FoodSupplyDescription } from '../material/FoodSupplyDescription'
 import { foodToken } from '../material/FoodTokenDescription'
 import { militaryVictoryToken } from '../material/MilitaryVictoryTokenDescription'
+import { PlayerDeckDescription } from '../material/PlayerDeckDescription'
 import { sharkToken } from '../material/SharkTokenDescription'
 import { tileSize } from '../material/TileDescription'
 
@@ -123,8 +124,7 @@ const militaryVictoryRow = (y: number) => (y - tokenColumnTop - militaryVictoryT
 const militaryVictoryOverflow = (player: number | undefined, context: MaterialContext) =>
   Math.max(
     0,
-    context.rules.material(MaterialType.MilitaryVictoryToken).location(LocationType.PlayerMilitaryVictory).player(player).length -
-      militaryVictoryFirstColumn
+    context.rules.material(MaterialType.MilitaryVictoryToken).location(LocationType.PlayerMilitaryVictory).player(player).length - militaryVictoryFirstColumn
   )
 
 /**
@@ -236,7 +236,7 @@ class SpiedItemLocator extends Locator {
 }
 
 /** Where the pile an item was taken from sits, so that looking at one of its items moves nothing. */
-const pileCoordinates = (type: MaterialType, player: number, context: MaterialContext): Partial<Coordinates> => {
+const pileCoordinates = (type: MaterialType, player: number | undefined, context: MaterialContext): Partial<Coordinates> => {
   switch (type) {
     case MaterialType.ActionTile:
       return actionTileDeck
@@ -244,6 +244,26 @@ const pileCoordinates = (type: MaterialType, player: number, context: MaterialCo
       return militaryVictoryDeck
     default:
       return { x: playerSide(player, context) * sideColumnX, y: gridRowY(3) }
+  }
+}
+
+/**
+ * Where an item that goes back under a pile comes in from: flat on the table, half of it out from under the pile,
+ * so that the last thing it does is slide under it and disappear. A player's deck is come at from below and the 2
+ * piles of the middle column from the right: those are the sides the table leaves free next to each of them, and
+ * half an item is all the room there is anyway.
+ * Read by the animation of that move alone (see the trajectory of gameAnimations): nothing ever rests here.
+ */
+export const underPileApproach = (move: MaterialMove<number, MaterialType, LocationType>, context: MaterialContext): Partial<Coordinates> | undefined => {
+  if (!isMoveItem(move)) return undefined
+  const { x = 0, y = 0 } = pileCoordinates(move.itemType, move.location.player, context)
+  switch (move.itemType) {
+    case MaterialType.ActionTile:
+      return { x: x + actionTile.width + 1, y, z: 0 }
+    case MaterialType.MilitaryVictoryToken:
+      return { x: x + militaryVictoryToken.width + 1, y, z: 0 }
+    default:
+      return { x, y: y - tileSize - 1, z: 0 }
   }
 }
 
@@ -314,7 +334,11 @@ class PlacedSharkTokenLocator extends Locator {
   parentFace = ParentFace.Up
 
   getItemCoordinates(item: MaterialItem<number, LocationType>, context: ItemContext<number, MaterialType, LocationType>): Partial<Coordinates> {
-    return { x: this.slot(item.location, context) === SharkSlot.Left ? -sharkSlotX : sharkSlotX, y: sharkSlotY, z: this.cardsUnder(item.location, context) * cardThickness }
+    return {
+      x: this.slot(item.location, context) === SharkSlot.Left ? -sharkSlotX : sharkSlotX,
+      y: sharkSlotY,
+      z: this.cardsUnder(item.location, context) * cardThickness
+    }
   }
 
   slot(location: Location, context: MaterialContext): SharkSlot | undefined {
@@ -368,6 +392,32 @@ class PlayerSpotLocator extends Locator {
 
   getCoordinates(location: Location, context: MaterialContext) {
     return { x: playerSide(location.player, context) * this.anchorX, y: this.anchorY }
+  }
+}
+
+/**
+ * The deck of a player, at the bottom of their side column, lined up with the last row of their grid.
+ *
+ * Its cards are stacked one card thickness above the next rather than laid on one another: a pile is worth
+ * reading as a pile, and above all a card put back under the deck has to land below every card it holds, or
+ * nothing would say which of them is on top of which (see {@link underPileApproach}).
+ * They are stacked straight up, unlike the 2 piles of the middle column, which are staggered a little on x and y
+ * as well: the deck stays lined up with the row of the grid it answers to, however many cards are left in it.
+ */
+class PlayerDeckLocator extends DeckLocator {
+  /** Only 10 cards are drawn however many the deck holds: a deeper stack costs DOM nodes for 0.05 cm each. */
+  limit = 10
+  gap = { x: 0, y: 0, z: cardThickness }
+
+  locationDescription = new PlayerDeckDescription()
+
+  getCoordinates(location: Location, context: MaterialContext) {
+    return { x: playerSide(location.player, context) * sideColumnX, y: gridRowY(3) }
+  }
+
+  /** The 2 decks are always on the table, each carrying the count of the cards left in it. */
+  getLocations(context: MaterialContext) {
+    return context.rules.players.map((player) => ({ type: LocationType.PlayerDeck, player }))
   }
 }
 
@@ -494,7 +544,7 @@ export const Locators: Partial<Record<LocationType, Locator<number, MaterialType
 
   /** The side column: the clan card at the top and the deck at the bottom, each lined up with a row of the grid. */
   [LocationType.PlayerVictoryCondition]: new PlayerSpotLocator(sideColumnX, gridRowY(0)),
-  [LocationType.PlayerDeck]: Object.assign(new PlayerSpotLocator(sideColumnX, gridRowY(3)), { limit: 10 }),
+  [LocationType.PlayerDeck]: new PlayerDeckLocator(),
 
   /**
    * The 2 columns of tokens between the 2, on the quarters of the card above them (see {@link tokenColumnTop}).

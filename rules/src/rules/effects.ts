@@ -4,6 +4,7 @@ import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { Rules } from '../Rules'
 import { Memory } from './Memory'
+import { rotateCard } from './playedCards'
 import { RuleId } from './RuleId'
 import { playerClan, specialActivationEffects } from './specialActivation'
 
@@ -134,6 +135,11 @@ const resolve = (rule: Rule, effect: Effect, quantity: number, asked: Asked, sou
       rule.memorize(Memory.EffectPlayer, player)
       asked.rules.push(...times(quantity, RuleId.DowngradeTile))
       return []
+    case Effect.HalfTurn:
+      // The card taking it is the one that gave it, which is to say the card on the square the effects were read
+      // on, in the grid they were read in: a card copied is turned in its owner's grid and not in the copier's.
+      // Given once however many times it is given: a card has 2 faces, and turning it twice is turning nothing.
+      return source.cell === undefined ? [] : rotateCard(rule, source.owner ?? player, source.cell)
     case Effect.BlockMilitaryVictory:
       // Nothing to ask and nothing to move: the round simply stops handing tokens out (see {@link canWinMilitaryVictory}).
       rule.memorize(Memory.MilitaryVictoryBlocked, true)

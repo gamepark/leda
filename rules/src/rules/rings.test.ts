@@ -33,9 +33,6 @@ type Setup = {
   blocked?: boolean
 }
 
-/** The one square of the zone that is worth activating: the 3 others are Deserts (see {@link game}). */
-const lastSquare: XYCoordinates = { x: 0, y: 0 }
-
 /** A card names the tile it covers by its index: the 16 tiles of the player come first, then the 16 of the opponent. */
 const tileIndex = (cell: XYCoordinates) => cell.y * 4 + cell.x
 
@@ -57,7 +54,10 @@ const grid = (upgraded: number) =>
     })
   )
 
-/** Any Cat card with nothing on its second face, so that a square holding one is a square with nothing to activate. */
+/**
+ * Any Cat card with nothing on its second face, played on that face: activating its square gives nothing but the
+ * half turn back onto its first one, so a test may hold cards in the zone without gaining anything from them.
+ */
 const blankCard = ClanCardId.CatFoodAndMilitary
 
 /**
@@ -105,8 +105,17 @@ const playAll = (rules: LedaRules, move: MaterialMove<number, MaterialType, Loca
   for (const consequence of rules.play(move)) playAll(rules, consequence)
 }
 
-/** The player finishes activating their zone, which is the last square of it that is worth anything. */
-const endActivation = (rules: LedaRules) => playAll(rules, rules.customMove(CustomMoveType.ActivateSquare, lastSquare))
+/** The squares of the zone the player may still activate, in whatever order the rule offers them. */
+const activableSquares = (rules: LedaRules) =>
+  rules.game.rule?.id === RuleId.ActivateZone ? rules.getLegalMoves(1).filter(isCustomMoveType(CustomMoveType.ActivateSquare)) : []
+
+/**
+ * The player activates their whole zone, which is the one Food tile of the row and whichever cards the test put
+ * on it: a card on its blank face is activated too, for the half turn it gives back (see {@link blankCard}).
+ */
+const endActivation = (rules: LedaRules) => {
+  for (let [move] = activableSquares(rules); move !== undefined; [move] = activableSquares(rules)) playAll(rules, move)
+}
 
 /**
  * The conflict of the round, whoever the symbols hand it to: the winner takes the top token of the pile, if there

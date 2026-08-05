@@ -15,9 +15,10 @@ import { sharkCards } from './sharkCards'
 export const clanCardProperties: Record<ClanCardId, ClanCardProperties> = { ...pandaCards, ...sharkCards, ...catCards, ...scorpionCards }
 
 /**
- * One of the 2 effects a card may print, and nothing at all for a face that prints nothing: the 4 cheap Shark
- * cards outside of their Pack, and the Cat cards with a blank second face. Such a card leaves its square with
- * nothing to activate, since it covers its tile.
+ * One of the 2 effects a card may print, and nothing at all for a face that gives nothing: the 4 cheap Shark
+ * cards outside of their Pack. Such a card leaves its square with nothing to activate, since it covers its tile.
+ * A Cat card with a blank second face is not one of them: that face still gives its half turn, and its square is
+ * activated for it (see {@link Effect.HalfTurn}).
  *
  * Which of the 2 is the live one belongs to the clan of the card and not to the card itself, so it is asked of
  * the table rather than of this: `second` is the answer, not the question (see {@link cardEffectsOn}).

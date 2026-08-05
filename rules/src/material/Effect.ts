@@ -89,7 +89,15 @@ export enum Effect {
   SpendRingForToken,
 
   /** You may turn one of your Cat cards in play half a turn, onto the other of the 2 effects it prints. */
-  RotateCatCard
+  RotateCatCard,
+
+  /**
+   * The card giving it takes half a turn, onto the other of the 2 effects it prints: what every Cat card but the
+   * Rings gives on top of what it prints, and the whole of what a blank face gives.
+   * An effect rather than something the activation does to Cat cards, so that a face printing nothing else is a
+   * face worth activating still: turning the card back onto its other effect is what activating it is for.
+   */
+  HalfTurn
 }
 
 /**
@@ -112,10 +120,13 @@ export type Effects = Partial<Record<Effect, EffectQuantity>>
  * = 1 Food OR 1 Awakening", and what the crystal is worth is only readable beside the crystal itself.
  * `cell` is the square that gives them, when a square is what gives them: a Shark card counts the tokens around
  * its own square.
+ * `owner` is whose grid that square is in, when it is not the grid of the player resolving them: a card copied is
+ * read, and turned, where it stands, which is on the other side of the table (see {@link CopyOpponentCardRule}).
  */
 export type EffectSource = {
   from?: Effect
   cell?: XYCoordinates
+  owner?: number
 }
 
 /**
@@ -133,3 +144,6 @@ export const isEffectChoice = (effects: EffectSet): effects is EffectChoice => '
 
 /** Whether there is anything at all to resolve, which is what makes a square worth activating. */
 export const hasEffect = (effects: EffectSet): boolean => (isEffectChoice(effects) ? effects.or.length > 0 : Object.keys(effects).length > 0)
+
+/** Whether what is being read turns itself over once it has given the rest (see {@link Effect.HalfTurn}). */
+export const hasHalfTurn = (effects?: EffectSet): boolean => effects !== undefined && !isEffectChoice(effects) && effects[Effect.HalfTurn] !== undefined

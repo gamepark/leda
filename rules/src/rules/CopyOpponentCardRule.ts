@@ -16,8 +16,11 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  *
  * What is copied is what the card gives, read on their grid and against their square: a Shark card surrounded by
  * their tokens gives its Pack effect here too, and a Cat card gives whichever of its 2 effects is up over there.
- * The card itself is never touched — no Cat card of theirs is turned over by being copied, and nothing of theirs
- * is spent: the copy is resolved for the player holding this card, in their own grid.
+ * Everything it gives is copied, the half turn of a Cat card included: their card is turned over by being copied,
+ * exactly as activating it would have turned it (see {@link Effect.HalfTurn}).
+ *
+ * Nothing else of theirs is spent, and nothing else lands on their side: the copy is resolved for the player
+ * holding this card, in their own grid.
  */
 export class CopyOpponentCardRule extends EffectRule {
   /** An opponent with no card of their own in the zone leaves nothing to copy, and the effect is lost. */
@@ -45,9 +48,11 @@ export class CopyOpponentCardRule extends EffectRule {
     const effects = cardEffectsOn(this, this.opponent, cell)
     if (effects === undefined) return []
     /**
-     * The square handed to the effects is the one the card stands on in the opponent's grid, which is where it is
-     * read: a Shark card counting the tokens around it counts theirs, since theirs is the card being copied.
+     * The square handed to the effects is the one the card stands on in the opponent's grid, and it is handed over
+     * as theirs: that is where the card is read, a Shark card counting the tokens around it counting theirs, and
+     * that is where it is turned, a Cat card copied taking its half turn on their side of the table
+     * (see {@link Effect.HalfTurn}). Everything else is gained by the player copying it, in their own grid.
      */
-    return [...resolveEffects(this, effects, { cell }), ...this.resume()]
+    return [...resolveEffects(this, effects, { cell, owner: this.opponent }), ...this.resume()]
   }
 }

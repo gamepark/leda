@@ -1,9 +1,10 @@
 import { CustomMove, isCustomMoveType, isMoveItemType, ItemMove, MaterialMove, XYCoordinates } from '@gamepark/rules-api'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
-import { rotatableCells, rotateCatCard } from './activation'
+import { rotatableCells } from './activation'
 import { CustomMoveType } from './CustomMoveType'
 import { EffectRule } from './EffectRule'
+import { rotateCard } from './playedCards'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
@@ -37,7 +38,7 @@ export class RotateCatCardRule extends EffectRule {
     if (!isCustomMoveType<CustomMoveType, XYCoordinates>(CustomMoveType.RotateCatCard)(move)) return []
     const cell = move.data
     if (cell === undefined || !this.cells.some((rotatable) => rotatable.x === cell.x && rotatable.y === cell.y)) return []
-    return rotateCatCard(this, this.player, cell)
+    return rotateCard(this, this.player, cell)
   }
 
   /** The half turn is the whole of the effect: the game moves on as soon as the card has taken it. */

@@ -1,4 +1,4 @@
-import { XYCoordinates } from '@gamepark/rules-api'
+import { MaterialMove, XYCoordinates } from '@gamepark/rules-api'
 import { Clan } from '../Clan'
 import { ClanCardId, ClanCardItemId, clanOf } from '../material/ClanCardId'
 import { clanCardEffects } from '../material/clanCards/cardProperties'
@@ -36,7 +36,7 @@ export const topCardOn = (rules: Rules, player: number, cell: XYCoordinates): Cl
 
 /**
  * Which of the 2 effects a Cat card is showing: the second one once the card has been turned half a turn, which
- * is what activating it does (see {@link activateCard}). Every other clan reads the same thing every time.
+ * is what activating it gives (see {@link Effect.HalfTurn}). Every other clan reads the same thing every time.
  * The half turn is the rotation of the location, as it is for a tile, and it means the same thing: the face up.
  */
 const isRotated = (rules: Rules, player: number, cell: XYCoordinates): boolean => {
@@ -64,6 +64,20 @@ export const cardEffectsOn = (rules: Rules, player: number, cell: XYCoordinates)
   if (card === undefined) return undefined
   const read = clanCardReaders[clanOf(card)]
   return read === undefined ? clanCardEffects(card) : read(rules, player, cell, card)
+}
+
+/**
+ * The half turn a card takes, the one move there is to it: the rotation of the location is which of its 2 effects
+ * is up, and turning the card is flipping that. Which cards ever take it is not asked here, it is read off what
+ * they give (see {@link Effect.HalfTurn}): the effect turns the card that gave it, and a Ring turns the card its
+ * owner names.
+ */
+export const rotateCard = (rules: Rules, player: number, cell: XYCoordinates): MaterialMove<number, MaterialType, LocationType>[] => {
+  const index = topCardIndexOn(rules, player, cell)
+  if (index === undefined) return []
+  const cards = rules.material(MaterialType.ClanCard)
+  const rotated = cards.getItem(index).location.rotation === true
+  return [cards.index(index).moveItem((item) => ({ ...item.location, rotation: !rotated }))]
 }
 
 /**

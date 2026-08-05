@@ -153,10 +153,15 @@ describe('A Cat card', () => {
     expect(food(second)).toBe(3)
   })
 
-  it('leaves its square with nothing to activate while its blank face is up', () => {
+  it('is worth activating on its blank face, for the half turn that face gives', () => {
     const rules = new LedaRules(game({ cards: [{ card: ClanCardId.CatFoodAndMilitary, x: 0, rotated: true }] }))
-    // The 3 other squares of the zone, whose tiles are bare.
-    expect(rules.getLegalMoves(1).filter(isCustomMoveType(CustomMoveType.ActivateSquare))).toHaveLength(3)
+    // All 4 squares of the zone: the blank face gives its half turn and nothing else, which is enough.
+    expect(rules.getLegalMoves(1).filter(isCustomMoveType(CustomMoveType.ActivateSquare))).toHaveLength(4)
+    activate(rules, 0)
+    expect(food(rules)).toBe(0)
+    expect(military(rules)).toBe(0)
+    // Back onto its first face, ready to give it next round.
+    expect(isRotated(rules, 0)).toBe(false)
   })
 })
 
@@ -255,7 +260,7 @@ describe('The Cat cards that ask the player something', () => {
     expect(kept.material(MaterialType.MilitaryVictoryToken).location(LocationType.PlayerMilitaryVictory).length).toBe(0)
   })
 
-  it('copies a card of the opponent in the zone, without touching theirs', () => {
+  it('copies a card of the opponent in the zone, its owner gaining nothing from it', () => {
     const rules = new LedaRules(
       game({
         cards: [{ card: ClanCardId.CatCopyOpponentCard, x: 0 }],
@@ -270,6 +275,43 @@ describe('The Cat cards that ask the player something', () => {
     // The 2 Military of their card, gained by the player copying it and not by its owner.
     expect(military(rules, 1)).toBe(2)
     expect(military(rules, 2)).toBe(0)
+  })
+
+  /** Whether the card the opponent has played on that square is showing its second face. */
+  const isOpponentCardRotated = (rules: LedaRules) =>
+    rules.material(MaterialType.ClanCard).location(LocationType.PlayedCard).player(2).getItem()!.location.rotation === true
+
+  it('turns the Cat card of the opponent it copies, the way activating it would have', () => {
+    const rules = new LedaRules(
+      game({
+        cards: [{ card: ClanCardId.CatCopyOpponentCard, x: 0 }],
+        opponentCards: [{ card: ClanCardId.CatFoodAndMilitary, x: 1 }]
+      })
+    )
+    activate(rules, 0)
+    playAll(rules, rules.customMove(CustomMoveType.ActivateSquare, { x: 1, y: 0 }))
+    // What their card gives is gained here, and the half turn it takes is taken over there.
+    expect(food(rules)).toBe(1)
+    expect(military(rules)).toBe(1)
+    expect(isOpponentCardRotated(rules)).toBe(true)
+    // Their card being turned is no reason for this one not to take its own half turn, being a Cat card too.
+    expect(isRotated(rules, 0)).toBe(true)
+  })
+
+  it('copies a card of theirs showing a face that gives nothing but its half turn', () => {
+    const rules = new LedaRules(
+      game({
+        cards: [{ card: ClanCardId.CatCopyOpponentCard, x: 0 }],
+        opponentCards: [{ card: ClanCardId.CatFoodAndMilitary, x: 1, rotated: true }]
+      })
+    )
+    activate(rules, 0)
+    // Their blank face is a square they can activate, so it is a square this may copy.
+    expect(rules.game.rule?.id).toBe(RuleId.CopyOpponentCard)
+    playAll(rules, rules.customMove(CustomMoveType.ActivateSquare, { x: 1, y: 0 }))
+    expect(food(rules)).toBe(0)
+    expect(military(rules)).toBe(0)
+    expect(isOpponentCardRotated(rules)).toBe(false)
   })
 
   it('is lost when the opponent has no card in the zone', () => {

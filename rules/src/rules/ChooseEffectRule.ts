@@ -1,5 +1,5 @@
 import { CustomMove, isCustomMoveType, MaterialMove } from '@gamepark/rules-api'
-import { Effects } from '../material/Effect'
+import { EffectChoice, Effects } from '../material/Effect'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { CustomMoveType } from './CustomMoveType'
@@ -23,20 +23,28 @@ export class ChooseEffectRule extends EffectRule {
     return this.branches.map((_, branch) => this.customMove(CustomMoveType.ChooseEffect, branch))
   }
 
-  /** The branches of the choice being made, which is the first one waiting. */
+  /** The choice being made, which is the first one waiting. */
+  get choice(): EffectChoice | undefined {
+    return pendingChoices(this)[0]
+  }
+
+  /** The branches it offers. */
   get branches(): Effects[] {
-    return pendingChoices(this)[0]?.or ?? []
+    return this.choice?.or ?? []
   }
 
   /**
    * The branch picked is resolved like anything else, so it may ask the player something in turn, and what it
    * asks is answered before whatever this choice interrupted (see {@link resolveEffects}).
+   * It is read against what the choice was reached from, which the choice carries for that: a branch is part of
+   * what a square gives, and it is read on that square like the rest of it (see {@link EffectSource}).
    */
   onCustomMove(move: CustomMove): Move[] {
     if (!isCustomMoveType<CustomMoveType, number>(CustomMoveType.ChooseEffect)(move)) return []
+    const choice = this.choice
     const branch = move.data !== undefined ? this.branches[move.data] : undefined
-    if (branch === undefined) return []
+    if (choice === undefined || branch === undefined) return []
     forgetChoice(this)
-    return [...resolveEffects(this, branch), ...this.resume()]
+    return [...resolveEffects(this, branch, { cell: choice.cell, from: choice.from, owner: choice.owner }), ...this.resume()]
   }
 }

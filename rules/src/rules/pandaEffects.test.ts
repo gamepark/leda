@@ -61,11 +61,9 @@ describe('A card played on a square', () => {
   })
 
   it('leaves nothing to activate when the face it shows gives nothing', () => {
-    // A Cat card turned onto its second face, which this one leaves blank: it covers its tile all the same, so
-    // its square holds nothing to resolve and is not offered.
-    const state = game([ClanCardId.CatFoodAndMilitary])
-    state.items[MaterialType.ClanCard]![0].location.rotation = true
-    const rules = new LedaRules(state)
+    // A Shark card outside of its Pack, which prints nothing at all: it covers its tile all the same, so its
+    // square holds nothing to resolve and is not offered.
+    const rules = new LedaRules(game([ClanCardId.SharkPackSpy]))
     expect(rules.getLegalMoves(1).filter(isCustomMoveType(CustomMoveType.ActivateSquare))).toHaveLength(3)
   })
 

@@ -16,7 +16,15 @@
     "close": "Fermer"
   },
   "search-ring": {
-    "choose": "Choisissez un Anneau de votre pioche"
+    "choose": "Choisissez un Anneau de votre pioche",
+    "condition": "Condition de pose :",
+    "effect": "Effet de chaque Anneau :",
+    "rotate": "Vous pouvez pivoter une de vos cartes Chat.",
+    "pick": "Choisir",
+    "win-conflict": "Remporter un Conflit militaire avec {count} d'écart ou plus.",
+    "empty-deck": "Vider votre pioche.",
+    "three-cat-cards": "Activer une zone comptant au moins {count} cartes Chat.",
+    "five-upgraded-tiles": "Avoir {count} tuiles améliorées."
   },
   "clan": {
     "1": "Pandas",

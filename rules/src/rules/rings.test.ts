@@ -289,6 +289,17 @@ describe('The Red Ring', () => {
     expect(rules.game.rule?.player).toBe(2)
   })
 
+  it.each([
+    { 1: 1, 2: 0 },
+    { 1: 2, 2: 0 },
+    { 1: 3, 2: 1 },
+    { 1: 5, 2: 3 }
+  ])('is not offered on a conflict won by less than 3 symbols (%j)', (symbols) => {
+    const rules = new LedaRules(game(setup(symbols, MilitaryVictoryTokenId.Victory)))
+    settleConflict(rules)
+    expect(rules.game.rule?.id).toBe(RuleId.Organisation)
+  })
+
   it('reads the lead over the opponent and not the symbols gathered', () => {
     const rules = new LedaRules(game(setup({ 1: 4, 2: 2 }, MilitaryVictoryTokenId.Victory)))
     settleConflict(rules)

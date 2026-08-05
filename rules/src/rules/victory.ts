@@ -1,9 +1,12 @@
+import { XYCoordinates } from '@gamepark/rules-api'
 import { Clan } from '../Clan'
 import { ClanCardId } from '../material/ClanCardId'
 import { isRing } from '../material/clanCards/catCards'
+import { PandaLevel } from '../material/clanCards/PandaLevel'
 import { isPortal } from '../material/clanCards/scorpionCards'
 import { gridCells, gridCorners } from '../material/PlayerGrid'
 import { Rules } from '../Rules'
+import { pandaLevel } from './awakening'
 import { victorySymbols } from './militaryConflict'
 import { topCardOn } from './playedCards'
 import { placedSharkTokens, sharkTokens } from './sharkPack'
@@ -34,14 +37,29 @@ export const victorySymbolsToWin: Record<Clan, number> = {
 /** How many of their 4 Rings the Cats have to have in play. */
 export const ringsToWin = 3
 
+/** How many Gold Pandas the Pandas have to have in play: the King and the Queen, and there is one of each. */
+export const goldPandasToWin = 2
+
 /**
- * The military victory: the tokens won during the conflicts, added up, against the number the clan of the player
- * has to reach. False while they have no clan, as {@link hasSpecialVictory} is, and for the same reason.
+ * How far along one of the 2 races a player is, and how far they have to go. Counted rather than answered yes or
+ * no, so that the panel of a player can show them their progress and the rules read the same numbers it does
+ * (see {@link PlayerPanels}).
  */
-export const hasMilitaryVictory = (rules: Rules, player: number): boolean => {
+export type VictoryProgress = { count: number; goal: number }
+
+/** Whether a race is run: the count has reached the goal. */
+const isWon = (progress?: VictoryProgress): boolean => progress !== undefined && progress.count >= progress.goal
+
+/**
+ * The military victory: the Victory symbols of the tokens won during the conflicts, added up, against the number
+ * the clan of the player has to reach. Undefined while they have no clan, which is only true of the setup.
+ */
+export const militaryVictoryProgress = (rules: Rules, player: number): VictoryProgress | undefined => {
   const clan = playerClan(rules, player)
-  return clan !== undefined && victorySymbols(rules, player) >= victorySymbolsToWin[clan]
+  return clan === undefined ? undefined : { count: victorySymbols(rules, player), goal: victorySymbolsToWin[clan] }
 }
+
+export const hasMilitaryVictory = (rules: Rules, player: number): boolean => isWon(militaryVictoryProgress(rules, player))
 
 /**
  * The cards a player has face up on their grid, at most one per square: cards pile up on a square as they are
@@ -52,40 +70,48 @@ export const hasMilitaryVictory = (rules: Rules, player: number): boolean => {
 const visibleCards = (rules: Rules, player: number): ClanCardId[] =>
   gridCells.map((cell) => topCardOn(rules, player, cell)).filter((card): card is ClanCardId => card !== undefined)
 
-/** What each clan wins with, read off its Victory condition card. */
-const specialVictories: Record<Clan, (rules: Rules, player: number) => boolean> = {
-  /** The 2 Gold Pandas in play: the King and the Queen, which only Awakenings bring onto the grid. */
-  [Clan.Panda]: (rules, player) => {
-    const cards = visibleCards(rules, player)
-    return cards.includes(ClanCardId.PandaKing) && cards.includes(ClanCardId.PandaQueen)
-  },
+/** What each clan counts towards its own victory, read off its Victory condition card. */
+const specialVictoryCounts: Record<Clan, (rules: Rules, player: number) => number> = {
+  /** The Gold Pandas in play: the King and the Queen, which only Awakenings bring onto the grid. */
+  [Clan.Panda]: (rules, player) => visibleCards(rules, player).filter((card) => pandaLevel(card) === PandaLevel.Gold).length,
 
   /**
-   * The whole supply of the clan placed on the grid: 9 tokens for 16 squares.
+   * The supply of the clan placed on the grid: 9 tokens for 16 squares.
    * Counted on the tokens that are out rather than on the supply that is empty, which every other clan's is
    * (see {@link sharkTokens}).
    */
-  [Clan.Shark]: (rules, player) => placedSharkTokens(rules, player).getQuantity() >= sharkTokens,
+  [Clan.Shark]: (rules, player) => placedSharkTokens(rules, player).getQuantity(),
 
-  /** 3 of the 4 Rings in play, whichever 3 they are. */
-  [Clan.Cat]: (rules, player) => visibleCards(rules, player).filter(isRing).length >= ringsToWin,
+  /** The Rings in play, whichever they are. */
+  [Clan.Cat]: (rules, player) => visibleCards(rules, player).filter(isRing).length,
 
-  /** The 4 Portals in the 4 corners of the grid, which a swap of 2 squares is another way of reaching. */
-  [Clan.Scorpion]: (rules, player) =>
-    gridCorners.every((corner) => {
-      const card = topCardOn(rules, player, corner)
-      return card !== undefined && isPortal(card)
-    })
+  /** The Portals standing in a corner of the grid, which a swap of 2 squares is another way of reaching. */
+  [Clan.Scorpion]: (rules, player) => gridCorners.filter((corner) => isPortalOn(rules, player, corner)).length
+}
+
+/** How many of them each clan needs, which is all there is of the material in every case but the Rings. */
+const specialVictoryGoals: Record<Clan, number> = {
+  [Clan.Panda]: goldPandasToWin,
+  [Clan.Shark]: sharkTokens,
+  [Clan.Cat]: ringsToWin,
+  [Clan.Scorpion]: gridCorners.length
+}
+
+const isPortalOn = (rules: Rules, player: number, cell: XYCoordinates): boolean => {
+  const card = topCardOn(rules, player, cell)
+  return card !== undefined && isPortal(card)
 }
 
 /**
- * The special victory of the clan a player took. False while they have no clan, which is only true of the setup:
- * a clan is picked before anything of it exists (see {@link ChooseClanRule}).
+ * The special victory of the clan a player took. Undefined while they have no clan, which is only true of the
+ * setup: a clan is picked before anything of it exists (see {@link ChooseClanRule}).
  */
-export const hasSpecialVictory = (rules: Rules, player: number): boolean => {
+export const specialVictoryProgress = (rules: Rules, player: number): VictoryProgress | undefined => {
   const clan = playerClan(rules, player)
-  return clan !== undefined && specialVictories[clan](rules, player)
+  return clan === undefined ? undefined : { count: specialVictoryCounts[clan](rules, player), goal: specialVictoryGoals[clan] }
 }
+
+export const hasSpecialVictory = (rules: Rules, player: number): boolean => isWon(specialVictoryProgress(rules, player))
 
 /** Whether a player has won, either way: nothing tells the 2 victories apart once the game is over. */
 export const hasWon = (rules: Rules, player: number): boolean => hasMilitaryVictory(rules, player) || hasSpecialVictory(rules, player)

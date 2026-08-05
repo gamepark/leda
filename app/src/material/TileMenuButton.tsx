@@ -1,14 +1,12 @@
 import { LedaRules } from '@gamepark/leda/LedaRules'
-import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { activableCells } from '@gamepark/leda/rules/activation'
 import { RuleId } from '@gamepark/leda/rules/RuleId'
 import { bareCells, visibleDesertCells } from '@gamepark/leda/rules/tileChoices'
-import { useAnimation, usePlayerId, useRules } from '@gamepark/react-game'
-import { isMoveItemType, MaterialMove } from '@gamepark/rules-api'
 import { ActivateSquareOnTile } from './ActivateSquareButton'
 import { ChooseActionTileButton } from './ChooseActionTileButton'
 import { DowngradeTileButton } from './DowngradeTileButton'
 import { FlipDesertButton } from './FlipDesertButton'
+import { useMenuButtonRules } from './menuButtons'
 import { PlaceSharkTokenButton } from './PlaceSharkTokenButton'
 import { UpgradeAndActivateTileButton } from './UpgradeAndActivateTileButton'
 import { UpgradeTileButton } from './UpgradeTileButton'
@@ -22,18 +20,16 @@ export type TileButtonProps = {
 
 /**
  * The button a square of the player's own grid carries, whatever the rules are waiting for.
- * It reads the state through the hooks rather than through the context handed to the material description: the
- * squares of a grid are only re-rendered when their own item changes, which is far from every time their button
- * has to change.
+ * What it reads is the state nothing is still catching up with (see {@link useMenuButtonRules}): for as long as
+ * anything is being shown, the squares carry no button at all. Pressing one is what starts an animation, so the
+ * buttons of the whole grid go away the moment the player presses one, and only come back once the rules have
+ * moved on and the table has been told about it.
  */
 export const TileMenuButton = ({ index }: { index: number }) => {
-  const rules = useRules<LedaRules>()
-  const me = usePlayerId<number>()
-  // The round opens on the Action tile being turned over, and the rule reading it starts before the tile lands.
-  // Until it has, the zones offered are read off the tile of the round before, on the squares of the wrong zones.
-  const revealingActionTile = useAnimation<MaterialMove>(({ move }) => isMoveItemType(MaterialType.ActionTile)(move)) !== undefined
-  // Never from the legal moves: they are filtered in the tutorial, and they come and go during animations.
-  if (!rules || me === undefined || rules.getActivePlayer() !== me || revealingActionTile) return null
+  const context = useMenuButtonRules()
+  if (context === undefined) return null
+  const { rules, player: me } = context
+  if (rules.getActivePlayer() !== me) return null
 
   switch (rules.game.rule?.id) {
     case RuleId.ChooseAction:

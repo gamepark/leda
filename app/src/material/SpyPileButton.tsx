@@ -1,13 +1,12 @@
 import { faEye } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { LedaRules } from '@gamepark/leda/LedaRules'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { RuleId } from '@gamepark/leda/rules/RuleId'
 import { spiablePile, spiedItem } from '@gamepark/leda/rules/spy'
-import { usePlayerId, useRules } from '@gamepark/react-game'
 import { useTranslation } from 'react-i18next'
 import { LedaMenuButton } from './LedaMenuButton'
+import { useMenuButtonRules } from './menuButtons'
 import { spyButtonX } from './spiedItem'
 
 /**
@@ -17,12 +16,12 @@ import { spyButtonX } from './spiedItem'
  * a Spy is not.
  */
 export const SpyPileButton = ({ type, index }: { type: MaterialType; index: number }) => {
-  const rules = useRules<LedaRules>()
-  const me = usePlayerId<number>()
+  const context = useMenuButtonRules()
   const { t } = useTranslation()
 
-  // Never from the legal moves: they are filtered in the tutorial, and they come and go during animations.
-  if (!rules || me === undefined || rules.getActivePlayer() !== me) return null
+  if (context === undefined) return null
+  const { rules, player: me } = context
+  if (rules.getActivePlayer() !== me) return null
   if (rules.game.rule?.id !== RuleId.Spy || spiedItem(rules) !== undefined) return null
   if (spiablePile(rules, me, type, index) === undefined) return null
 

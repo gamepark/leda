@@ -5,7 +5,7 @@ import { cellOf } from '@gamepark/leda/material/PlayerGrid'
 import { TileId } from '@gamepark/leda/material/TileId'
 import { isActivationPhase, isCellOfActivatedZone } from '@gamepark/leda/rules/activation'
 import { CardDescription, ItemContext } from '@gamepark/react-game'
-import { MaterialItem } from '@gamepark/rules-api'
+import { MaterialItem, MaterialMoveBuilder } from '@gamepark/rules-api'
 import PermanentDrawFront from '../images/tiles/recto/permanent-draw.jpg'
 import PermanentFoodFront from '../images/tiles/recto/permanent-food.jpg'
 import PermanentMilitaryFront from '../images/tiles/recto/permanent-military.jpg'
@@ -95,6 +95,25 @@ export class TileDescription extends CardDescription<number, MaterialType, Locat
   /** A square the active player selected is ringed, in their own grid and in their opponent's. */
   getItemExtraCss(item: MaterialItem<number, LocationType, TileId>) {
     return item.selected ? selectedTile : undefined
+  }
+
+  /**
+   * A card played on a square covers its tile entirely, and while its owner organises their grid it lets the
+   * pointer through so that the tile can be dragged (see ClanCardDescription.getItemExtraCss): clicking a covered
+   * square then opens the help about the card the player sees, the topmost one, rather than about the tile hidden
+   * underneath, which no click could reach any more.
+   */
+  displayHelp(item: MaterialItem<number, LocationType, TileId>, context: ItemContext<number, MaterialType, LocationType>) {
+    const cardIndex = this.topCardIndex(context)
+    if (cardIndex === undefined) return super.displayHelp(item, context)
+    const card = context.rules.material(MaterialType.ClanCard).getItem(cardIndex)
+    return MaterialMoveBuilder.displayMaterialHelp<number, MaterialType, LocationType>(MaterialType.ClanCard, card, cardIndex)
+  }
+
+  /** The card laid last on the square of this tile, hence the one over all the others, if the square carries any. */
+  topCardIndex(context: ItemContext<number, MaterialType, LocationType>): number | undefined {
+    const indexes = context.rules.material(MaterialType.ClanCard).location(LocationType.PlayedCard).parent(context.index).getIndexes()
+    return indexes.length > 0 ? Math.max(...indexes) : undefined
   }
 }
 

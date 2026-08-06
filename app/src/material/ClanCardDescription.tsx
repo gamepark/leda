@@ -58,6 +58,7 @@ import SharkPackRedrawToken from '../images/cards/shark/shark-pack-redraw-token.
 import SharkPackSpy from '../images/cards/shark/shark-pack-spy.jpg'
 import SharkSpyOrTriggerToken from '../images/cards/shark/shark-spy-or-trigger-token.jpg'
 import SharkUpgrade from '../images/cards/shark/shark-upgrade.jpg'
+import { ClanCardHelp } from './ClanCardHelp'
 import { PlayedCardMenuButton } from './PlayedCardMenuButton'
 import { isSpiedByOther } from './spiedItem'
 import { SpiedItemButtons } from './SpiedItemButtons'
@@ -138,6 +139,9 @@ export class ClanCardDescription extends CardDescription<number, MaterialType, L
 
   /** Indexed by the back of the id, which is the clan. A hidden card keeps it, so its back can still be drawn. */
   backImages = clanBacks
+
+  /** Clicking a card opens what it costs and what it gives, spelled out beside the card (see {@link ClanCardHelp}). */
+  help = ClanCardHelp
 
   /**
    * Which face is up is decided by the location rather than left to the default, which flips a card whose front id

@@ -2,28 +2,16 @@ import { css } from '@emotion/react'
 import { ClanCardId } from '@gamepark/leda/material/ClanCardId'
 import { Ring } from '@gamepark/leda/material/clanCards/catCards'
 import { CustomMoveType } from '@gamepark/leda/rules/CustomMoveType'
-import { ringCatCardsInZone, ringConflictLead, ringUpgradedTiles } from '@gamepark/leda/rules/rings'
 import { Dialog, PlayMoveButton, useLegalMoves } from '@gamepark/react-game'
 import { CustomMove, isCustomMoveType } from '@gamepark/rules-api'
 import { useTranslation } from 'react-i18next'
 import { clanCardFronts } from '../material/ClanCardDescription'
+import { ringConditions } from '../material/ringConditions'
 import { copper } from '../theme'
 
 type SearchRingDialogProps = {
   open: boolean
   close: () => void
-}
-
-/**
- * What each Ring asks for before it may be put in play, which is the whole of what tells them apart: the effect is
- * the same on all 4 (see {@link ringPlacements}). The numbers are read off the rules rather than written into the
- * texts, so that a balance change cannot leave the dialog lying about what the card asks.
- */
-const ringConditions: Record<Ring, { code: string; count?: number }> = {
-  [ClanCardId.CatRingWinConflictByThree]: { code: 'win-conflict', count: ringConflictLead },
-  [ClanCardId.CatRingEmptyDeck]: { code: 'empty-deck' },
-  [ClanCardId.CatRingThreeCatCards]: { code: 'three-cat-cards', count: ringCatCardsInZone },
-  [ClanCardId.CatRingFiveUpgradedTiles]: { code: 'five-upgraded-tiles', count: ringUpgradedTiles }
 }
 
 /**

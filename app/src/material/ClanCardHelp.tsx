@@ -1,4 +1,3 @@
-import { css } from '@emotion/react'
 import { Clan } from '@gamepark/leda/Clan'
 import { LedaRules } from '@gamepark/leda/LedaRules'
 import { ClanCardId, ClanCardItemId, clanOf } from '@gamepark/leda/material/ClanCardId'
@@ -9,15 +8,11 @@ import { isPortal } from '@gamepark/leda/material/clanCards/scorpionCards'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { awakeningGroup } from '@gamepark/leda/rules/awakening'
-import { MaterialHelpProps, Picture, useRules } from '@gamepark/react-game'
-import { ReactNode } from 'react'
-import { Trans, useTranslation } from 'react-i18next'
-import MilitaryImage from '../images/icons/Military.png'
+import { MaterialHelpProps, useRules } from '@gamepark/react-game'
+import { useTranslation } from 'react-i18next'
 import PandaBronzeImage from '../images/icons/PandaBronze.png'
-import PandaGoldImage from '../images/icons/PandaGold.png'
 import PandaSilverImage from '../images/icons/PandaSilver.png'
-import FoodImage from '../images/tokens/food.png'
-import { copper } from '../theme'
+import { HelpText, HelpTitle, Line, Note, Paragraph } from './helpLayout'
 import { ringConditions } from './ringConditions'
 
 /**
@@ -99,21 +94,6 @@ const awakeningRequirement: Partial<Record<PandaLevel, string>> = {
 }
 
 /**
- * The symbols the texts are written with, the ones the cards themselves print beside their numbers. The levels of
- * the Pandas are named by their symbol and never in words, exactly as the rulebook names them, and what each of
- * them is is read off the Awakening reminder underneath (see cardNotes).
- */
-const Icon = ({ src }: { src: string }) => <Picture src={src} css={inlineIcon} alt="" />
-
-const icons = {
-  food: <Icon src={FoodImage} />,
-  military: <Icon src={MilitaryImage} />,
-  bronze: <Icon src={PandaBronzeImage} />,
-  silver: <Icon src={PandaSilverImage} />,
-  gold: <Icon src={PandaGoldImage} />
-}
-
-/**
  * What a clan card does, told the way its clan sheet tells it: what it costs, the effect or the 2 effects it
  * prints, and a reminder of the keyword it leans on when it leans on one.
  *
@@ -126,18 +106,16 @@ export const ClanCardHelp = ({ item }: MaterialHelpProps<number, MaterialType, L
   const id = item.id as ClanCardItemId | undefined
   const card = id?.front
   /** A hand is secret: the card an opponent holds has no front to read, only the emblem of its clan. */
-  if (card === undefined) return <p css={text}>{t('help.hidden')}</p>
+  if (card === undefined) return <Paragraph>{t('help.hidden')}</Paragraph>
   return (
     <>
       {/* A clan card has no name: the clan it belongs to is the whole of what it is called. */}
-      <h2 css={title}>{t(`help.title.${clanOf(card)}`)}</h2>
+      <HelpTitle>{t(`help.title.${clanOf(card)}`)}</HelpTitle>
       <CardCost card={card} player={item.location?.player} />
       <CardEffects card={card} />
+      {/* The Awakening reminder is the one that counts the Pandas it takes; the others read no number. */}
       {cardNotes(card).map((note) => (
-        <p key={note} css={[text, noteText]}>
-          {/* The Awakening reminder is the one that counts the Pandas it takes; the others read no number. */}
-          <Trans i18nKey={note} values={{ count: awakeningGroup }} components={icons} />
-        </p>
+        <Note key={note} code={note} values={{ count: awakeningGroup }} />
       ))}
     </>
   )
@@ -164,7 +142,7 @@ const CardCost = ({ card, player }: { card: ClanCardId; player?: number }) => {
     if (required === undefined) return null
     return (
       <Line label={t('help.cost')}>
-        <Trans i18nKey="help.awakening" values={{ count: awakeningGroup }} components={{ ...icons, level: <Icon src={required} /> }} />
+        <HelpText code="help.awakening" values={{ count: awakeningGroup }} level={required} />
       </Line>
     )
   }
@@ -172,18 +150,18 @@ const CardCost = ({ card, player }: { card: ClanCardId; player?: number }) => {
   if (typeof cost.food === 'number') {
     return (
       <Line label={t('help.cost')}>
-        <Trans i18nKey="help.food" values={{ count: cost.food }} components={icons} />
+        <HelpText code="help.food" values={{ count: cost.food }} />
       </Line>
     )
   }
   const current = rules === undefined || player === undefined ? undefined : clanCardFoodCost(card, rules, player)
   return (
     <Line label={t('help.cost')}>
-      <Trans i18nKey={`help.card.${clanCardCodes[card]}-cost`} components={icons} />
+      <HelpText code={`help.card.${clanCardCodes[card]}-cost`} />
       {current !== undefined && (
         <>
           {' '}
-          <Trans i18nKey="help.current" values={{ count: current }} components={icons} />
+          <HelpText code="help.current" values={{ count: current }} />
         </>
       )}
     </Line>
@@ -245,55 +223,4 @@ const cardNotes = (card: ClanCardId): string[] => {
   }
 }
 
-const CardText = ({ code }: { code: string }) => <Trans i18nKey={`help.card.${code}`} components={icons} />
-
-/** One line of the help: the heading the card prints in colour, and what follows it. */
-const Line = ({ label, children }: { label: string; children: ReactNode }) => (
-  <p css={text}>
-    <span css={labelText}>{label}</span> {children}
-  </p>
-)
-
-/** Over the texts rather than over the pane: the dialog centers what it holds, which is wider than what is read. */
-const title = css`
-  && {
-    margin: 0 0 0.5em;
-    font-size: 1.1em;
-    text-align: left;
-  }
-`
-
-/**
- * The dialog gives its content a font size of its own, so the texts are sized against it rather than against the
- * table. The width is the one of a paragraph that reads well, and not the one the dialog happens to open at: it is
- * as wide as the card art when there is nothing to page through, and 80% of the table when there is.
- */
-const text = css`
-  margin: 0 0 0.6em;
-  line-height: 1.3;
-  max-width: 20em;
-`
-
-/** "Coût", "Effet"... the headings the rulebook prints on the cards themselves, in the copper of the frames. */
-const labelText = css`
-  font-weight: 700;
-  color: ${copper};
-`
-
-/**
- * A reminder of a keyword, told apart from what the card itself says by its slant alone: the Awakening one names
- * the levels of the Pandas by their symbol, which a smaller text would leave too small to tell apart.
- */
-const noteText = css`
-  font-style: italic;
-  opacity: 0.8;
-`
-
-/** A symbol drawn inline in a sentence, sized off the text and dropped onto the middle of the lowercase letters. */
-const inlineIcon = css`
-  && {
-    height: 1.2em;
-    top: 0;
-    vertical-align: -0.25em;
-  }
-`
+const CardText = ({ code }: { code: string }) => <HelpText code={`help.card.${code}`} />

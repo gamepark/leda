@@ -26,6 +26,7 @@ import TemporaryMilitaryBack from '../images/tiles/verso/temporary-military.jpg'
 import TemporarySpecialActivationBack from '../images/tiles/verso/temporary-special-activation.jpg'
 import TemporaryUpgradeBack from '../images/tiles/verso/temporary-upgrade.jpg'
 import { copper, parchment } from '../theme'
+import { TileHelp } from './TileHelp'
 import { TileMenuButton } from './TileMenuButton'
 
 /**
@@ -65,6 +66,9 @@ export class TileDescription extends CardDescription<number, MaterialType, Locat
     [TileId.TemporarySpecialActivation]: TemporarySpecialActivationBack,
     [TileId.TemporaryMilitary]: TemporaryMilitaryBack
   }
+
+  /** Clicking a tile opens what each of its 2 faces gives, and which kind of tile it is (see {@link TileHelp}). */
+  help = TileHelp
 
   /** A tile shows its back once it has been upgraded, or flipped to its Desert side. */
   isFlipped(item: Partial<MaterialItem<number, LocationType, TileId>>) {

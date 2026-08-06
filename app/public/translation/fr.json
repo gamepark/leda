@@ -41,6 +41,9 @@
     "effect-2": "Effet 2 :",
     "pack": "Effet MEUTE :",
     "portal": "Portail – Effet :",
+    "front": "Recto :",
+    "back": "Verso :",
+    "desert": "Verso (Désert) :",
     "none": "Aucun.",
     "hidden": "Cette carte est face cachée : seul le clan auquel elle appartient est visible.",
     "food": "{count} <food/>",
@@ -59,7 +62,27 @@
       "ring": "Dès que sa condition est remplie, un Anneau se joue gratuitement, sans coûter d'action, une fois toutes les autres activations résolues. Jouer 3 Anneaux fait gagner la partie.",
       "pack": "L'effet MEUTE remplace l'effet normal tant que la carte est orthogonalement adjacente à 2 pions Requin.",
       "portal": "Placer les 4 Portails dans les 4 coins de votre grille d'action fait gagner la partie.",
-      "desert": "Un Désert est une tuile temporaire retournée sur sa face verso."
+      "desert": "Un Désert est une tuile temporaire retournée sur sa face verso.",
+      "permanent": "Une tuile permanente est toujours activable. Un effet Améliorer <upgrade/> la retourne sur son verso, où elle sera plus puissante lors des prochaines activations.",
+      "temporary": "Une tuile temporaire devient un Désert dès qu'elle est activée. Un effet Retourner <flip/> la remet sur son recto, où elle est de nouveau activable."
+    },
+    "tile": {
+      "permanent": "Tuile permanente",
+      "temporary": "Tuile temporaire",
+      "desert-face": "Cette tuile n'a plus d'effet activable. L'effet de son recto reste rappelé en bas à droite : c'est celui que les cartes Scorpion qui activent un Désert déclenchent.",
+      "permanent-draw": "Piochez 1 carte.",
+      "permanent-draw-2": "Piochez 2 cartes.",
+      "permanent-special-activation": "Déclenchez votre Activation Spéciale.",
+      "permanent-special-activation-2": "Déclenchez votre Activation Spéciale et gagnez 1 <food/>.",
+      "permanent-food": "Gagnez 1 <food/>.",
+      "permanent-food-2": "Gagnez 2 <food/>.",
+      "permanent-military": "Gagnez 1 <military/>.",
+      "permanent-military-2": "Gagnez 2 <military/>.",
+      "temporary-food": "Gagnez 1 <food/>, puis retournez cette tuile sur sa face Désert.",
+      "temporary-draw": "Piochez 1 carte, puis retournez cette tuile sur sa face Désert.",
+      "temporary-upgrade": "Améliorez une de vos tuiles permanentes, puis retournez cette tuile sur sa face Désert.",
+      "temporary-special-activation": "Déclenchez votre Activation Spéciale, puis retournez cette tuile sur sa face Désert.",
+      "temporary-military": "Gagnez 1 <military/>, puis retournez cette tuile sur sa face Désert."
     },
     "card": {
       "panda-draw-and-special-activation": "Piochez 1 carte et déclenchez votre Activation Spéciale.",

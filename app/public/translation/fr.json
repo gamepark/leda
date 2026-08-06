@@ -46,6 +46,8 @@
     "desert": "Verso (Désert) :",
     "symbols": "Symboles :",
     "zones": "Zones :",
+    "placement": "Pose :",
+    "use": "Utilisation :",
     "start": "Départ :",
     "special-activation": "Activation Spéciale :",
     "clan-victory": "Victoire de clan :",
@@ -75,7 +77,18 @@
       "clan-victory": "Le clan {clan} gagne s'il a {count} <victory/>.",
       "special-activation": "Le cristal <special/> imprimé sur une tuile ou une carte déclenche l'Activation Spéciale de votre clan, qui n'est pas la même d'un clan à l'autre.",
       "action": "Au début de la manche, le joueur actif révèle la première tuile de la pile et choisit une des zones qu'elle indique. Les 2 joueurs activent ensuite les 4 cases de cette zone dans leur propre grille, le joueur actif en premier.",
-      "cycle": "Après la {count}e tuile révélée, il n'en reste qu'une dans la pile : les 5 sont remélangées face cachée, et le joueur qui contrôle le moins de symboles <victory/> devient le nouveau joueur actif."
+      "cycle": "Après la {count}e tuile révélée, il n'en reste qu'une dans la pile : les 5 sont remélangées face cachée, et le joueur qui contrôle le moins de symboles <victory/> devient le nouveau joueur actif.",
+      "shark-victory": "Avoir vos {count} pions Requin en jeu remporte la partie.",
+      "food-gain": "Vous en gagnez avec vos tuiles et vos cartes, et pendant l'organisation : échanger la position de 2 de vos cases rapporte 1 <food/>, et vous pouvez la prendre sans échanger.",
+      "food-supply": "La réserve de Nourriture est illimitée."
+    },
+    "shark": {
+      "title": "Pion Requin",
+      "placement": "Jouer une carte Requin place un de vos pions sur la case de cette carte. Une case qui en a déjà un le garde."
+    },
+    "food": {
+      "title": "Pion Nourriture",
+      "use": "La Nourriture sert à payer les cartes de clan que vous jouez."
     },
     "action": {
       "title": "Tuile Action",

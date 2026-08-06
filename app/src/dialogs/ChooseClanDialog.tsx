@@ -77,13 +77,14 @@ const clanButton = css`
   flex-direction: column;
   align-items: center;
   gap: 0.5em;
-  padding: 0;
+  padding: 0 0 0.5em;
   border: none;
   background: none;
   cursor: pointer;
   color: inherit;
   font-size: 1.8em;
   transition: transform 0.1s ease-in-out;
+  border-radius: 1em;
 
   &:hover,
   &:focus {

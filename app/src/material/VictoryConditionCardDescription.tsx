@@ -9,6 +9,7 @@ import ScorpionVictoryCondition from '../images/cards/scorpion/victory-condition
 import SharkVictoryCondition from '../images/cards/shark/victory-condition.jpg'
 import { AwakeningButtons } from './AwakeningButtons'
 import { tileSize } from './TileDescription'
+import { VictoryConditionCardHelp } from './VictoryConditionCardHelp'
 
 /**
  * The Victory condition card of a clan, kept face up beside its owner's grid. Its id is the {@link Clan} itself.
@@ -26,6 +27,9 @@ export class VictoryConditionCardDescription extends CardDescription<number, Mat
     [Clan.Cat]: CatVictoryCondition,
     [Clan.Scorpion]: ScorpionVictoryCondition
   }
+
+  /** Clicking the card opens the 2 races of the clan and what its crystal is worth (see {@link VictoryConditionCardHelp}). */
+  help = VictoryConditionCardHelp
 
   /**
    * The card carries the Awakenings of its owner, hanging under it, which is where a player reads what their clan

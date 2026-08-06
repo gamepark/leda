@@ -2,12 +2,17 @@ import { css } from '@emotion/react'
 import { Picture } from '@gamepark/react-game'
 import { ReactNode } from 'react'
 import { Trans } from 'react-i18next'
+import { AwakeningIcon } from '../headers/AwakeningIcon'
+import CatRingImage from '../images/icons/CatRing.png'
 import FlipImage from '../images/icons/Flip.png'
 import MilitaryImage from '../images/icons/Military.png'
 import MilitaryVictoryImage from '../images/icons/MilitaryVictory.png'
 import PandaBronzeImage from '../images/icons/PandaBronze.png'
 import PandaGoldImage from '../images/icons/PandaGold.png'
 import PandaSilverImage from '../images/icons/PandaSilver.png'
+import ScorpionPortalImage from '../images/icons/ScorpionPortal.png'
+import SharkImage from '../images/icons/Shark.png'
+import SpecialActivationImage from '../images/icons/SpecialActivation.png'
 import UpgradeImage from '../images/icons/Upgrade.png'
 import FoodImage from '../images/tokens/food.png'
 import { copper } from '../theme'
@@ -61,9 +66,15 @@ const icons = {
   victory: <Icon src={MilitaryVictoryImage} />,
   upgrade: <Icon src={UpgradeImage} />,
   flip: <Icon src={FlipImage} />,
+  special: <Icon src={SpecialActivationImage} />,
+  /** Black line art rather than a coloured symbol, hence drawn as a mask of the text color (see {@link AwakeningIcon}). */
+  awakening: <AwakeningIcon />,
   bronze: <Icon src={PandaBronzeImage} />,
   silver: <Icon src={PandaSilverImage} />,
-  gold: <Icon src={PandaGoldImage} />
+  gold: <Icon src={PandaGoldImage} />,
+  shark: <Icon src={SharkImage} />,
+  ring: <Icon src={CatRingImage} />,
+  portal: <Icon src={ScorpionPortalImage} />
 }
 
 /** Over the texts rather than over the pane: the dialog centers what it holds, which is wider than what is read. */

@@ -90,7 +90,7 @@ const specialVictoryCounts: Record<Clan, (rules: Rules, player: number) => numbe
 }
 
 /** How many of them each clan needs, which is all there is of the material in every case but the Rings. */
-const specialVictoryGoals: Record<Clan, number> = {
+export const specialVictoryGoals: Record<Clan, number> = {
   [Clan.Panda]: goldPandasToWin,
   [Clan.Shark]: sharkTokens,
   [Clan.Cat]: ringsToWin,

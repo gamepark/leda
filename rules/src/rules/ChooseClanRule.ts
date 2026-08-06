@@ -1,14 +1,10 @@
 import { CustomMove, isCreateItemType, isCustomMoveType, ItemMove, MaterialMove, PlayerTurnRule } from '@gamepark/rules-api'
-import { Clan, clanCards, playableClans } from '../Clan'
+import { Clan, clanCards, clanStart, playableClans } from '../Clan'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { CustomMoveType } from './CustomMoveType'
 import { RuleId } from './RuleId'
 import { sharkTokens } from './sharkPack'
-
-/** Setup step 6: the starting resources, the same for the 4 clans of this box. */
-const startingHand = 3
-const startingFood = 1
 
 /**
  * Setup step 6: in turn order, a player picks a clan from the box and takes its material.
@@ -57,12 +53,14 @@ export class ChooseClanRule extends PlayerTurnRule<number, MaterialType, Locatio
   afterItemMove(move: ItemMove<number, MaterialType, LocationType>): MaterialMove<number, MaterialType, LocationType>[] {
     if (!isCreateItemType(MaterialType.VictoryConditionCard)(move)) return []
     const player = this.player
+    // What the clan starts with, which is printed on the very card whose creation we are answering (see {@link clanStart}).
+    const start = clanStart[move.item.id as Clan]
     return [
       this.deck.shuffle(),
-      // Shuffling swaps the cards between the slots of the deck without moving the slots, so drawing the 3 first
-      // slots draws 3 random cards even though these moves are built before the shuffle is played.
-      ...this.deck.limit(startingHand).moveItems({ type: LocationType.PlayerHand, player }),
-      this.material(MaterialType.FoodToken).createItem({ location: { type: LocationType.PlayerFood, player }, quantity: startingFood }),
+      // Shuffling swaps the cards between the slots of the deck without moving the slots, so drawing the first
+      // slots draws as many random cards even though these moves are built before the shuffle is played.
+      ...this.deck.limit(start.cards).moveItems({ type: LocationType.PlayerHand, player }),
+      this.material(MaterialType.FoodToken).createItem({ location: { type: LocationType.PlayerFood, player }, quantity: start.food }),
       ...this.nextStep()
     ]
   }

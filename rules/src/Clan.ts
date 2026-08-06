@@ -22,3 +22,16 @@ export const clanCards = (clan: Clan): ClanCardId[] => getEnumValues(ClanCardId)
 
 /** The clans a player can pick: all 4 of this box, since each of them has its cards. */
 export const playableClans: Clan[] = getEnumValues(Clan).filter((clan) => clanCards(clan).length > 0)
+
+/**
+ * What a player takes when they pick a clan: cards off the top of their deck, and Food.
+ * Printed in the top left corner of the Victory condition card of the clan, hence held per clan rather than as one
+ * number for the game: the 4 clans of this box start the same way, and a clan of another one may not
+ * (see {@link ChooseClanRule}, {@link VictoryConditionCardHelp}).
+ */
+export const clanStart: Record<Clan, { cards: number; food: number }> = {
+  [Clan.Panda]: { cards: 3, food: 1 },
+  [Clan.Shark]: { cards: 3, food: 1 },
+  [Clan.Cat]: { cards: 3, food: 1 },
+  [Clan.Scorpion]: { cards: 3, food: 1 }
+}

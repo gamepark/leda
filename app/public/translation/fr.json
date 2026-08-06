@@ -45,6 +45,10 @@
     "back": "Verso :",
     "desert": "Verso (Désert) :",
     "symbols": "Symboles :",
+    "start": "Départ :",
+    "special-activation": "Activation Spéciale :",
+    "clan-victory": "Victoire de clan :",
+    "military-victory": "Victoire militaire :",
     "none": "Aucun.",
     "hidden": "Cette carte est face cachée : seul le clan auquel elle appartient est visible.",
     "food": "{count} <food/>",
@@ -58,7 +62,7 @@
       "4": "Carte Scorpion"
     },
     "note": {
-      "awakening": "Effet Éveil : si vous avez au moins {count} <bronze/> en jeu, remettez l'un d'entre eux dans votre main et remplacez-le par un <silver/> ; ou si vous avez au moins {count} <silver/> en jeu, remettez l'un d'entre eux dans votre main et remplacez-le par un <gold/>, au même endroit. L'effet Éveil se résout après avoir résolu toutes les autres activations.",
+      "awakening": "<awakening/> Effet Éveil : si vous avez au moins {count} <bronze/> en jeu, remettez l'un d'entre eux dans votre main et remplacez-le par un <silver/> ; ou si vous avez au moins {count} <silver/> en jeu, remettez l'un d'entre eux dans votre main et remplacez-le par un <gold/>, au même endroit. L'effet Éveil se résout après avoir résolu toutes les autres activations.",
       "rotation": "Rotation : après son activation, la carte est tournée à 180°. C'est alors son autre effet qui sera activable.",
       "ring": "Dès que sa condition est remplie, un Anneau se joue gratuitement, sans coûter d'action, une fois toutes les autres activations résolues. Jouer 3 Anneaux fait gagner la partie.",
       "pack": "L'effet MEUTE remplace l'effet normal tant que la carte est orthogonalement adjacente à 2 pions Requin.",
@@ -67,7 +71,24 @@
       "permanent": "Une tuile permanente est toujours activable. Un effet Améliorer <upgrade/> la retourne sur son verso, où elle sera plus puissante lors des prochaines activations.",
       "temporary": "Une tuile temporaire devient un Désert dès qu'elle est activée. Un effet Retourner <flip/> la remet sur son recto, où elle est de nouveau activable.",
       "conflict": "À la fin de chaque manche, le joueur qui a réuni le plus de symboles militaires <military/> pioche le premier jeton de la pile et résout son effet. En cas d'égalité, personne ne le pioche.",
-      "clan-victory": "Le clan {clan} gagne s'il a {count} <victory/>."
+      "clan-victory": "Le clan {clan} gagne s'il a {count} <victory/>.",
+      "special-activation": "Le cristal <special/> imprimé sur une tuile ou une carte déclenche l'Activation Spéciale de votre clan, qui n'est pas la même d'un clan à l'autre."
+    },
+    "victory": {
+      "title": "Carte Condition de Victoire",
+      "start": "Commencez la partie avec {cards, plural, one {# carte} other {# cartes}} et {food} <food/>.",
+      "activation": {
+        "1": "Gagnez 1 <food/> OU 1 Éveil <awakening/>.",
+        "2": "Gagnez 2 <military/>.",
+        "3": "Piochez 1 carte.",
+        "4": "Scrutez."
+      },
+      "clan": {
+        "1": "Avoir vos {count} Pandas <gold/> en jeu.",
+        "2": "Avoir vos {count} pions Requin <shark/> en jeu.",
+        "3": "Jouer {count} Anneaux <ring/>.",
+        "4": "Placer vos {count} Portails <portal/> dans les 4 coins de votre grille d'action."
+      }
     },
     "token": {
       "title": "Jeton Victoire militaire",

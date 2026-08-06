@@ -8,7 +8,7 @@ import { RuleId } from './RuleId'
 type Move = MaterialMove<number, MaterialType, LocationType>
 
 /** How many rounds a pile of Action tiles lasts: the 4 tiles it reveals, the 5th one staying face down. */
-const roundsPerCycle = 4
+export const roundsPerCycle = 4
 
 /**
  * The round is over: the player who was not the active one becomes the active player, and reveals the next

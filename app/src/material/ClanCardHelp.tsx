@@ -105,18 +105,26 @@ export const ClanCardHelp = ({ item }: MaterialHelpProps<number, MaterialType, L
   const { t } = useTranslation()
   const id = item.id as ClanCardItemId | undefined
   const card = id?.front
-  /** A hand is secret: the card an opponent holds has no front to read, only the emblem of its clan. */
-  if (card === undefined) return <Paragraph>{t('help.hidden')}</Paragraph>
   return (
     <>
-      {/* A clan card has no name: the clan it belongs to is the whole of what it is called. */}
-      <HelpTitle>{t(`help.title.${clanOf(card)}`)}</HelpTitle>
-      <CardCost card={card} player={item.location?.player} />
-      <CardEffects card={card} />
-      {/* The Awakening reminder is the one that counts the Pandas it takes; the others read no number. */}
-      {cardNotes(card).map((note) => (
-        <Note key={note} code={note} values={{ count: awakeningGroup }} />
-      ))}
+      {/*
+       * A clan card has no name: the clan it belongs to is the whole of what it is called, and it is read off the
+       * back of the card rather than off its front, which a hidden card does not have. So a card an opponent holds
+       * is named like any other: its back is the emblem of its clan, and it is the one thing about it that is open.
+       */}
+      {id !== undefined && <HelpTitle>{t(`help.title.${id.back}`)}</HelpTitle>}
+      {card === undefined ? (
+        <Paragraph>{t('help.hidden')}</Paragraph>
+      ) : (
+        <>
+          <CardCost card={card} player={item.location?.player} />
+          <CardEffects card={card} />
+          {/* The Awakening reminder is the one that counts the Pandas it takes; the others read no number. */}
+          {cardNotes(card).map((note) => (
+            <Note key={note} code={note} values={{ count: awakeningGroup }} />
+          ))}
+        </>
+      )}
     </>
   )
 }

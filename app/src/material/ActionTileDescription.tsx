@@ -9,6 +9,7 @@ import ActionTileBottomRight from '../images/action-tiles/bottom-right.png'
 import ActionTileCornersOrCenter from '../images/action-tiles/corners-or-center.png'
 import ActionTileTopLeft from '../images/action-tiles/top-left.png'
 import ActionTileTopRight from '../images/action-tiles/top-right.png'
+import { ActionTileHelp } from './ActionTileHelp'
 import { isSpiedByOther } from './spiedItem'
 import { SpiedItemButtons } from './SpiedItemButtons'
 import { SpyPileButton } from './SpyPileButton'
@@ -41,6 +42,9 @@ export class ActionTileDescription extends TokenDescription<number, MaterialType
   }
 
   backImage = ActionTileBack
+
+  /** Clicking a tile opens the zones it offers, and what the round does with them (see {@link ActionTileHelp}). */
+  help = ActionTileHelp
 
   /** The pile between the players is face down: a tile is only visible once revealed, or while it is spied. */
   isFlipped(item: Partial<MaterialItem<number, LocationType, ActionTileId>>, context: MaterialContext) {

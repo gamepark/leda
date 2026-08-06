@@ -45,6 +45,7 @@
     "back": "Verso :",
     "desert": "Verso (Désert) :",
     "symbols": "Symboles :",
+    "zones": "Zones :",
     "start": "Départ :",
     "special-activation": "Activation Spéciale :",
     "clan-victory": "Victoire de clan :",
@@ -72,7 +73,18 @@
       "temporary": "Une tuile temporaire devient un Désert dès qu'elle est activée. Un effet Retourner <flip/> la remet sur son recto, où elle est de nouveau activable.",
       "conflict": "À la fin de chaque manche, le joueur qui a réuni le plus de symboles militaires <military/> pioche le premier jeton de la pile et résout son effet. En cas d'égalité, personne ne le pioche.",
       "clan-victory": "Le clan {clan} gagne s'il a {count} <victory/>.",
-      "special-activation": "Le cristal <special/> imprimé sur une tuile ou une carte déclenche l'Activation Spéciale de votre clan, qui n'est pas la même d'un clan à l'autre."
+      "special-activation": "Le cristal <special/> imprimé sur une tuile ou une carte déclenche l'Activation Spéciale de votre clan, qui n'est pas la même d'un clan à l'autre.",
+      "action": "Au début de la manche, le joueur actif révèle la première tuile de la pile et choisit une des zones qu'elle indique. Les 2 joueurs activent ensuite les 4 cases de cette zone dans leur propre grille, le joueur actif en premier.",
+      "cycle": "Après la {count}e tuile révélée, il n'en reste qu'une dans la pile : les 5 sont remélangées face cachée, et le joueur qui contrôle le moins de symboles <victory/> devient le nouveau joueur actif."
+    },
+    "action": {
+      "title": "Tuile Action",
+      "hidden": "La pile des 5 tuiles est mélangée face cachée : rien ne dit laquelle sera révélée ensuite.",
+      "top-left": "La rangée 1, la colonne 1, ou le carré de 4 cases en haut à gauche.",
+      "top-right": "La rangée 2, la colonne 2, ou le carré de 4 cases en haut à droite.",
+      "bottom-left": "La rangée 3, la colonne 3, ou le carré de 4 cases en bas à gauche.",
+      "bottom-right": "La rangée 4, la colonne 4, ou le carré de 4 cases en bas à droite.",
+      "corners-or-center": "Les 4 cases dans les coins, ou les 4 cases au centre."
     },
     "victory": {
       "title": "Carte Condition de Victoire",

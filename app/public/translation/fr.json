@@ -44,6 +44,7 @@
     "front": "Recto :",
     "back": "Verso :",
     "desert": "Verso (Désert) :",
+    "symbols": "Symboles :",
     "none": "Aucun.",
     "hidden": "Cette carte est face cachée : seul le clan auquel elle appartient est visible.",
     "food": "{count} <food/>",
@@ -64,7 +65,20 @@
       "portal": "Placer les 4 Portails dans les 4 coins de votre grille d'action fait gagner la partie.",
       "desert": "Un Désert est une tuile temporaire retournée sur sa face verso.",
       "permanent": "Une tuile permanente est toujours activable. Un effet Améliorer <upgrade/> la retourne sur son verso, où elle sera plus puissante lors des prochaines activations.",
-      "temporary": "Une tuile temporaire devient un Désert dès qu'elle est activée. Un effet Retourner <flip/> la remet sur son recto, où elle est de nouveau activable."
+      "temporary": "Une tuile temporaire devient un Désert dès qu'elle est activée. Un effet Retourner <flip/> la remet sur son recto, où elle est de nouveau activable.",
+      "conflict": "À la fin de chaque manche, le joueur qui a réuni le plus de symboles militaires <military/> pioche le premier jeton de la pile et résout son effet. En cas d'égalité, personne ne le pioche.",
+      "clan-victory": "Le clan {clan} gagne s'il a {count} <victory/>."
+    },
+    "token": {
+      "title": "Jeton Victoire militaire",
+      "hidden": "La pile des 18 jetons est mélangée face cachée entre les 2 joueurs : seul le prochain à être pioché sera révélé.",
+      "symbols": "{count} <victory/>",
+      "spy": "Scrutez.",
+      "flip-desert": "Retournez un de vos Déserts sur sa face recto, si possible : son effet pourra être de nouveau activé.",
+      "upgrade": "Améliorez une de vos tuiles.",
+      "food": "Gagnez 1 <food/>.",
+      "steal-food": "Volez 1 <food/> à votre adversaire. S'il n'en a pas, ignorez cet effet.",
+      "draw": "Piochez 1 carte."
     },
     "tile": {
       "permanent": "Tuile permanente",

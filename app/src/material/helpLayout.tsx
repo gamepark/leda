@@ -4,6 +4,7 @@ import { ReactNode } from 'react'
 import { Trans } from 'react-i18next'
 import FlipImage from '../images/icons/Flip.png'
 import MilitaryImage from '../images/icons/Military.png'
+import MilitaryVictoryImage from '../images/icons/MilitaryVictory.png'
 import PandaBronzeImage from '../images/icons/PandaBronze.png'
 import PandaGoldImage from '../images/icons/PandaGold.png'
 import PandaSilverImage from '../images/icons/PandaSilver.png'
@@ -57,6 +58,7 @@ const Icon = ({ src }: { src: string }) => <Picture src={src} css={inlineIcon} a
 const icons = {
   food: <Icon src={FoodImage} />,
   military: <Icon src={MilitaryImage} />,
+  victory: <Icon src={MilitaryVictoryImage} />,
   upgrade: <Icon src={UpgradeImage} />,
   flip: <Icon src={FlipImage} />,
   bronze: <Icon src={PandaBronzeImage} />,

@@ -13,6 +13,7 @@ import MilitaryVictoryStealFood from '../images/military-victory/steal-food.png'
 import MilitaryVictoryUpgrade from '../images/military-victory/upgrade.png'
 import MilitaryVictoryVictory from '../images/military-victory/victory.png'
 import { MilitaryVictoryTokenButtons } from './MilitaryVictoryTokenButtons'
+import { MilitaryVictoryTokenHelp } from './MilitaryVictoryTokenHelp'
 import { isSpiedByOther } from './spiedItem'
 import { SpiedItemButtons } from './SpiedItemButtons'
 import { SpyPileButton } from './SpyPileButton'
@@ -43,6 +44,9 @@ export class MilitaryVictoryTokenDescription extends TokenDescription<number, Ma
   }
 
   backImage = MilitaryVictoryBack
+
+  /** Clicking a token opens what it is worth, and how one is won (see {@link MilitaryVictoryTokenHelp}). */
+  help = MilitaryVictoryTokenHelp
 
   /** The pile between the players is face down. A token a player has won is face up, and so is a spied one. */
   isFlipped(item: Partial<MaterialItem<number, LocationType, MilitaryVictoryTokenId>>, context: MaterialContext) {

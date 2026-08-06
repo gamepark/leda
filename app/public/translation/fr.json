@@ -34,6 +34,22 @@
     "choose": "Choisissez votre clan",
     "random": "Au hasard !"
   },
+  "zone": {
+    "1": "la ligne 1",
+    "2": "la ligne 2",
+    "3": "la ligne 3",
+    "4": "la ligne 4",
+    "5": "la colonne 1",
+    "6": "la colonne 2",
+    "7": "la colonne 3",
+    "8": "la colonne 4",
+    "9": "le carré en haut à gauche",
+    "10": "le carré en haut à droite",
+    "11": "le carré en bas à gauche",
+    "12": "le carré en bas à droite",
+    "13": "les 4 coins",
+    "14": "les 4 cases centrales"
+  },
   "help": {
     "cost": "Coût :",
     "effect": "Effet :",
@@ -93,10 +109,10 @@
     "action": {
       "title": "Tuile Action",
       "hidden": "La pile des 5 tuiles est mélangée face cachée : rien ne dit laquelle sera révélée ensuite.",
-      "top-left": "La rangée 1, la colonne 1, ou le carré de 4 cases en haut à gauche.",
-      "top-right": "La rangée 2, la colonne 2, ou le carré de 4 cases en haut à droite.",
-      "bottom-left": "La rangée 3, la colonne 3, ou le carré de 4 cases en bas à gauche.",
-      "bottom-right": "La rangée 4, la colonne 4, ou le carré de 4 cases en bas à droite.",
+      "top-left": "La ligne 1, la colonne 1, ou le carré de 4 cases en haut à gauche.",
+      "top-right": "La ligne 2, la colonne 2, ou le carré de 4 cases en haut à droite.",
+      "bottom-left": "La ligne 3, la colonne 3, ou le carré de 4 cases en bas à gauche.",
+      "bottom-right": "La ligne 4, la colonne 4, ou le carré de 4 cases en bas à droite.",
       "corners-or-center": "Les 4 cases dans les coins, ou les 4 cases au centre."
     },
     "victory": {
@@ -323,6 +339,69 @@
     "place-ring": {
       "you": "Posez un Anneau sur une case de votre plateau ou <decline>passez</decline>",
       "player": "{player} peut poser un Anneau sur son plateau"
+    }
+  },
+  "log": {
+    "choose-clan": "{player} choisit le clan des {clan}",
+    "mulligan": "{player} remélange sa main de départ et pioche autant de cartes",
+    "keep-hand": "{player} garde sa main de départ",
+    "reveal-action": "{player} révèle la tuile Action <material/>",
+    "choose-action": "{player} choisit {zone}",
+    "activate": "{player} active <material/>",
+    "activate-card": "{player} active sa carte <material/>",
+    "activate-tile": "{player} active sa tuile <material/>",
+    "activate-and-upgrade-tile": "{player} active sa tuile <material/>, puis l'améliore",
+    "activate-desert": "{player} active l'effet rappelé sur son Désert <material/>",
+    "copy": "{player} copie la carte <material/> de son adversaire",
+    "choose-effect": "{player} choisit <effects/>",
+    "conflict": {
+      "won": "{player} remporte le conflit militaire, {symbols} <military/> contre {opponent}",
+      "tie": "Conflit militaire : égalité, personne ne pioche de jeton",
+      "blocked": "{player} remporte le conflit militaire, mais aucun jeton ne peut être gagné cette manche",
+      "empty": "{player} remporte le conflit militaire, mais la pile de jetons est vide"
+    },
+    "food-gain": "{player} gagne {count} <food/>",
+    "organisation-food": "{player} gagne {count} <food/> en organisant sa grille",
+    "food-spend": "{player} dépense {count} <food/>",
+    "food-steal": "{player} vole {count} <food/> à son adversaire",
+    "draw": "{player} pioche 1 carte",
+    "draw-seen": "{player} pioche <material/>",
+    "play-card": "{player} joue <material/>",
+    "awaken": "{player} éveille <material/>",
+    "place-ring": "{player} pose l'Anneau <material/>",
+    "pay-card": "{player} met 1 carte de sa main sous sa pioche",
+    "spend-ring": "{player} remet 1 Anneau sous sa pioche",
+    "spend-ring-seen": "{player} remet l'Anneau <material/> sous sa pioche",
+    "search-ring": "{player} prend l'Anneau <material/> dans sa pioche",
+    "rotate": "{player} pivote sa carte <material/>",
+    "upgrade": "{player} améliore une de ses tuiles : <material/>",
+    "flip": "{player} retourne un de ses Déserts sur son recto : <material/>",
+    "downgrade-front": "{player} retourne une de ses tuiles sur sa face non améliorée : <material/>",
+    "downgrade-desert": "{player} retourne une de ses tuiles sur sa face Désert : <material/>",
+    "swap": "{player} échange la position de 2 de ses cases",
+    "win-token": "{player} pioche le jeton <material/>",
+    "redraw-token": "{player} remet le jeton <material/> sous la pile",
+    "trigger-token": "{player} déclenche l'effet du jeton <material/>",
+    "shark-token": "{player} place un pion Requin <shark/> ({count}/{goal})",
+    "pass": {
+      "play-card": "{player} renonce à jouer une carte",
+      "spend-ring": "{player} renonce à échanger un Anneau",
+      "rotate": "{player} renonce à pivoter une carte",
+      "place-ring": "{player} renonce à poser un Anneau"
+    },
+    "spy": {
+      "deck": "{player} scrute la première carte de sa pioche",
+      "deck-seen": "{player} scrute la première carte de sa pioche : <material/>",
+      "action-tile": "{player} scrute la première tuile de la pile Action",
+      "action-tile-seen": "{player} scrute la première tuile de la pile Action : <material/>",
+      "military-victory": "{player} scrute le premier jeton de Victoire militaire",
+      "military-victory-seen": "{player} scrute le premier jeton de Victoire militaire : <material/>"
+    },
+    "spy-return": {
+      "on-top": "{player} remet l'élément scruté sur sa pile",
+      "on-top-seen": "{player} remet <material/> sur sa pile",
+      "under": "{player} remet l'élément scruté sous sa pile",
+      "under-seen": "{player} remet <material/> sous sa pile"
     }
   }
 }

@@ -50,8 +50,11 @@ export const ChooseEffectHeader = () => {
 /**
  * What a branch gives, one symbol per time it gives it: 2 military symbols are 2 crossed swords, as on the cards.
  * How many times is asked of the rules, since a card may read it off the game rather than print it.
+ *
+ * Read by the journal as well, which says what a player picked with the very symbols they picked between
+ * (see {@link ChooseEffectLog}).
  */
-const EffectIcons = ({ effects, rules, player, cell }: { effects: Effects; rules: LedaRules; player: number; cell?: XYCoordinates }) => (
+export const EffectIcons = ({ effects, rules, player, cell }: { effects: Effects; rules: LedaRules; player: number; cell?: XYCoordinates }) => (
   <>
     {getEnumValues(Effect).flatMap((effect) =>
       Array.from({ length: effectQuantity(rules, player, effects[effect], cell) }, (_, time) => <EffectIcon key={`${effect}-${time}`} effect={effect} />)

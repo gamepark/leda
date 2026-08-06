@@ -6,6 +6,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { gameAnimations } from './animations/GameAnimations'
 import { App } from './App'
+import { LedaHistory } from './history/LedaHistory'
 import { Locators } from './locators/Locators'
 import { Material } from './material/Material'
 import { ledaTheme } from './theme'
@@ -20,6 +21,7 @@ createRoot(document.getElementById('root')!).render(
       material={Material}
       locators={Locators}
       animations={gameAnimations}
+      logs={new LedaHistory()}
       theme={ledaTheme}
     >
       <App />

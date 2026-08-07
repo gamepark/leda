@@ -304,7 +304,7 @@
     },
     "spy-return": {
       "you": "Remettez cet élément sur ou sous sa pile",
-      "player": "{player} remet l'élément dans sa pile"
+      "player": "{player} remet l'élément scruté sur ou sous sa pile"
     },
     "activate-desert": {
       "you": "Activez l'effet rappelé sur un de vos Déserts",

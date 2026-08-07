@@ -79,7 +79,7 @@ export enum Effect {
   /** Activate one of your tiles, on the face it is showing, whether that face is upgraded or not. */
   ActivateTile,
 
-  /** Copy what one of the cards your opponent has in the zone of the round gives, without activating theirs. */
+  /** Copy what one of the squares of your opponent in the zone of the round gives, without activating theirs. */
   CopyOpponentCard,
 
   /** Search your deck for a Ring, reveal it, take it into your hand, then shuffle your deck. */
@@ -119,14 +119,14 @@ export type Effects = Partial<Record<Effect, EffectQuantity>>
  * `from` is the effect it was reached through, when it was reached through one: a special activation is "1 crystal
  * = 1 Food OR 1 Awakening", and what the crystal is worth is only readable beside the crystal itself.
  * `cell` is the square that gives them, when a square is what gives them: a Shark card counts the tokens around
- * its own square.
- * `owner` is whose grid that square is in, when it is not the grid of the player resolving them: a card copied is
- * read, and turned, where it stands, which is on the other side of the table (see {@link CopyOpponentCardRule}).
+ * its own square, and a Cat card turns itself over where it stands.
+ *
+ * Always a square of the player resolving them, and never one of their opponent: what is copied off the other
+ * side of the table is resolved here, on the card that copied it (see {@link CopyOpponentCardRule}).
  */
 export type EffectSource = {
   from?: Effect
   cell?: XYCoordinates
-  owner?: number
 }
 
 /**

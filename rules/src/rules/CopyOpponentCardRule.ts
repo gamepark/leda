@@ -2,28 +2,36 @@ import { CustomMove, isCustomMoveType, MaterialMove, XYCoordinates } from '@game
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { sameCell } from '../material/PlayerGrid'
-import { copiableCells } from './activation'
+import { copiableCells, squareEffects } from './activation'
 import { CustomMoveType } from './CustomMoveType'
 import { EffectRule } from './EffectRule'
 import { resolveEffects } from './effects'
-import { cardEffectsOn } from './playedCards'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
 /**
- * What a Cat card reads as "copy the effect of a card your opponent can activate this turn": the squares of the
+ * What a Cat card reads as "copy the effect of a square your opponent can activate this turn": the squares of the
  * zone of the round in their opponent's grid, whether that opponent has resolved them yet or not.
  *
- * What is copied is what the card gives, read on their grid and against their square: a Shark card surrounded by
- * their tokens gives its Pack effect here too, and a Cat card gives whichever of its 2 effects is up over there.
- * Everything it gives is copied, the half turn of a Cat card included: their card is turned over by being copied,
- * exactly as activating it would have turned it (see {@link Effect.HalfTurn}).
+ * A square is what is copied, and not only a card: a bare square of theirs gives its tile, exactly as it would
+ * give it to them (see {@link squareEffects}). Which face of it is up is read over there, on their grid: a Shark
+ * card surrounded by their tokens gives its Pack effect and not its printed one.
  *
- * Nothing else of theirs is spent, and nothing else lands on their side: the copy is resolved for the player
- * holding this card, in their own grid.
+ * What that square gives is then given to the card that copied it, and given exactly as if it had been printed on
+ * it in the place of the copy: the Cat card resolves those effects, on its own side of the table and for its own
+ * owner, and takes the half turn it prints once everything is resolved, as it would have on any other face
+ * (see {@link Effect.HalfTurn}). So the card that reads "1 Food per pair of your Deserts" copied by a Cat gives
+ * the Deserts of the Cat, and the card that reads its own square gives what that square is worth here: nothing at
+ * all, the only such card counting Shark tokens, which a Cat never owns (see {@link EffectSource}).
+ *
+ * Nothing of theirs is spent and nothing lands on their side, their square staying exactly as it stands: a
+ * temporary tile of theirs does not become the Desert activating it would have made of it, becoming one being
+ * what it costs its owner to activate it and not what it gives (see {@link activateTile}). Their card is not
+ * turned over either, and no copy ever turns one: the 2 players hold 2 different clans (see {@link ChooseClanRule}),
+ * so the only clan whose cards take a half turn is the one holding this card, never the one it copies.
  */
 export class CopyOpponentCardRule extends EffectRule {
-  /** An opponent with no card of their own in the zone leaves nothing to copy, and the effect is lost. */
+  /** An opponent with nothing of their own to activate in the zone leaves nothing to copy, and the effect is lost. */
   onRuleStart(): Move[] {
     return this.cells.length > 0 ? [] : this.resume()
   }
@@ -36,7 +44,7 @@ export class CopyOpponentCardRule extends EffectRule {
     return this.nextPlayer
   }
 
-  /** The squares of the zone that hold a card of the opponent with something to give (see {@link copiableCells}). */
+  /** The squares of the zone the opponent has something to give on (see {@link copiableCells}). */
   get cells(): XYCoordinates[] {
     return copiableCells(this, this.player)
   }
@@ -45,14 +53,14 @@ export class CopyOpponentCardRule extends EffectRule {
     if (!isCustomMoveType<CustomMoveType, XYCoordinates>(CustomMoveType.ActivateSquare)(move)) return []
     const cell = move.data
     if (cell === undefined || !this.cells.some((copiable) => sameCell(copiable, cell))) return []
-    const effects = cardEffectsOn(this, this.opponent, cell)
+    const effects = squareEffects(this, this.opponent, cell)
     if (effects === undefined) return []
     /**
-     * The square handed to the effects is the one the card stands on in the opponent's grid, and it is handed over
-     * as theirs: that is where the card is read, a Shark card counting the tokens around it counting theirs, and
-     * that is where it is turned, a Cat card copied taking its half turn on their side of the table
-     * (see {@link Effect.HalfTurn}). Everything else is gained by the player copying it, in their own grid.
+     * No square is handed to the effects, unlike every other activation: the square they were read on is not the
+     * square they are resolved on, and the one they are resolved on is the card that copied them, which the rule
+     * an effect queues is never told about (see {@link resolveEffects}). Nothing is lost by that: what a square
+     * is read for is the Shark tokens around it, and there are none around a Cat card to read.
      */
-    return [...resolveEffects(this, effects, { cell, owner: this.opponent }), ...this.resume()]
+    return [...resolveEffects(this, effects), ...this.resume()]
   }
 }

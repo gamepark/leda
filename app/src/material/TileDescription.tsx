@@ -80,14 +80,19 @@ export class TileDescription extends CardDescription<number, MaterialType, Locat
   }
 
   /**
-   * The squares of the player's own grid always carry their menu: the button inside it is what decides whether
-   * there is anything to offer, and it has to be mounted to do so (see {@link TileMenuButton}).
+   * The squares of a grid always carry their menu: the button inside it is what decides whether there is anything
+   * to offer, and it has to be mounted to do so (see {@link TileMenuButton}).
    */
   menuAlwaysVisible = true
 
+  /**
+   * Both grids, and not only the one of the player looking: a Cat card copying the opponent is answered on their
+   * squares, which is where what is being copied stands (see {@link CopyOpponentCardRule}). Whose grid a square is
+   * in is handed over, since almost every button belongs to its owner alone.
+   */
   getItemMenu(item: MaterialItem<number, LocationType, TileId>, context: ItemContext<number, MaterialType, LocationType>) {
-    if (item.location.type !== LocationType.PlayerGrid || item.location.player !== context.player) return
-    return <TileMenuButton index={context.index} />
+    if (item.location.type !== LocationType.PlayerGrid || item.location.player === undefined) return
+    return <TileMenuButton index={context.index} owner={item.location.player} />
   }
 
   /**

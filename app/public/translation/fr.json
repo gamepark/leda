@@ -196,7 +196,7 @@
       "shark-food-per-token-2": "Gagnez 1 <food/> pour chaque jeton de Victoire militaire que vous possédez.",
       "shark-pack-place-token-2": "Placez un pion Requin sur une de vos tuiles qui n'en a pas.",
       "shark-pack-spy-2": "Scrutez.",
-      "cat-copy-opponent-card": "Copiez l'effet d'une carte activable par votre adversaire ce tour. Rotation.",
+      "cat-copy-opponent-card": "Copiez l'effet d'une case activable par votre adversaire ce tour. Rotation.",
       "cat-copy-opponent-card-2": "Piochez 2 cartes. Rotation.",
       "cat-search-ring": "Cherchez un Anneau dans votre pioche, révélez-le et ajoutez-le à votre main, puis mélangez votre pioche. Rotation.",
       "cat-search-ring-2": "Rotation.",
@@ -327,8 +327,8 @@
       "player": "{player} active une de ses tuiles"
     },
     "copy-opponent-card": {
-      "you": "Copiez l'effet d'une carte de votre adversaire dans la zone",
-      "player": "{player} copie l'effet d'une de vos cartes dans la zone"
+      "you": "Copiez l'effet d'une case de votre adversaire dans la zone",
+      "player": "{player} copie l'effet d'une de vos cases dans la zone"
     },
     "search-ring": {
       "you": "<reopen>Prenez un Anneau de votre pioche dans votre main</reopen>",
@@ -358,7 +358,7 @@
     "activate-tile": "{player} active sa tuile <material/>",
     "activate-and-upgrade-tile": "{player} active sa tuile <material/>, puis l'améliore",
     "activate-desert": "{player} active l'effet rappelé sur son Désert <material/>",
-    "copy": "{player} copie la carte <material/> de son adversaire",
+    "copy": "{player} copie <material/> de son adversaire",
     "choose-effect": "{player} choisit <effects/>",
     "conflict": {
       "won": "{player} remporte le conflit militaire, {symbols} <military/> contre {opponent}",

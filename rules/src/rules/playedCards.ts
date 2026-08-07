@@ -2,7 +2,7 @@ import { MaterialMove, XYCoordinates } from '@gamepark/rules-api'
 import { Clan } from '../Clan'
 import { ClanCardId, ClanCardItemId, clanOf } from '../material/ClanCardId'
 import { clanCardEffects } from '../material/clanCards/cardProperties'
-import { Effect, EffectSet, hasEffect, isEffectChoice } from '../material/Effect'
+import { Effect, EffectSet, hasEffect, hasHalfTurn, isEffectChoice } from '../material/Effect'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { tileAt } from '../material/PlayerGrid'
@@ -68,13 +68,18 @@ export const cardEffectsOn = (rules: Rules, player: number, cell: XYCoordinates)
 
 /**
  * The half turn a card takes, the one move there is to it: the rotation of the location is which of its 2 effects
- * is up, and turning the card is flipping that. Which cards ever take it is not asked here, it is read off what
- * they give (see {@link Effect.HalfTurn}): the effect turns the card that gave it, and a Ring turns the card its
- * owner names.
+ * is up, and turning the card is flipping that.
+ *
+ * Only a card that has 2 effects to alternate between ever takes it, which is asked of the square rather than of
+ * whoever is turning it: a bare square holds no card to turn, a Ring prints one effect and no second one, and a
+ * card of a clan that alternates nothing would be turned onto a face it does not have. Nothing happens to any of
+ * them, exactly as nothing happens to a card told to become a Desert (see {@link becomesDesert}).
+ * That the effect turns the card that gave it is therefore never assumed here: it is a half turn reaching a
+ * square, and the square says whether there is anything to turn (see {@link Effect.HalfTurn}).
  */
 export const rotateCard = (rules: Rules, player: number, cell: XYCoordinates): MaterialMove<number, MaterialType, LocationType>[] => {
   const index = topCardIndexOn(rules, player, cell)
-  if (index === undefined) return []
+  if (index === undefined || !hasHalfTurn(cardEffectsOn(rules, player, cell))) return []
   const cards = rules.material(MaterialType.ClanCard)
   const rotated = cards.getItem(index).location.rotation === true
   return [cards.index(index).moveItem((item) => ({ ...item.location, rotation: !rotated }))]

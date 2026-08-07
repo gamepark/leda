@@ -1,10 +1,10 @@
-import { MaterialMove, PlayerTurnRule, XYCoordinates } from '@gamepark/rules-api'
+import { MaterialItem, MaterialMove, PlayerTurnRule, XYCoordinates } from '@gamepark/rules-api'
 import { ActionZone, actionZoneCells, zoneContains } from '../material/ActionZone'
-import { hasEffect, hasHalfTurn } from '../material/Effect'
+import { EffectSet, hasEffect, hasHalfTurn } from '../material/Effect'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { cellOf, sameCell, tileAt } from '../material/PlayerGrid'
-import { hasTileEffect, isPermanent, tileEffects } from '../material/TileEffect'
+import { isPermanent, tileEffects } from '../material/TileEffect'
 import { TileId } from '../material/TileId'
 import { Rules } from '../Rules'
 import { pendingRules, resolveEffects } from './effects'
@@ -60,46 +60,58 @@ export const activableCells = (rules: Rules, player: number): XYCoordinates[] =>
 }
 
 /**
- * Whether a square holds anything to resolve: what the card played on it gives, or what its tile gives when no
- * card covers it. A card covers the tile of its square, so a card showing a face that prints nothing leaves its
- * square with nothing to activate (see {@link cardEffectsOn}).
+ * What a square holds to resolve: what the card played on it gives, or what its tile gives when no card covers it.
+ * A card covers the tile of its square, so a card showing a face that prints nothing leaves its square with
+ * nothing to activate, the tile under it staying out of reach (see {@link cardEffectsOn}).
  */
-const isActivable = (rules: Rules, player: number, cell: XYCoordinates): boolean => {
+export const squareEffects = (rules: Rules, player: number, cell: XYCoordinates): EffectSet | undefined => {
   const card = cardEffectsOn(rules, player, cell)
-  if (card !== undefined) return hasEffect(card)
+  if (card !== undefined) return card
   const tile = tileAt(rules.material(MaterialType.Tile), player, cell).getItem<TileId>()
-  return tile !== undefined && hasTileEffect(tile.id, tile.location.rotation === true)
+  return tile === undefined ? undefined : tileEffects(tile.id, tile.location.rotation === true)
+}
+
+/** Whether a square holds anything to resolve at all, which is what makes it worth activating. */
+const isActivable = (rules: Rules, player: number, cell: XYCoordinates): boolean => {
+  const effects = squareEffects(rules, player, cell)
+  return effects !== undefined && hasEffect(effects)
 }
 
 /**
+ * Whether activating an item turns it into a Desert, which only a temporary tile still showing its front ever
+ * does: a permanent tile keeps its face however often it is activated, a tile already turned over is a Desert
+ * already, and a card has no Desert face at all.
+ * Asked of the item being activated rather than assumed of the rule asking, so that becoming a Desert can never
+ * happen to something that has no such face.
+ */
+const becomesDesert = (item: MaterialItem<number, LocationType, TileId>): boolean => item.location.rotation !== true && !isPermanent(item.id)
+
+/**
  * Everything activating a tile gives, whichever rule asked for it: what the face it shows gives, and the Desert a
- * temporary tile becomes once it has given it. A permanent tile keeps its face and can be activated again.
+ * temporary tile becomes once it has given it (see {@link becomesDesert}).
  * The square is handed to the effects, some of which are read against it (see {@link EffectSource}).
  */
 export const activateTile = (rule: PlayerTurnRule<number, MaterialType, LocationType>, index: number): MaterialMove<number, MaterialType, LocationType>[] => {
   const tiles = rule.material(MaterialType.Tile)
   const tile = tiles.getItem<TileId>(index)
   if (tile === undefined) return []
-  const flipped = tile.location.rotation === true
-  const moves = resolveEffects(rule, tileEffects(tile.id, flipped), { cell: cellOf(tile.location) })
-  if (!flipped && !isPermanent(tile.id)) moves.push(tiles.index(index).moveItem({ ...tile.location, rotation: true }))
+  const moves = resolveEffects(rule, tileEffects(tile.id, tile.location.rotation === true), { cell: cellOf(tile.location) })
+  if (becomesDesert(tile)) moves.push(tiles.index(index).moveItem({ ...tile.location, rotation: true }))
   return moves
 }
 
 /**
- * The squares a Cat card copying the opponent may pick: the squares of the zone of the round that hold a card of
- * that opponent with something to give, whether they have activated it yet or not.
- * A card showing a face that prints nothing is left out, exactly as it is when a square is activated: what may be
- * copied is what its owner could activate, which is the same question asked on their grid.
+ * The squares a Cat card copying the opponent may pick: the squares of the zone of the round that hold something
+ * of that opponent to give, whether they have activated it yet or not. A card of theirs, or the tile of a bare
+ * square: the card names a square, and a square is a card over a tile.
+ * A square with nothing to give is left out, exactly as it is when its owner activates the zone: what may be
+ * copied is what they could activate, which is the same question asked on their grid (see {@link isActivable}).
  */
 export const copiableCells = (rules: Rules, player: number): XYCoordinates[] => {
   const zone = roundZone(rules)
   const opponent = rules.game.players.find((other) => other !== player)
   if (zone === undefined || opponent === undefined) return []
-  return actionZoneCells[zone].filter((cell) => {
-    const effects = cardEffectsOn(rules, opponent, cell)
-    return effects !== undefined && hasEffect(effects)
-  })
+  return actionZoneCells[zone].filter((cell) => isActivable(rules, opponent, cell))
 }
 
 /**
@@ -123,8 +135,9 @@ export const rotatableCells = (rules: Rules, player: number): XYCoordinates[] =>
  * which that card gives like anything else it gives (see {@link Effect.HalfTurn}).
  *
  * Shared by the 2 rules that activate a card, the zone of the round and a card asking for a card
- * (see {@link ActivateCardRule}): a Cat card copied by an opponent is not turned over, since what is activated
- * there is the copy and not the card (see {@link CopyOpponentCardRule}).
+ * (see {@link ActivateCardRule}). A card copied by an opponent goes through neither: what is resolved there is
+ * the copy, on the card that copied it, and the card read stays exactly as it stands
+ * (see {@link CopyOpponentCardRule}).
  */
 export const activateCard = (rule: PlayerTurnRule<number, MaterialType, LocationType>, cell: XYCoordinates): MaterialMove<number, MaterialType, LocationType>[] => {
   const effects = cardEffectsOn(rule, rule.player, cell)

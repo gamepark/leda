@@ -80,8 +80,9 @@ const ActivateCardButton = ({ index, rules, player }: CardButtonProps) => {
 }
 
 /**
- * A card of the opponent, when a Cat card is copying one of theirs: the button sits on their grid, which is where
- * the card being copied is, and the square it names is a square of their grid (see {@link CopyOpponentCardRule}).
+ * A card of the opponent, when a Cat card is copying a square of theirs: the button sits on their grid, which is
+ * where what is being copied is, and the square it names is a square of their grid.
+ * Their bare squares carry the same one, on the tile itself (see {@link TileMenuButton}).
  */
 const CopyOpponentCardButton = ({ index, rules, player }: CardButtonProps) => {
   const card = rules.material(MaterialType.ClanCard).getItem(index)

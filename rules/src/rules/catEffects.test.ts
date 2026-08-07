@@ -1,17 +1,21 @@
-import { isCustomMoveType, isMoveItemType, MaterialGame, MaterialMove } from '@gamepark/rules-api'
+import { getEnumValues, isCustomMoveType, isMoveItemType, MaterialGame, MaterialMove } from '@gamepark/rules-api'
 import { describe, expect, it } from 'vitest'
 import { Clan } from '../Clan'
 import { LedaRules } from '../LedaRules'
 import { ActionZone } from '../material/ActionZone'
-import { ClanCardId } from '../material/ClanCardId'
+import { ClanCardId, clanOf } from '../material/ClanCardId'
+import { hasHalfTurn } from '../material/Effect'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { MilitaryVictoryTokenId } from '../material/MilitaryVictoryTokenId'
+import { tileAt } from '../material/PlayerGrid'
 import { TileId } from '../material/TileId'
+import { clanCardEffects } from '../material/clanCards/cardProperties'
 import { catCards } from '../material/clanCards/catCards'
 import { CustomMoveType } from './CustomMoveType'
 import { pendingRules } from './effects'
 import { Memory } from './Memory'
+import { rotateCard } from './playedCards'
 import { RuleId } from './RuleId'
 
 /** A card in play, on the square of the zone whose x it is given, and on the face it is showing. */
@@ -24,7 +28,17 @@ type Setup = {
   opponentCards?: Played[]
   /** The cards the player holds. Their deck holds every Cat card these and the ones in play leave. */
   hand?: ClanCardId[]
+  /** What the 16 tiles of a grid are, for the tests the permanent Food tile of every grid will not do for. */
+  tiles?: Grid
+  opponentTiles?: Grid
+  /** The squares of the row of the opponent holding a Shark token, which is what wakes a Pack (see {@link sharkPack}). */
+  opponentSharkTokens?: number[]
 }
+
+/** The 16 tiles of a grid, all the same and all on the same face: a Desert is a temporary tile turned over. */
+type Grid = { tile: TileId; flipped?: boolean }
+
+const permanentFood: Grid = { tile: TileId.PermanentFood }
 
 /** The 13 cards of the clan, which a player takes as their deck when they pick it (see {@link ChooseClanRule}). */
 const allCatCards = Object.keys(catCards).map(Number) as ClanCardId[]
@@ -44,7 +58,14 @@ const playedCard = (player: number, { card, x, rotated }: Played) => ({
  * A Cat player, their row of the grid holding the cards below. The tiles are permanent Food tiles, so a square
  * with no card on it gives 1 Food: that is what tells a tile being activated from a card being activated.
  */
-const game = ({ cards = [], opponentCards = [], hand = [] }: Setup): MaterialGame<number, MaterialType, LocationType> => {
+const game = ({
+  cards = [],
+  opponentCards = [],
+  hand = [],
+  tiles = permanentFood,
+  opponentTiles = permanentFood,
+  opponentSharkTokens = []
+}: Setup): MaterialGame<number, MaterialType, LocationType> => {
   /**
    * Whatever the hand and the grid do not hold: a clan deck starts whole, and it is that invariant the search of a
    * Ring reads the deck through (see {@link ringsInDeck}).
@@ -65,16 +86,25 @@ const game = ({ cards = [], opponentCards = [], hand = [] }: Setup): MaterialGam
         { id: Clan.Cat, location: { type: LocationType.PlayerVictoryCondition, player: 1 } },
         { id: Clan.Shark, location: { type: LocationType.PlayerVictoryCondition, player: 2 } }
       ],
-      [MaterialType.Tile]: [1, 2].flatMap((player) =>
-        [0, 1, 2, 3].flatMap((y) => [0, 1, 2, 3].map((x) => ({ id: TileId.PermanentFood, location: { type: LocationType.PlayerGrid, player, x, y } })))
-      ),
+      [MaterialType.Tile]: [1, 2].flatMap((player) => {
+        const grid = player === 1 ? tiles : opponentTiles
+        return [0, 1, 2, 3].flatMap((y) =>
+          [0, 1, 2, 3].map((x) => ({
+            id: grid.tile,
+            location: { type: LocationType.PlayerGrid, player, x, y, rotation: grid.flipped ? true : undefined }
+          }))
+        )
+      }),
       [MaterialType.ClanCard]: [
         ...cards.map((played) => playedCard(1, played)),
         ...opponentCards.map((played) => playedCard(2, played)),
         ...hand.map((front, x) => ({ id: { front, back: Clan.Cat }, location: { type: LocationType.PlayerHand, player: 1, x } })),
         ...deck.map((front, x) => ({ id: { front, back: Clan.Cat }, location: { type: LocationType.PlayerDeck, player: 1, x } }))
       ],
-      [MaterialType.MilitaryVictoryToken]: [{ id: MilitaryVictoryTokenId.Food, location: { type: LocationType.MilitaryVictoryDeck, x: 0 } }]
+      [MaterialType.MilitaryVictoryToken]: [{ id: MilitaryVictoryTokenId.Food, location: { type: LocationType.MilitaryVictoryDeck, x: 0 } }],
+      [MaterialType.SharkToken]: opponentSharkTokens.map((x) => ({
+        location: { type: LocationType.PlacedSharkToken, player: 2, parent: tileIndex(2, x) }
+      }))
     }
   }
 }
@@ -269,55 +299,146 @@ describe('The Cat cards that ask the player something', () => {
     )
     activate(rules, 0)
     expect(rules.game.rule?.id).toBe(RuleId.CopyOpponentCard)
+    // All 4 squares of their row: their card, and the 3 tiles the rest of the zone is bare of any card.
     const moves = rules.getLegalMoves(1).filter(isCustomMoveType(CustomMoveType.ActivateSquare))
-    expect(moves).toHaveLength(1)
+    expect(moves).toHaveLength(4)
     playAll(rules, rules.customMove(CustomMoveType.ActivateSquare, { x: 1, y: 0 }))
     // The 2 Military of their card, gained by the player copying it and not by its owner.
     expect(military(rules, 1)).toBe(2)
     expect(military(rules, 2)).toBe(0)
-  })
-
-  /** Whether the card the opponent has played on that square is showing its second face. */
-  const isOpponentCardRotated = (rules: LedaRules) =>
-    rules.material(MaterialType.ClanCard).location(LocationType.PlayedCard).player(2).getItem()!.location.rotation === true
-
-  it('turns the Cat card of the opponent it copies, the way activating it would have', () => {
-    const rules = new LedaRules(
-      game({
-        cards: [{ card: ClanCardId.CatCopyOpponentCard, x: 0 }],
-        opponentCards: [{ card: ClanCardId.CatFoodAndMilitary, x: 1 }]
-      })
-    )
-    activate(rules, 0)
-    playAll(rules, rules.customMove(CustomMoveType.ActivateSquare, { x: 1, y: 0 }))
-    // What their card gives is gained here, and the half turn it takes is taken over there.
-    expect(food(rules)).toBe(1)
-    expect(military(rules)).toBe(1)
-    expect(isOpponentCardRotated(rules)).toBe(true)
-    // Their card being turned is no reason for this one not to take its own half turn, being a Cat card too.
+    // The card that copied takes the half turn it prints, exactly as it would have on any other face: what it
+    // copies replaces the copy and nothing else of what the card gives.
     expect(isRotated(rules, 0)).toBe(true)
   })
 
-  it('copies a card of theirs showing a face that gives nothing but its half turn', () => {
+  it('never copies a half turn, no clan but this one printing any', () => {
+    // What the copy is resolved on is the card that copied it, so a copied half turn would turn that card a
+    // second time and undo its own (see {@link CopyOpponentCardRule}). It cannot happen: the 2 players hold 2
+    // different clans, and only the Cats print one. Pinned here rather than argued, since a card added to any
+    // other sheet would break the copy silently.
+    const turning = getEnumValues(ClanCardId).filter((card) => [false, true].some((second) => hasHalfTurn(clanCardEffects(card, second))))
+    expect(turning.every((card) => clanOf(card) === Clan.Cat)).toBe(true)
+  })
+
+  /** The face the tile of that square of the opponent is showing, a temporary tile turned over being a Desert. */
+  const isOpponentTileFlipped = (rules: LedaRules, x: number) =>
+    tileAt(rules.material(MaterialType.Tile), 2, { x, y: 0 }).getItem()!.location.rotation === true
+
+  it('copies a bare square of theirs, which is the tile of that square, and leaves that tile untouched', () => {
     const rules = new LedaRules(
       game({
         cards: [{ card: ClanCardId.CatCopyOpponentCard, x: 0 }],
-        opponentCards: [{ card: ClanCardId.CatFoodAndMilitary, x: 1, rotated: true }]
+        opponentTiles: { tile: TileId.TemporaryMilitary }
       })
     )
     activate(rules, 0)
-    // Their blank face is a square they can activate, so it is a square this may copy.
     expect(rules.game.rule?.id).toBe(RuleId.CopyOpponentCard)
     playAll(rules, rules.customMove(CustomMoveType.ActivateSquare, { x: 1, y: 0 }))
-    expect(food(rules)).toBe(0)
-    expect(military(rules)).toBe(0)
-    expect(isOpponentCardRotated(rules)).toBe(false)
+    // The Military their tile gives, gained here and not by them, their tile staying on its front: nothing of
+    // theirs is spent, so a temporary tile copied does not become the Desert activating it would have made of it.
+    expect(military(rules, 1)).toBe(1)
+    expect(military(rules, 2)).toBe(0)
+    expect(isOpponentTileFlipped(rules, 1)).toBe(false)
   })
 
-  it('is lost when the opponent has no card in the zone', () => {
-    const rules = new LedaRules(game({ cards: [{ card: ClanCardId.CatCopyOpponentCard, x: 0 }] }))
+  it('reads the face the tile of theirs is showing, an upgraded tile giving what that face gives', () => {
+    const rules = new LedaRules(
+      game({
+        cards: [{ card: ClanCardId.CatCopyOpponentCard, x: 0 }],
+        opponentTiles: { tile: TileId.PermanentFood, flipped: true }
+      })
+    )
+    activate(rules, 0)
+    playAll(rules, rules.customMove(CustomMoveType.ActivateSquare, { x: 1, y: 0 }))
+    expect(food(rules)).toBe(2)
+  })
+
+  it('reads what it copies against the player copying, a card counting Deserts counting theirs', () => {
+    const rules = new LedaRules(
+      game({
+        cards: [{ card: ClanCardId.CatCopyOpponentCard, x: 0 }],
+        // 16 Deserts on this side, and none on the other: what a copy counts is what the copying player owns.
+        tiles: { tile: TileId.TemporaryFood, flipped: true },
+        opponentCards: [{ card: ClanCardId.ScorpionFoodPerDesertPair, x: 1 }]
+      })
+    )
+    activate(rules, 0)
+    playAll(rules, rules.customMove(CustomMoveType.ActivateSquare, { x: 1, y: 0 }))
+    // 15 Deserts in sight, the 16th being under the card itself, hence 7 pairs and 7 Food. Their own grid holds
+    // none, so a card read on their side would have given nothing at all.
+    expect(food(rules)).toBe(7)
+  })
+
+  it('copies the Shark card that counts the tokens around it, and finds none around itself', () => {
+    const rules = new LedaRules(
+      game({
+        cards: [{ card: ClanCardId.CatCopyOpponentCard, x: 0 }],
+        opponentCards: [{ card: ClanCardId.SharkMilitaryPerToken, x: 1 }],
+        // One token on their card and one on each side of it: 2 around the square, so their Pack is awake and it
+        // is the face counting tokens that is up, worth 3 Military to them.
+        opponentSharkTokens: [0, 1, 2]
+      })
+    )
+    activate(rules, 0)
+    playAll(rules, rules.customMove(CustomMoveType.ActivateSquare, { x: 1, y: 0 }))
+    // That awake face is what is copied, and it counts the tokens around the card resolving it: a Cat card, in a
+    // grid holding no Shark token at all, hence nothing.
+    expect(military(rules, 1)).toBe(0)
+    expect(military(rules, 2)).toBe(0)
+
+    // The same card with its Pack asleep, to show the 0 above is the Pack face being read and not a copy that
+    // failed: its printed face gives 2 Military, and those 2 are copied.
+    const asleep = new LedaRules(
+      game({
+        cards: [{ card: ClanCardId.CatCopyOpponentCard, x: 0 }],
+        opponentCards: [{ card: ClanCardId.SharkMilitaryPerToken, x: 1 }]
+      })
+    )
+    activate(asleep, 0)
+    playAll(asleep, asleep.customMove(CustomMoveType.ActivateSquare, { x: 1, y: 0 }))
+    expect(military(asleep, 1)).toBe(2)
+  })
+
+  it('copies a Special activation square of theirs, which is worth the clan of the player copying', () => {
+    const rules = new LedaRules(
+      game({
+        cards: [{ card: ClanCardId.CatCopyOpponentCard, x: 0 }],
+        opponentTiles: { tile: TileId.TemporarySpecialActivation }
+      })
+    )
+    const before = hand(rules).length
+    activate(rules, 0)
+    playAll(rules, rules.customMove(CustomMoveType.ActivateSquare, { x: 1, y: 0 }))
+    // The crystal of the Cats, which is 1 card drawn, and not the 2 Military their Shark opponent reads it as.
+    expect(hand(rules).length).toBe(before + 1)
+    expect(military(rules, 1)).toBe(0)
+  })
+
+  it('is lost when the opponent has nothing to activate in the zone', () => {
+    const rules = new LedaRules(
+      game({
+        cards: [{ card: ClanCardId.CatCopyOpponentCard, x: 0 }],
+        // A grid of Deserts, with no card over any of them: there is nothing of theirs to copy in the zone.
+        opponentTiles: { tile: TileId.TemporaryFood, flipped: true }
+      })
+    )
     activate(rules, 0)
     expect(rules.game.rule?.id).not.toBe(RuleId.CopyOpponentCard)
+  })
+})
+
+describe('A half turn', () => {
+  it('turns nothing on a square that has no face to turn onto', () => {
+    const rules = new LedaRules(game({ cards: [{ card: ClanCardId.CatRingEmptyDeck, x: 0 }] }))
+    // A Ring, which prints one effect and no second one, and a bare square, which holds no card at all. A half
+    // turn reaching either of them is worth nothing, the way becoming a Desert is worth nothing to a card: what
+    // is turned is asked of the square, never assumed of whoever sent the half turn there.
+    expect(rotateCard(rules, 1, { x: 0, y: 0 })).toHaveLength(0)
+    expect(rotateCard(rules, 1, { x: 1, y: 0 })).toHaveLength(0)
+    // The same square once a card that does alternate 2 faces stands on it, to show the 2 above are the guard
+    // and not a square nothing can reach.
+    const turning = new LedaRules(game({ cards: [{ card: ClanCardId.CatFoodAndMilitary, x: 0 }] }))
+    expect(rotateCard(turning, 1, { x: 0, y: 0 })).toHaveLength(1)
   })
 })
 

@@ -1,4 +1,4 @@
-import { Effect, Effects, hasEffect } from './Effect'
+import { Effect, Effects } from './Effect'
 import { TileId } from './TileId'
 
 /** What each tile gives, on each of its 2 faces, in the lexicon every effect of the game is written in. */
@@ -34,5 +34,3 @@ const upgradedEffects: Partial<Record<TileId, Effects>> = {
  * face of a permanent tile, the Desert of a temporary one. A Desert has no effect, hence the empty record.
  */
 export const tileEffects = (tile: TileId, flipped: boolean): Effects => (flipped ? (upgradedEffects[tile] ?? {}) : frontEffects[tile])
-
-export const hasTileEffect = (tile: TileId, flipped: boolean): boolean => hasEffect(tileEffects(tile, flipped))

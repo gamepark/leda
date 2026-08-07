@@ -1,5 +1,5 @@
 import { LedaRules } from '@gamepark/leda/LedaRules'
-import { activableCells } from '@gamepark/leda/rules/activation'
+import { activableCells, copiableCells } from '@gamepark/leda/rules/activation'
 import { RuleId } from '@gamepark/leda/rules/RuleId'
 import { bareCells, visibleDesertCells } from '@gamepark/leda/rules/tileChoices'
 import { ActivateSquareOnTile } from './ActivateSquareButton'
@@ -19,17 +19,28 @@ export type TileButtonProps = {
 }
 
 /**
- * The button a square of the player's own grid carries, whatever the rules are waiting for.
+ * The button a square of a grid carries, whatever the rules are waiting for.
  * What it reads is the state nothing is still catching up with (see {@link useMenuButtonRules}): for as long as
  * anything is being shown, the squares carry no button at all. Pressing one is what starts an animation, so the
  * buttons of the whole grid go away the moment the player presses one, and only come back once the rules have
  * moved on and the table has been told about it.
  */
-export const TileMenuButton = ({ index }: { index: number }) => {
+export const TileMenuButton = ({ index, owner }: { index: number; owner: number }) => {
   const context = useMenuButtonRules()
   if (context === undefined) return null
   const { rules, player: me } = context
   if (rules.getActivePlayer() !== me) return null
+
+  /**
+   * The squares of the opponent, which one rule and one rule only ever asks about: a Cat card copying a square of
+   * theirs is answered over there, on the bare squares as well as on the cards (see {@link CopyOpponentCardRule}).
+   * Every other button is about the grid of the player pressing it, and their own grid says nothing during that
+   * rule: the squares are only ever named by their coordinates, so whose grid they are in has to be asked here.
+   */
+  if (owner !== me) {
+    if (rules.game.rule?.id !== RuleId.CopyOpponentCard) return null
+    return <ActivateSquareOnTile index={index} rules={rules} cells={copiableCells(rules, me)} />
+  }
 
   switch (rules.game.rule?.id) {
     case RuleId.ChooseAction:

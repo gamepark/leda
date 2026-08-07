@@ -16,6 +16,18 @@ export const FoodGainLog = ({ move }: MaterialLogProps<CreateItem>) => {
 }
 
 /**
+ * The Food an Awakening that cannot be resolved is worth: the group of Pandas it takes is not on the grid, or none
+ * of the level above is left in hand to take the square, and the crystal falls back onto its other branch
+ * (see {@link AwakeningRule}).
+ * An entry of its own rather than one indented under a square: it is not what the last square activated gave, but
+ * what the whole zone came to once it was done.
+ */
+export const AwakeningLostLog = ({ move }: MaterialLogProps<CreateItem>) => {
+  const player = usePlayerName(move.item.location.player)
+  return <LogText code="log.awakening-lost" values={{ player, count: move.item.quantity ?? 1 }} />
+}
+
+/**
  * The Food an organisation is worth, which its player takes whether they swapped 2 of their squares for it or
  * simply took it. Its own entry because it is the whole of what a player did with their turn, and not something
  * an effect gave them along the way (see {@link OrganisationRule}).

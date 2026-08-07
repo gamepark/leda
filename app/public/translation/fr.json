@@ -374,6 +374,7 @@
     "draw-seen": "{player} pioche <material/>",
     "play-card": "{player} joue <material/>",
     "awaken": "{player} éveille <material/>",
+    "awakening-lost": "Éveil impossible, {player} gagne {count} <food/>",
     "place-ring": "{player} pose l'Anneau <material/>",
     "pay-card": "{player} met 1 carte de sa main sous sa pioche",
     "spend-ring": "{player} remet 1 Anneau sous sa pioche",

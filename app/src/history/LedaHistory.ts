@@ -22,7 +22,7 @@ import {
 import { clanLogCss } from './logCss'
 import { ActivateSquareLog, ChooseEffectLog, PassLog } from './log/ActivateLogs'
 import { AwakenLog, PayCardLog, PlaceRingLog, PlayCardLog, RotateCatCardLog, SearchRingLog, SpendRingLog } from './log/CardLogs'
-import { DrawLog, FoodGainLog, FoodSpendLog, OrganisationFoodLog, StealFoodLog } from './log/ResourceLogs'
+import { AwakeningLostLog, DrawLog, FoodGainLog, FoodSpendLog, OrganisationFoodLog, StealFoodLog } from './log/ResourceLogs'
 import { ChooseActionLog, ConflictLog, RevealActionTileLog } from './log/RoundLogs'
 import { ChooseClanLog, MulliganLog } from './log/SetupLogs'
 import { SpyLog, SpyReturnLog } from './log/SpyLogs'
@@ -98,6 +98,8 @@ export class LedaHistory implements LogDescription<Move, number, Game> {
       // The Food a clan starts with is part of taking that clan, and is already written down with it.
       if (ruleId === RuleId.ChooseClan) return undefined
       const owner = move.item.location.player
+      // The only Food the Awakenings ever give is the one they turn into when none of them can be resolved.
+      if (ruleId === RuleId.Awakening) return this.entry(AwakeningLostLog, rules, owner)
       return ruleId === RuleId.Organisation ? this.entry(OrganisationFoodLog, rules, owner) : this.entry(FoodGainLog, rules, owner, 1)
     }
     if (isDeleteItemType(MaterialType.FoodToken)(move)) {

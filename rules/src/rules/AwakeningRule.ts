@@ -1,8 +1,10 @@
 import { isMoveItemType, ItemMove, MaterialMove, MoveItem, PlayerTurnRule } from '@gamepark/rules-api'
+import { Effect } from '../material/Effect'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { afterActivation } from './activation'
 import { awakeningGroup, awakeningSteps, pandasInHand, pandasInPlay } from './awakening'
+import { resolveEffects } from './effects'
 import { Memory } from './Memory'
 import { RuleId } from './RuleId'
 import { awakenings } from './specialActivation'
@@ -19,19 +21,21 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  * them leaves it.
  *
  * Raising a Panda is all there is to do here: the choice between the Food and the Awakening was made when the
- * square was activated, and it was final (see {@link PandaSpecialActivationRule}).
+ * square was activated, and it was final (see {@link ChooseEffectRule}).
  */
 export class AwakeningRule extends PlayerTurnRule<number, MaterialType, LocationType> {
   /**
-   * Nothing to resolve leaves nothing to ask, and an Awakening that cannot be resolved is lost: a player is free
-   * to gather one they turn out not to be able to play (see {@link PandaSpecialActivationRule}).
+   * Nothing to resolve leaves nothing to ask, and an Awakening that cannot be resolved gives 1 Food instead: a
+   * player is free to gather one they turn out not to be able to play, and what they gathered is worth the other
+   * branch of the crystal rather than nothing (see {@link specialActivationEffects}).
    * The whole count goes at once, since nothing moves on the grid between two of them: what stops one stops them
-   * all.
+   * all, and each of them is worth its Food.
    */
   onRuleStart(): Move[] {
-    if (awakenings(this, this.player) > 0 && this.awakenMoves.length > 0) return []
+    const left = awakenings(this, this.player)
+    if (left > 0 && this.awakenMoves.length > 0) return []
     this.memorize(Memory.Awakenings, 0, this.player)
-    return afterActivation(this)
+    return [...(left > 0 ? resolveEffects(this, { [Effect.Food]: left }) : []), ...afterActivation(this)]
   }
 
   getPlayerMoves(): Move[] {

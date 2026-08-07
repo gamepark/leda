@@ -126,6 +126,36 @@ describe('A card that asks the player several things', () => {
   })
 })
 
+describe('An Awakening', () => {
+  /** The Awakenings a player gathered while activating their zone, resolved once the whole zone is done. */
+  const resolveAwakenings = (rules: LedaRules, count: number) => {
+    rules.game.memory[Memory.Awakenings] = { 1: count }
+    playAll(rules, rules.startRule(RuleId.Awakening))
+  }
+
+  it('waits for the player as long as a Panda can be raised', () => {
+    // 2 Bronze Pandas on the grid and a Silver one in hand: the group is there, and so is the card taking the square.
+    const rules = new LedaRules(game([ClanCardId.PandaUpgrade, ClanCardId.PandaFoodOrMilitary], [ClanCardId.PandaMilitary]))
+    resolveAwakenings(rules, 1)
+    expect(rules.game.rule?.id).toBe(RuleId.Awakening)
+    expect(food(rules)).toBe(0)
+  })
+
+  it('gives 1 Food instead when the group it takes is not on the grid', () => {
+    const rules = new LedaRules(game([ClanCardId.PandaUpgrade], [ClanCardId.PandaMilitary]))
+    resolveAwakenings(rules, 1)
+    expect(food(rules)).toBe(1)
+    expect(rules.game.memory[Memory.Awakenings][1]).toBe(0)
+  })
+
+  it('gives 1 Food per Awakening left, what stops one stopping them all', () => {
+    // The group of Bronze Pandas is there, but no Silver Panda in hand to take the square of the one raised.
+    const rules = new LedaRules(game([ClanCardId.PandaUpgrade, ClanCardId.PandaFoodOrMilitary]))
+    resolveAwakenings(rules, 2)
+    expect(food(rules)).toBe(2)
+  })
+})
+
 describe('The King and the Queen', () => {
   it('draws a Military Victory token and resolves it', () => {
     const rules = new LedaRules(game([ClanCardId.PandaKing]))

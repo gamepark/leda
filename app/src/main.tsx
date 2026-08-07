@@ -1,4 +1,4 @@
-import { LedaOptionsSpec } from '@gamepark/leda/LedaOptions'
+import { LedaOptionsSpecV2 } from '@gamepark/leda/LedaOptions'
 import { LedaRules } from '@gamepark/leda/LedaRules'
 import { LedaSetup } from '@gamepark/leda/LedaSetup'
 import { GameProvider } from '@gamepark/react-game'
@@ -16,7 +16,7 @@ createRoot(document.getElementById('root')!).render(
     <GameProvider
       game="leda"
       Rules={LedaRules}
-      optionsSpec={LedaOptionsSpec}
+      optionsSpec={LedaOptionsSpecV2}
       GameSetup={LedaSetup}
       material={Material}
       locators={Locators}

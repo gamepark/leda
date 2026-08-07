@@ -15,6 +15,7 @@ https://raw.githubusercontent.com/gamepark/gamepark.github.io/main/docs/[path]
 | Topic | Path |
 |-------|------|
 | Core concepts | `concepts/core-concepts.md` |
+| Game options | `features/game-options.md` |
 | Items & Locations | `concepts/items-and-locations.md` |
 | Hiding data | `concepts/hiding-data.md` |
 | Item moves | `features/item-moves.md` |
@@ -49,7 +50,10 @@ rules/src/                    # Server-side game logic
   │   └── *Rule.ts            # Rule implementations
   ├── [Game]Rules.ts          # Main rules class
   ├── [Game]Setup.ts          # Initial game setup
-  └── [Game]Options.ts        # Game configuration
+  └── [Game]Options.ts        # OptionsSpecV2: option structure, no text
+
+app/public/
+  └── translation/*.json      # Game texts, one file per locale
 
 app/src/                      # Client-side React UI
   ├── material/Material.ts    # Visual descriptions (sizes, images)
@@ -156,6 +160,35 @@ Translation files are located in `app/public/translation/` (one JSON file per la
 
 ### Translation keys convention
 Follow existing key naming patterns in the JSON files. Keep keys descriptive and organized by feature/screen.
+
+## Game Options
+
+Options are declared in `rules/src/LedaOptions.ts` with `OptionsSpecV2` — **plain JSON, no functions
+and no text**. The platform snapshots it when the bundle is prepared and reads it from its database.
+
+Leda has nothing to choose before the game starts: no variant, and no identity either, since the clan is
+picked during the game. Its whole option space is the table size:
+
+```typescript
+export const LedaOptionsSpecV2: OptionsSpecV2 = {
+  specVersion: 2,
+  players: { min: 2, max: 2 }
+}
+```
+
+Three things do **not** belong in it:
+
+- **Texts** go to `app/public/options/{locale}.json`, keyed by convention: `option.<option>`,
+  `option.<option>.<value>`, `identities.<value>`, plus optional `.help` and `.warn` variants. Leda
+  declares no option and no identity, so it has no such key and no such folder — if an option is ever
+  added, create the folder with the developer's native language file first.
+- **`subscriberRequired`, `competitiveDisabled`, `competitivePlayers`** belong to the platform database.
+- **`validate`** no longer exists. Express constraints as `playerCount` (on an option or a value),
+  `requires` on a value, or a `forbidden-combination` rule whose `message` is a key in the options
+  document.
+
+Read `features/game-options.md` before changing this file — the shape is precise and the platform
+depends on it. Never reintroduce a v1 `OptionsSpec`.
 
 ## When Helping
 

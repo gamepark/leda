@@ -1,3 +1,3 @@
 export { LedaRules } from './LedaRules'
-export { LedaOptionsSpec } from './LedaOptions'
+export { LedaOptionsSpecV2 } from './LedaOptions'
 export { LedaSetup } from './LedaSetup'

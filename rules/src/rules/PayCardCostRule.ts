@@ -4,6 +4,7 @@ import { MaterialType } from '../material/MaterialType'
 import { EffectRule } from './EffectRule'
 import { Memory } from './Memory'
 import { cardsOwed } from './organisation'
+import { hand, underDeckMoves } from './underDeck'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
@@ -31,8 +32,7 @@ export class PayCardCostRule extends EffectRule {
   }
 
   getPlayerMoves(): Move[] {
-    // x 0 is the far end of the pile, which the deck draws from the other side of (see {@link DeckLocator}).
-    return this.hand.moveItems({ type: LocationType.PlayerDeck, player: this.player, x: 0 })
+    return underDeckMoves(this.hand, this.player)
   }
 
   /** One card of the price, and the game goes back to what was interrupted once the last of them is paid. */
@@ -51,6 +51,6 @@ export class PayCardCostRule extends EffectRule {
 
   /** A hand is secret, so on the client of the opponent these are the backs of a clan and nothing more. */
   get hand() {
-    return this.material(MaterialType.ClanCard).location(LocationType.PlayerHand).player(this.player)
+    return hand(this, this.player)
   }
 }

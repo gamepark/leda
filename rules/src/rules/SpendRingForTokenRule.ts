@@ -1,12 +1,11 @@
 import { CustomMove, isCustomMoveType, isMoveItemType, ItemMove, MaterialMove } from '@gamepark/rules-api'
-import { ClanCardItemId } from '../material/ClanCardId'
-import { isRing } from '../material/clanCards/catCards'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { CustomMoveType } from './CustomMoveType'
 import { EffectRule } from './EffectRule'
 import { queueFirstRule } from './effects'
 import { RuleId } from './RuleId'
+import { ringsInHand, underDeckMoves } from './underDeck'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
@@ -25,16 +24,12 @@ export class SpendRingForTokenRule extends EffectRule {
   }
 
   getPlayerMoves(): Move[] {
-    // x 0 is the far end of the pile, which the deck draws from the other side of (see {@link DeckLocator}).
-    return [...this.rings.moveItems({ type: LocationType.PlayerDeck, player: this.player, x: 0 }), this.customMove(CustomMoveType.Pass, this.player)]
+    return [...underDeckMoves(this.rings, this.player), this.customMove(CustomMoveType.Pass, this.player)]
   }
 
   /** The Rings the player holds. A hand is secret, so only its owner ever reads the fronts of these. */
   get rings() {
-    return this.material(MaterialType.ClanCard)
-      .location(LocationType.PlayerHand)
-      .player(this.player)
-      .id<ClanCardItemId>((id) => id.front !== undefined && isRing(id.front))
+    return ringsInHand(this, this.player)
   }
 
   /** The token is drawn and resolved by the rule that does it everywhere else, queued ahead of what was waiting. */

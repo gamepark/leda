@@ -626,14 +626,14 @@ __metadata:
     es-toolkit: "npm:^1.50.0"
     vitest: "npm:^4.1.10"
   peerDependencies:
-    "@gamepark/rules-api": ">=7"
+    "@gamepark/rules-api": ">=7.7"
     es-toolkit: ^1.45.1
   languageName: unknown
   linkType: soft
 
-"@gamepark/react-client@npm:^7.7.5":
-  version: 7.7.5
-  resolution: "@gamepark/react-client@npm:7.7.5"
+"@gamepark/react-client@npm:^7.7.6":
+  version: 7.7.6
+  resolution: "@gamepark/react-client@npm:7.7.6"
   dependencies:
     "@reduxjs/toolkit": "npm:^2.12.0"
     "@tanstack/react-query": "npm:^5.101.4"
@@ -654,19 +654,19 @@ __metadata:
     react-dom: ^19.2.4
     react-redux: ^9.2.0
     rxjs: ^7.8.2
-  checksum: 10c0/df765db5c34d133874ea32d07e88ef5ca84f71d844226fc55d93e3b298c8e0e01d83f7f837649e5accd44be5612238cd4a437e70e7cded71d0bed8b5f85b2770
+  checksum: 10c0/4eace233c17537467c9326bd14656708afdde72fd8fa9ab3d31c3afea3d03f860f516a3ec930873d4ec671631682bb5d791e97118bc996c7be93536bdafbfe98
   languageName: node
   linkType: hard
 
 "@gamepark/react-game@npm:~7.7.43":
-  version: 7.7.43
-  resolution: "@gamepark/react-game@npm:7.7.43"
+  version: 7.7.44
+  resolution: "@gamepark/react-game@npm:7.7.44"
   dependencies:
     "@datadog/browser-logs": "npm:^7.7.0"
     "@dnd-kit/modifiers": "npm:^9.0.0"
     "@gamepark/api-types": "npm:^1.0.3"
     "@gamepark/avataaars": "npm:^3.0.0"
-    "@gamepark/react-client": "npm:^7.7.5"
+    "@gamepark/react-client": "npm:^7.7.6"
     dayjs: "npm:^1.11.21"
     fscreen: "npm:^1.2.0"
     i18next-http-backend: "npm:^4.0.1"
@@ -694,16 +694,16 @@ __metadata:
     react-dom: 19.x
     react-i18next: 17.x
     react-redux: 9.x
-  checksum: 10c0/2188b788de25fe03d7088ee026096a40af687b0a5a3ec9c7d43ad1f26703daa320466e2375df3ceb62285bf62c1ce9c4f3656529e9df69abc7f785da4ee63690
+  checksum: 10c0/4caffdd0c85441f00d26067b046600acd00e74337045a9c0ea9ec795f26b954597b83935c996aca3fe2264572c51fadff485a331173dc1069b0edb7c3c0c371f
   languageName: node
   linkType: hard
 
 "@gamepark/rules-api@npm:~7.7.1":
-  version: 7.7.1
-  resolution: "@gamepark/rules-api@npm:7.7.1"
+  version: 7.7.2
+  resolution: "@gamepark/rules-api@npm:7.7.2"
   peerDependencies:
     es-toolkit: ^1.46.0
-  checksum: 10c0/38744b134f8f8b04a5d79f2a73a205d787417097a2945577f028a9660ee03d682749f5b643d108abf9227e1345fb391479aac8fcf187b74dbd6c59a488f2bead
+  checksum: 10c0/6455183d8d2453f1db749c8e473786959ae470698cca541d817d0280aeae2831a38d6685800544520a673b47229372c8bd606a9298465ad62723b223b49e27a9
   languageName: node
   linkType: hard
 

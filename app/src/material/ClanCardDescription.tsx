@@ -60,6 +60,7 @@ import SharkSpyOrTriggerToken from '../images/cards/shark/shark-spy-or-trigger-t
 import SharkUpgrade from '../images/cards/shark/shark-upgrade.jpg'
 import { ClanCardHelp } from './ClanCardHelp'
 import { PlayedCardMenuButton } from './PlayedCardMenuButton'
+import { PutUnderDeckButton } from './PutUnderDeckButton'
 import { isSpiedByOther } from './spiedItem'
 import { SpiedItemButtons } from './SpiedItemButtons'
 import { SpyHistoryButton } from './SpyHistoryButton'
@@ -157,7 +158,7 @@ export class ClanCardDescription extends CardDescription<number, MaterialType, L
     )
   }
 
-  /** A player's own deck and the spied card carry the buttons of a Spy effect, which decide whether to show. */
+  /** The buttons a card carries are read off the state of the game, and each decides on its own whether to show. */
   menuAlwaysVisible = true
 
   /**
@@ -168,6 +169,7 @@ export class ClanCardDescription extends CardDescription<number, MaterialType, L
   getItemMenu(item: MaterialItem<number, LocationType, ClanCardItemId>, context: ItemContext<number, MaterialType, LocationType>) {
     if (item.location.type === LocationType.SpiedItem) return <SpiedItemButtons type={MaterialType.ClanCard} />
     if (item.location.type === LocationType.PlayedCard) return <PlayedCardMenuButton index={context.index} />
+    if (item.location.type === LocationType.PlayerHand) return <PutUnderDeckButton index={context.index} />
     if (item.location.type !== LocationType.PlayerDeck) return
     return (
       <>

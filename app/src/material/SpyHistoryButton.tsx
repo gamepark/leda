@@ -6,7 +6,6 @@ import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { isPileTop, spiesOnPile } from '@gamepark/leda/rules/spy'
 import { useRules } from '@gamepark/react-game'
 import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import { SpyHistoryDialog } from '../dialogs/SpyHistoryDialog'
 import { LedaMenuButton } from './LedaMenuButton'
 import { spyButtonX } from './spiedItem'
@@ -28,7 +27,6 @@ import { spyButtonX } from './spiedItem'
  */
 export const SpyHistoryButton = ({ type, index, player }: { type: MaterialType; index: number; player?: number }) => {
   const rules = useRules<LedaRules>()
-  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
 
   if (rules === undefined) return null

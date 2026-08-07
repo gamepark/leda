@@ -1,9 +1,13 @@
-import { Material, MaterialMove, MaterialRules } from '@gamepark/rules-api'
+import { Material, MaterialMove, MaterialRules, MaterialRulesPart } from '@gamepark/rules-api'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
+import { Memory } from './Memory'
 
 /** All these helpers need, which a part of the rules and the MaterialRules instance of the app both satisfy. */
 type Rules = Pick<MaterialRules<number, MaterialType, LocationType>, 'game' | 'material'>
+
+/** Writing a Spy down is a rule's, unlike everything the app reads here. */
+type Rule = MaterialRulesPart<number, MaterialType, LocationType>
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
@@ -67,4 +71,41 @@ export const putBackMoves = (rules: Rules, player: number): { onTop: Move; under
   if (spied === undefined) return undefined
   const pile = spied.pile.owned ? { type: spied.pile.pile, player } : { type: spied.pile.pile }
   return { onTop: spied.material.moveItem(pile), under: spied.material.moveItem({ ...pile, x: 0 }) }
+}
+
+/**
+ * What a Spy of the round leaves behind: who looked, into which pile, and which end of it the item went back into.
+ * The face of that item is not part of it and never will be: that is the whole of the effect, and it belongs to
+ * the player who looked (see {@link Memory.Spies}).
+ * The pile is its material type, which is what tells the 3 of them apart (see {@link spiedPiles}), and the player
+ * is the owner of the one pile that belongs to somebody: a Spy only ever looks into its own player's deck.
+ */
+export type Spy = { player: number; pile: MaterialType; onTop: boolean }
+
+/** The Spies of the round, in the order they were made. */
+export const roundSpies = (rules: Rules): Spy[] => rules.game.memory[Memory.Spies] ?? []
+
+/** One more of them, written down once the item is back in its pile: that is when the whole of it is known. */
+export const rememberSpy = (rule: Rule, spy: Spy) => rule.memorize<Spy[]>(Memory.Spies, (spies: Spy[] = []) => [...spies, spy])
+
+/**
+ * The Spies of the round that looked into one pile, which is what that pile has to show for itself
+ * (see {@link SpyHistoryButton}). A deck is a pile of its own, hence its owner: the 2 decks of the table are 2
+ * piles, and a Spy on one of them says nothing about the other.
+ */
+export const spiesOnPile = (rules: Rules, type: MaterialType, owner?: number): Spy[] => {
+  const pile = spiedPiles.find((spiable) => spiable.type === type)
+  if (pile === undefined) return []
+  return roundSpies(rules).filter((spy) => spy.pile === type && (!pile.owned || spy.player === owner))
+}
+
+/**
+ * Whether an item is the one on top of its pile, which is where the buttons of that pile sit: a pile is drawn as
+ * the stack of its items, and a button on each of them would be the same button drawn ten times.
+ * The owner is the one of the pile, for the pile that has one, exactly as above.
+ */
+export const isPileTop = (rules: Rules, type: MaterialType, index: number, owner?: number): boolean => {
+  const pile = spiedPiles.find((spiable) => spiable.type === type)
+  if (pile === undefined || (pile.owned && owner === undefined)) return false
+  return pileTop(rules, owner!, pile).getIndexes().includes(index)
 }

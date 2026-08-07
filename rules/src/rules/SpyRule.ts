@@ -1,9 +1,9 @@
-import { ItemMove, MaterialMove } from '@gamepark/rules-api'
+import { isMoveItem, ItemMove, MaterialMove } from '@gamepark/rules-api'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { EffectRule } from './EffectRule'
 import { spentDifferentPileSpy, spyDifferentPiles } from './effects'
-import { pileTop, putBackMoves, SpiedPile, spiablePiles, spiedItem } from './spy'
+import { pileTop, putBackMoves, rememberSpy, SpiedPile, spiablePiles, spiedItem } from './spy'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
@@ -46,10 +46,16 @@ export class SpyRule extends EffectRule {
    * The player makes 2 moves: taking an item, then putting it back. The second one is the end of the effect.
    * Which pile was looked into is read off the item going back rather than remembered: the type of that item is
    * the pile it belongs to (see {@link spiedPiles}).
+   *
+   * That is also the moment the Spy is worth writing down for the rest of the round: which end of the pile the
+   * item went back into is the half of it nobody knew until now, and both halves are open to everyone
+   * (see {@link Memory.Spies}). Under the pile is x 0, and on top of it is no x at all.
    */
   afterItemMove(move: ItemMove<number, MaterialType, LocationType>): Move[] {
-    if (spiedItem(this) !== undefined) return []
+    // Taking an item and putting it back are the 2 moves of this rule, and both of them move one.
+    if (!isMoveItem(move) || spiedItem(this) !== undefined) return []
     spentDifferentPileSpy(this, move.itemType)
+    rememberSpy(this, { player: this.player, pile: move.itemType, onTop: move.location.x !== 0 })
     return this.resume()
   }
 }

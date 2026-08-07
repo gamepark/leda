@@ -62,6 +62,17 @@ export enum Memory {
   MilitaryVictoryBlocked,
 
   /**
+   * The Spies of the round: who looked into which pile, and whether they put the item back on top of it or under
+   * it (see {@link Spy}). Emptied when the next round starts, like the counters above it.
+   *
+   * Nothing secret is written here: around a table everyone sees which pile a player takes an item from and which
+   * end of it they slide it back into, and only the face of that item is theirs alone. This is that much, kept for
+   * the round it belongs to, so that a player who was watching something else can read it back
+   * (see {@link SpyHistoryDialog}).
+   */
+  Spies,
+
+  /**
    * How many cards the player who has just played one of the 3 Cat cards paid with cards still owes for it, as a
    * count going down to nothing (see {@link PayCardCostRule}).
    * Written down when the card is played rather than read off it: what has already been paid would otherwise have

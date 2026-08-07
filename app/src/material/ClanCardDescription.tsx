@@ -62,6 +62,7 @@ import { ClanCardHelp } from './ClanCardHelp'
 import { PlayedCardMenuButton } from './PlayedCardMenuButton'
 import { isSpiedByOther } from './spiedItem'
 import { SpiedItemButtons } from './SpiedItemButtons'
+import { SpyHistoryButton } from './SpyHistoryButton'
 import { SpyPileButton } from './SpyPileButton'
 import { tileSize } from './TileDescription'
 
@@ -159,11 +160,21 @@ export class ClanCardDescription extends CardDescription<number, MaterialType, L
   /** A player's own deck and the spied card carry the buttons of a Spy effect, which decide whether to show. */
   menuAlwaysVisible = true
 
+  /**
+   * A player only ever looks into their own deck, hence the Spy button on that one alone. What a deck was looked
+   * into is another matter: both decks carry that mark, since a player is owed the news that their opponent read
+   * the top of their own pile and maybe buried it (see {@link SpyHistoryButton}).
+   */
   getItemMenu(item: MaterialItem<number, LocationType, ClanCardItemId>, context: ItemContext<number, MaterialType, LocationType>) {
     if (item.location.type === LocationType.SpiedItem) return <SpiedItemButtons type={MaterialType.ClanCard} />
     if (item.location.type === LocationType.PlayedCard) return <PlayedCardMenuButton index={context.index} />
-    if (item.location.type !== LocationType.PlayerDeck || item.location.player !== context.player) return
-    return <SpyPileButton type={MaterialType.ClanCard} index={context.index} />
+    if (item.location.type !== LocationType.PlayerDeck) return
+    return (
+      <>
+        {item.location.player === context.player && <SpyPileButton type={MaterialType.ClanCard} index={context.index} />}
+        <SpyHistoryButton type={MaterialType.ClanCard} index={context.index} player={item.location.player} />
+      </>
+    )
   }
 
   /**

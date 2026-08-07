@@ -12,6 +12,7 @@ import ActionTileTopRight from '../images/action-tiles/top-right.png'
 import { ActionTileHelp } from './ActionTileHelp'
 import { isSpiedByOther } from './spiedItem'
 import { SpiedItemButtons } from './SpiedItemButtons'
+import { SpyHistoryButton } from './SpyHistoryButton'
 import { SpyPileButton } from './SpyPileButton'
 
 const actionTileRatio = 389 / 663
@@ -57,6 +58,11 @@ export class ActionTileDescription extends TokenDescription<number, MaterialType
   getItemMenu(item: MaterialItem<number, LocationType, ActionTileId>, context: ItemContext<number, MaterialType, LocationType>) {
     if (item.location.type === LocationType.SpiedItem) return <SpiedItemButtons type={MaterialType.ActionTile} />
     if (item.location.type !== LocationType.ActionTileDeck) return
-    return <SpyPileButton type={MaterialType.ActionTile} index={context.index} />
+    return (
+      <>
+        <SpyPileButton type={MaterialType.ActionTile} index={context.index} />
+        <SpyHistoryButton type={MaterialType.ActionTile} index={context.index} />
+      </>
+    )
   }
 }

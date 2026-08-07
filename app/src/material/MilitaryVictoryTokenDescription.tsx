@@ -16,6 +16,7 @@ import { MilitaryVictoryTokenButtons } from './MilitaryVictoryTokenButtons'
 import { MilitaryVictoryTokenHelp } from './MilitaryVictoryTokenHelp'
 import { isSpiedByOther } from './spiedItem'
 import { SpiedItemButtons } from './SpiedItemButtons'
+import { SpyHistoryButton } from './SpyHistoryButton'
 import { SpyPileButton } from './SpyPileButton'
 
 const militaryVictoryTokenRatio = 436 / 409
@@ -60,6 +61,11 @@ export class MilitaryVictoryTokenDescription extends TokenDescription<number, Ma
     if (item.location.type === LocationType.SpiedItem) return <SpiedItemButtons type={MaterialType.MilitaryVictoryToken} />
     if (item.location.type === LocationType.PlayerMilitaryVictory) return <MilitaryVictoryTokenButtons index={context.index} />
     if (item.location.type !== LocationType.MilitaryVictoryDeck) return
-    return <SpyPileButton type={MaterialType.MilitaryVictoryToken} index={context.index} />
+    return (
+      <>
+        <SpyPileButton type={MaterialType.MilitaryVictoryToken} index={context.index} />
+        <SpyHistoryButton type={MaterialType.MilitaryVictoryToken} index={context.index} />
+      </>
+    )
   }
 }

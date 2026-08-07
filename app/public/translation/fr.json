@@ -2,7 +2,13 @@
   "spy": {
     "look": "Scruter",
     "on-top": "Sur la pile",
-    "under": "Sous la pile"
+    "under": "Sous la pile",
+    "history": {
+      "title": "Qui a consulté cette pile à cette manche ?",
+      "on-top": "{player} a scruté cette pile, et a remis l'élément au-dessus.",
+      "under": "{player} a scruté cette pile, et a remis l'élément au-dessous.",
+      "close": "Fermer"
+    }
   },
   "organisation": {
     "food": {

@@ -68,5 +68,13 @@ export enum LocationType {
    * Never holds more than one item, and only for as long as the player takes to decide. Its owner sees its face,
    * and nobody else does, which is what makes the look a secret one.
    */
-  SpiedItem
+  SpiedItem,
+
+  /**
+   * One of the zones of 4 squares the Action tile of the round offers, over the grid of a player: the rectangle
+   * the app draws around those squares while the active player picks the zone both of them will activate
+   * (see {@link ActionZone}). Its id is the zone, and its player the grid it is drawn over.
+   * Display only, like {@link FoodSupply}: no item is ever placed here, and the rules never read it.
+   */
+  ActionZoneArea
 }

@@ -9,6 +9,7 @@ import { activableCards } from '@gamepark/leda/rules/playedCards'
 import { RuleId } from '@gamepark/leda/rules/RuleId'
 import { MaterialMoveBuilder } from '@gamepark/rules-api'
 import { ActivateSquareButton } from './ActivateSquareButton'
+import { ChooseZoneButton } from './ChooseActionTileButton'
 import { LedaMenuButton } from './LedaMenuButton'
 import { useMenuButtonRules } from './menuButtons'
 import { tileButtonPosition } from './tileButtonPosition'
@@ -28,6 +29,8 @@ export const PlayedCardMenuButton = ({ index }: { index: number }) => {
   if (rules.getActivePlayer() !== me) return null
 
   switch (rules.game.rule?.id) {
+    case RuleId.ChooseAction:
+      return <ChooseZoneCardButton index={index} rules={rules} player={me} />
     case RuleId.ActivateZone:
       return <ActivateCardSquareButton index={index} rules={rules} player={me} />
     case RuleId.ActivateCard:
@@ -47,6 +50,17 @@ type CardButtonProps = { index: number; rules: LedaRules; player: number }
 const cardCell = (rules: LedaRules, index: number) => {
   const { parent } = rules.material(MaterialType.ClanCard).getItem(index).location
   return parent === undefined ? undefined : cellOf(rules.material(MaterialType.Tile).getItem(parent).location)
+}
+
+/**
+ * The button that picks a zone, when the square carrying it is covered by a card of its owner
+ * (see {@link ChooseZoneButton}). Their own grid alone: the buttons are on the grid of the player picking.
+ */
+const ChooseZoneCardButton = ({ index, rules, player }: CardButtonProps) => {
+  const card = rules.material(MaterialType.ClanCard).getItem(index)
+  const cell = cardCell(rules, index)
+  if (card.location.player !== player || cell === undefined) return null
+  return <ChooseZoneButton rules={rules} cell={cell} />
 }
 
 /** The square of the card, when its owner still has it to activate: what a card gives is what its square gives. */

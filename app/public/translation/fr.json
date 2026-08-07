@@ -243,7 +243,7 @@
       "players": "Les joueurs regardent leur main de départ"
     },
     "choose-action": {
-      "you": "Choisissez la zone à activer puis <validate>Validez</validate>",
+      "you": "Choisissez la zone à activer",
       "player": "{player} choisit la zone à activer"
     },
     "activate-zone": {

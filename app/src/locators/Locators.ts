@@ -1,18 +1,22 @@
+import { ActionZone } from '@gamepark/leda/material/ActionZone'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { cellOf } from '@gamepark/leda/material/PlayerGrid'
 import { SharkSlot } from '@gamepark/leda/material/SharkSlot'
 import { actionTileRoundPlayer } from '@gamepark/leda/rules/round'
+import { RuleId } from '@gamepark/leda/rules/RuleId'
 import { sharkSlotOn } from '@gamepark/leda/rules/sharkPack'
 import { DeckLocator, HandLocator, ItemContext, ListLocator, Locator, MaterialContext, ParentFace, PileLocator } from '@gamepark/react-game'
 import { Coordinates, isMoveItem, Location, MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import { actionTile } from '../material/ActionTileDescription'
+import { ActionZoneDescription } from '../material/ActionZoneDescription'
+import { offeredZones, zoneRectangleAt, zoneRectangles } from '../material/actionZones'
 import { FoodSupplyDescription } from '../material/FoodSupplyDescription'
 import { foodToken } from '../material/FoodTokenDescription'
 import { militaryVictoryToken } from '../material/MilitaryVictoryTokenDescription'
 import { PlayerDeckDescription } from '../material/PlayerDeckDescription'
 import { sharkToken } from '../material/SharkTokenDescription'
-import { tileSize } from '../material/TileDescription'
+import { gridGap, tileSize } from '../material/TileDescription'
 
 /**
  * The table is laid out in 3 columns: a player on the left, a player on the right, and what they share in between.
@@ -23,9 +27,6 @@ import { tileSize } from '../material/TileDescription'
 
 /** A piece of the table, by what it measures. */
 type Piece = { width: number; height: number }
-
-/** Gap between 2 cells of a player's grid. */
-const gridGap = 0.3
 
 /** Distance between the centers of 2 consecutive cells of a grid. */
 const gridStep = tileSize + gridGap
@@ -174,6 +175,39 @@ class PlayerGridLocator extends Locator {
     }
   }
 }
+
+/**
+ * The zones the Action tile of the round offers, drawn over the squares they cover while the active player picks
+ * one (see {@link ActionZoneDescription}). Over the 2 grids, because the zone that is picked is activated in both,
+ * so the player picking is reading their opponent's grid as much as their own.
+ *
+ * A zone is one rectangle, or 4 of them when its squares are not a block (see {@link zoneRectangles}), and each
+ * location is one of those rectangles: its id is the zone it belongs to, and its x and y the square it starts on.
+ * They are lifted a little off the table so that they are read over the squares and over the cards played on
+ * them, and low enough that they stay flat against the grid as the table is tilted.
+ */
+class ActionZoneLocator extends Locator {
+  locationDescription = new ActionZoneDescription()
+
+  getLocations(context: MaterialContext) {
+    if (context.rules.game.rule?.id !== RuleId.ChooseAction) return []
+    return context.rules.players.flatMap((player) =>
+      offeredZones(context.rules).flatMap((zone) => zoneRectangles(zone).map(({ x, y }) => ({ player, id: zone, x, y })))
+    )
+  }
+
+  getCoordinates(location: Location, context: MaterialContext) {
+    const rectangle = zoneRectangleAt(location.id as ActionZone, cellOf(location))
+    if (rectangle === undefined) return {}
+    return {
+      x: playerSide(location.player, context) * playerGridX + (rectangle.x + (rectangle.width - 1) / 2 - 1.5) * gridStep,
+      y: gridRowY(rectangle.y + (rectangle.height - 1) / 2),
+      z: actionZoneHeight
+    }
+  }
+}
+
+const actionZoneHeight = 0.5
 
 /**
  * The middle column is read from top to bottom: the pile of Action tiles, the 2 rows of tiles revealed since the
@@ -539,6 +573,10 @@ class PlayerHandLocator extends HandLocator {
 
 export const Locators: Partial<Record<LocationType, Locator<number, MaterialType, LocationType>>> = {
   [LocationType.PlayerGrid]: new PlayerGridLocator(),
+
+  /** The zones offered while the active player picks one, over the squares of both grids they cover. */
+  [LocationType.ActionZoneArea]: new ActionZoneLocator(),
+
   [LocationType.PlayedCard]: new PlayedCardLocator(),
   [LocationType.PlacedSharkToken]: new PlacedSharkTokenLocator(),
 

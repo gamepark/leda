@@ -6,6 +6,10 @@ import { copper, copperActive, copperHover, copperLight, ink, parchment, parchme
 type LedaMenuButtonProps = {
   /** A button standing for something already engaged: copper filled, where a button that offers something is parchment. */
   filled?: boolean
+  /** How wide the medallion is, for the rare button that has more than one symbol to show. */
+  size?: number
+  /** The color of the rim, for a button standing for something that is drawn in a color of its own on the table. */
+  accent?: string
 } & ItemButtonProps &
   HTMLAttributes<HTMLButtonElement>
 
@@ -19,17 +23,31 @@ export const ledaMenuButtonSize = 2.2
  * The css of the framework is replaced rather than completed, because the css prop given to ItemMenuButton takes
  * the place of its own, hence the transform below: it is the one ItemMenuButton applies to place itself on its item.
  */
-export const LedaMenuButton = ({ filled, x = 0, y = 0, ...props }: LedaMenuButtonProps) => (
-  <ItemMenuButton x={x} y={y} {...props} css={[medallion, filled && filledMedallion, transformCss('translate(-50%, -50%)', `translate(${x}em, ${y}em)`)]} />
+export const LedaMenuButton = ({ filled, size = ledaMenuButtonSize, accent, x = 0, y = 0, ...props }: LedaMenuButtonProps) => (
+  <ItemMenuButton
+    x={x}
+    y={y}
+    {...props}
+    css={[
+      medallion,
+      medallionSize(size),
+      filled && filledMedallion,
+      accent !== undefined && accentMedallion(accent),
+      transformCss('translate(-50%, -50%)', `translate(${x}em, ${y}em)`)
+    ]}
+  />
 )
+
+const medallionSize = (size: number) => css`
+  width: ${size}em;
+  height: ${size}em;
+`
 
 const medallion = css`
   transform-style: preserve-3d;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: ${ledaMenuButtonSize}em;
-  height: ${ledaMenuButtonSize}em;
   padding: 0;
   border: 0.12em solid ${copper};
   border-radius: 50%;
@@ -70,6 +88,15 @@ const medallion = css`
     color: ${ink};
     font-weight: 700;
   }
+`
+
+/**
+ * The rim takes the color of what the button names, and its color alone: a medallion is a coin, and a coin has a
+ * rim rather than a line drawn around it. What ties the button to its zone whatever a player reads of the colors
+ * is the zone drawn inside it (see {@link ZoneIcon}).
+ */
+const accentMedallion = (accent: string) => css`
+  border: 0.22em solid ${accent};
 `
 
 const filledMedallion = css`

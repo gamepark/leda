@@ -34,6 +34,18 @@ export const clanColors: Record<Clan, string> = {
 export const clanGold = '#e8c851'
 
 /**
+ * The colors the zones of an Action tile are drawn in while the active player picks one, in the order the tile
+ * lists them: the row, the column and the square for tiles 1 to 4, the 4 corners and the 4 central squares for
+ * tile 5. A row is therefore always the first color, a column the second and a square the third, round after round.
+ *
+ * The blue, the vermillion and the bluish green of the Okabe-Ito palette, which is built so that its colors stay
+ * told apart under every color blindness, and dark enough to be read over the parchment of a tile as well as over
+ * the artwork of any card played on one. Each is doubled by a line of its own, so a player who reads none of the
+ * 3 colors still has 3 zones (see {@link zoneLine}).
+ */
+export const zoneColors = ['#0072b2', '#d55e00', '#009e73']
+
+/**
  * Buttons over the parchment surfaces: ink label in a copper outline, filling with a light copper tint on hover.
  * Contrast ratios: 12.2 at rest, 10.9 on hover, 4.5 while pressed.
  */

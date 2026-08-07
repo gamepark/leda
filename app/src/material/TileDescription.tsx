@@ -1,4 +1,3 @@
-import { css } from '@emotion/react'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { cellOf } from '@gamepark/leda/material/PlayerGrid'
@@ -25,7 +24,6 @@ import TemporaryFoodBack from '../images/tiles/verso/temporary-food.jpg'
 import TemporaryMilitaryBack from '../images/tiles/verso/temporary-military.jpg'
 import TemporarySpecialActivationBack from '../images/tiles/verso/temporary-special-activation.jpg'
 import TemporaryUpgradeBack from '../images/tiles/verso/temporary-upgrade.jpg'
-import { copper, parchment } from '../theme'
 import { TileHelp } from './TileHelp'
 import { TileMenuButton } from './TileMenuButton'
 
@@ -36,6 +34,12 @@ import { TileMenuButton } from './TileMenuButton'
  * rulebook; only their ratio comes from the images.
  */
 export const tileSize = 7
+
+/**
+ * The gap a grid leaves between 2 of its squares. It belongs here rather than to the layout of the table, because
+ * what is drawn over a grid is measured from it as much as the grid itself is (see {@link ActionZoneDescription}).
+ */
+export const gridGap = 0.3
 
 /** The 16 double sided tiles of a player's grid. They are square, hence the same width and height. */
 export class TileDescription extends CardDescription<number, MaterialType, LocationType, TileId> {
@@ -103,11 +107,6 @@ export class TileDescription extends CardDescription<number, MaterialType, Locat
     return isCellOfActivatedZone(context.rules, cellOf(item.location))
   }
 
-  /** A square the active player selected is ringed, in their own grid and in their opponent's. */
-  getItemExtraCss(item: MaterialItem<number, LocationType, TileId>) {
-    return item.selected ? selectedTile : undefined
-  }
-
   /**
    * A card played on a square covers its tile entirely, and while its owner organises their grid it lets the
    * pointer through so that the tile can be dragged (see ClanCardDescription.getItemExtraCss): clicking a covered
@@ -127,14 +126,3 @@ export class TileDescription extends CardDescription<number, MaterialType, Locat
     return indexes.length > 0 ? Math.max(...indexes) : undefined
   }
 }
-
-/**
- * The ring is as thick as the gap between 2 squares, so that the rings of a selected zone meet and read as one
- * border drawn around it. The parchment line inside the copper one keeps it visible over any tile artwork.
- */
-const selectedTile = css`
-  border-radius: 0.5em;
-  box-shadow:
-    0 0 0 0.15em ${parchment},
-    0 0 0 0.3em ${copper};
-`

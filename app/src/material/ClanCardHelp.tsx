@@ -154,11 +154,11 @@ const CardCost = ({ card, player }: { card: ClanCardId; player?: number }) => {
       </Line>
     )
   }
-  if ('cards' in cost) return <Line label={t('help.cost')}>{t('help.cards', { count: cost.cards })}</Line>
+  if ('cards' in cost) return <Line label={t('help.cost')}>{t('help.cards-cost', { count: cost.cards })}</Line>
   if (typeof cost.food === 'number') {
     return (
       <Line label={t('help.cost')}>
-        <HelpText code="help.food" values={{ count: cost.food }} />
+        <HelpText code="help.food-cost" values={{ count: cost.food }} />
       </Line>
     )
   }

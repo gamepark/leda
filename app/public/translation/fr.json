@@ -76,8 +76,8 @@
     "military-victory": "Victoire militaire :",
     "none": "Aucun.",
     "hidden": "Cette carte est face cachée : seul le clan auquel elle appartient est visible.",
-    "food": "{count} <food/>",
-    "cards": "{count, plural, one {# carte} other {# cartes}} de votre main, à remettre sous votre pioche.",
+    "food-cost": "{count} <food/>",
+    "cards-cost": "{count, plural, one {# carte} other {# cartes}} de votre main, à remettre sous votre pioche.",
     "current": "(actuellement {count} <food/>)",
     "awakening": "Activez un effet Éveil en ayant au moins {count} <level/> en jeu, et remontez-en 1 en main.",
     "title": {

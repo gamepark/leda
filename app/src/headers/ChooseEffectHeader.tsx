@@ -1,10 +1,10 @@
 import { css } from '@emotion/react'
 import { LedaRules } from '@gamepark/leda/LedaRules'
-import { Effect, Effects } from '@gamepark/leda/material/Effect'
+import { effectEntries, Effects, EffectSource } from '@gamepark/leda/material/Effect'
 import { CustomMoveType } from '@gamepark/leda/rules/CustomMoveType'
 import { effectQuantity, pendingChoices } from '@gamepark/leda/rules/effects'
 import { PlayMoveButton, usePlayerId, useRules } from '@gamepark/react-game'
-import { getEnumValues, MaterialMoveBuilder, XYCoordinates } from '@gamepark/rules-api'
+import { MaterialMoveBuilder } from '@gamepark/rules-api'
 import { Fragment } from 'react'
 import { EffectIcon } from './EffectIcon'
 
@@ -23,7 +23,7 @@ export const ChooseEffectHeader = () => {
   const player = rules?.getActivePlayer()
   if (rules === undefined || choice === undefined || player === undefined) return null
   // What the branches give is read for the player being asked, whoever is looking at the table.
-  const icons = (branch: Effects) => <EffectIcons effects={branch} rules={rules} player={player} cell={choice.cell} />
+  const icons = (branch: Effects) => <EffectIcons effects={branch} rules={rules} player={player} source={choice} />
   return (
     <span css={line}>
       {choice.from !== undefined && (
@@ -50,14 +50,15 @@ export const ChooseEffectHeader = () => {
 /**
  * What a branch gives, one symbol per time it gives it: 2 military symbols are 2 crossed swords, as on the cards.
  * How many times is asked of the rules, since a card may read it off the game rather than print it.
+ * Left to right in the order the branch is written, which is the order it will be resolved in.
  *
  * Read by the journal as well, which says what a player picked with the very symbols they picked between
  * (see {@link ChooseEffectLog}).
  */
-export const EffectIcons = ({ effects, rules, player, cell }: { effects: Effects; rules: LedaRules; player: number; cell?: XYCoordinates }) => (
+export const EffectIcons = ({ effects, rules, player, source }: { effects: Effects; rules: LedaRules; player: number; source?: EffectSource }) => (
   <>
-    {getEnumValues(Effect).flatMap((effect) =>
-      Array.from({ length: effectQuantity(rules, player, effects[effect], cell) }, (_, time) => <EffectIcon key={`${effect}-${time}`} effect={effect} />)
+    {effectEntries(effects).flatMap(([effect, quantity]) =>
+      Array.from({ length: effectQuantity(rules, player, quantity, source) }, (_, time) => <EffectIcon key={`${effect}-${time}`} effect={effect} />)
     )}
   </>
 )

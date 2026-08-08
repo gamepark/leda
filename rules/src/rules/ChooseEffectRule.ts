@@ -45,6 +45,6 @@ export class ChooseEffectRule extends EffectRule {
     const branch = move.data !== undefined ? this.branches[move.data] : undefined
     if (choice === undefined || branch === undefined) return []
     forgetChoice(this)
-    return [...resolveEffects(this, branch, { cell: choice.cell, from: choice.from }), ...this.resume()]
+    return [...resolveEffects(this, branch, { item: choice.item, from: choice.from }), ...this.resume()]
   }
 }

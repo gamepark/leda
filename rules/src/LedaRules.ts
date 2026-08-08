@@ -42,6 +42,7 @@ import { ChooseClanRule } from './rules/ChooseClanRule'
 import { MulliganRule } from './rules/MulliganRule'
 import { OrganisationRule } from './rules/OrganisationRule'
 import { PayCardCostRule } from './rules/PayCardCostRule'
+import { PendingEffectsRule } from './rules/PendingEffectsRule'
 import { PlaceRingRule } from './rules/PlaceRingRule'
 import { PlaceSharkTokenRule } from './rules/PlaceSharkTokenRule'
 import { PlayCardRule } from './rules/PlayCardRule'
@@ -96,7 +97,8 @@ export class LedaRules
     [RuleId.SpendRingForToken]: SpendRingForTokenRule,
     [RuleId.RotateCatCard]: RotateCatCardRule,
     [RuleId.Awakening]: AwakeningRule,
-    [RuleId.PlaceRing]: PlaceRingRule
+    [RuleId.PlaceRing]: PlaceRingRule,
+    [RuleId.PendingEffects]: PendingEffectsRule
   }
 
   /**

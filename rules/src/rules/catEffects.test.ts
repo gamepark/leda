@@ -8,15 +8,16 @@ import { hasHalfTurn } from '../material/Effect'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { MilitaryVictoryTokenId } from '../material/MilitaryVictoryTokenId'
-import { tileAt } from '../material/PlayerGrid'
+import { cellOf, tileAt } from '../material/PlayerGrid'
 import { TileId } from '../material/TileId'
 import { clanCardEffects } from '../material/clanCards/cardProperties'
 import { catCards } from '../material/clanCards/catCards'
 import { CustomMoveType } from './CustomMoveType'
 import { pendingRules } from './effects'
 import { Memory } from './Memory'
-import { rotateCard } from './playedCards'
+import { rotateCard, rotateCardOn } from './playedCards'
 import { RuleId } from './RuleId'
+import { putBackMoves } from './spy'
 
 /** A card in play, on the square of the zone whose x it is given, and on the face it is showing. */
 type Played = { card: ClanCardId; x: number; rotated?: boolean }
@@ -168,6 +169,10 @@ describe('A Cat card', () => {
     // The second face upgrades a tile rather than giving Military.
     expect(military(rules)).toBe(0)
     expect(rules.game.rule?.id).toBe(RuleId.UpgradeTile)
+    // The half turn is printed after the Upgrade, so it is taken after it: the card is still showing the face
+    // being resolved for as long as the player is being asked which tile it upgrades.
+    expect(isRotated(rules, 0)).toBe(true)
+    playAll(rules, rules.getLegalMoves(1)[0])
     expect(isRotated(rules, 0)).toBe(false)
   })
 
@@ -414,6 +419,58 @@ describe('The Cat cards that ask the player something', () => {
     expect(military(rules, 1)).toBe(0)
   })
 
+  /** The card the player would draw next, which is the very card a Spy on their own deck looks at. */
+  const deckTop = (rules: LedaRules): ClanCardId =>
+    rules.material(MaterialType.ClanCard).location(LocationType.PlayerDeck).player(1).deck().limit(1).getItem()!.id.front
+
+  it('Spies before it draws, the card drawn being the one the Spy leaves on top', () => {
+    const rules = new LedaRules(game({ cards: [{ card: ClanCardId.CatSpyAndDraw, x: 0 }] }))
+    const looked = deckTop(rules)
+    activate(rules, 0)
+    // The Spy comes first, and nothing is drawn until it has been answered: a card drawn ahead of it would be the
+    // very card the player is about to look at, and the Spy would have nothing left to decide.
+    expect(rules.game.rule?.id).toBe(RuleId.Spy)
+    expect(hand(rules).length).toBe(0)
+
+    // Into their own deck, and the card looked at goes back under it rather than on top.
+    const [look] = rules.getLegalMoves(1).filter(isMoveItemType(MaterialType.ClanCard))
+    playAll(rules, look)
+    playAll(rules, putBackMoves(rules, 1)!.under)
+
+    // The draw took whatever the Spy left on top, which is no longer the card that was looked at.
+    expect(hand(rules).length).toBe(1)
+    expect(hand(rules).getItem()!.id.front).not.toBe(looked)
+    expect(deckBottom(rules)).toBe(looked)
+    // And the half turn the card gives comes last, once the whole of it has been given.
+    expect(isRotated(rules, 0)).toBe(true)
+    expect(pendingRules(rules)).toEqual([])
+  })
+
+  it('takes its half turn on itself, wherever a swap it copied has left it', () => {
+    const rules = new LedaRules(
+      game({
+        cards: [{ card: ClanCardId.CatCopyOpponentCard, x: 0 }],
+        opponentCards: [{ card: ClanCardId.ScorpionPortalSwap, x: 1 }]
+      })
+    )
+    activate(rules, 0)
+    playAll(rules, rules.customMove(CustomMoveType.ActivateSquare, { x: 1, y: 0 }))
+    // The Portal copied asks the player to swap 2 of their own squares, and the half turn the card still owes
+    // waits for that answer, being printed after the copy.
+    expect(rules.game.rule?.id).toBe(RuleId.SwapSquares)
+    const [swap] = rules
+      .getLegalMoves(1)
+      .filter(isMoveItemType(MaterialType.Tile))
+      .filter((move) => move.itemIndex === tileIndex(1, 0) && move.location.x === 3 && move.location.y === 3)
+    playAll(rules, swap)
+
+    // The card is in the far corner it was sent to, and it is that card that turned: a half turn turns whatever
+    // gave it, and not whatever is standing on the square it was activated on by the time it is taken.
+    const card = rules.material(MaterialType.ClanCard).location(LocationType.PlayedCard).player(1).getItem()!
+    expect(cellOf(rules.material(MaterialType.Tile).getItem(card.location.parent!).location)).toEqual({ x: 3, y: 3 })
+    expect(card.location.rotation).toBe(true)
+  })
+
   it('is lost when the opponent has nothing to activate in the zone', () => {
     const rules = new LedaRules(
       game({
@@ -432,13 +489,15 @@ describe('A half turn', () => {
     const rules = new LedaRules(game({ cards: [{ card: ClanCardId.CatRingEmptyDeck, x: 0 }] }))
     // A Ring, which prints one effect and no second one, and a bare square, which holds no card at all. A half
     // turn reaching either of them is worth nothing, the way becoming a Desert is worth nothing to a card: what
-    // is turned is asked of the square, never assumed of whoever sent the half turn there.
-    expect(rotateCard(rules, 1, { x: 0, y: 0 })).toHaveLength(0)
-    expect(rotateCard(rules, 1, { x: 1, y: 0 })).toHaveLength(0)
-    // The same square once a card that does alternate 2 faces stands on it, to show the 2 above are the guard
+    // is turned is asked of what it reaches, never assumed of whoever sent the half turn there.
+    expect(rotateCardOn(rules, 1, { x: 0, y: 0 })).toHaveLength(0)
+    expect(rotateCardOn(rules, 1, { x: 1, y: 0 })).toHaveLength(0)
+    // A tile is no more turned over than a Ring is: only a card ever has a second face.
+    expect(rotateCard(rules, { type: MaterialType.Tile, index: 0 })).toHaveLength(0)
+    // The same square once a card that does alternate 2 faces stands on it, to show the 3 above are the guard
     // and not a square nothing can reach.
     const turning = new LedaRules(game({ cards: [{ card: ClanCardId.CatFoodAndMilitary, x: 0 }] }))
-    expect(rotateCard(turning, 1, { x: 0, y: 0 })).toHaveLength(1)
+    expect(rotateCardOn(turning, 1, { x: 0, y: 0 })).toHaveLength(1)
   })
 })
 

@@ -145,5 +145,13 @@ export enum RuleId {
    * (see {@link rings}). Where the Awakenings are for the Pandas, a step of phase 1 for that clan alone, and the
    * one rule that opens a second time in a round: the Red Ring asks for a conflict won, which phase 2 settles.
    */
-  PlaceRing
+  PlaceRing,
+
+  /**
+   * What is left of the effects of a square once one of them has asked the player something: given the moment
+   * they have answered, and nothing is ever asked here (see {@link PendingEffectsRule}).
+   * The one rule of the game the player never sees, hence its place after everything they do: it opens and hands
+   * over within the same set of moves, which is what puts the rest of a card behind the question it comes after.
+   */
+  PendingEffects
 }

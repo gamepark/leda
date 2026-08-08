@@ -9,7 +9,7 @@ import { TileId } from '../material/TileId'
 import { Rules } from '../Rules'
 import { pendingRules, resolveEffects } from './effects'
 import { Memory } from './Memory'
-import { cardEffectsOn } from './playedCards'
+import { cardEffectsOn, topCardIndexOn } from './playedCards'
 import { RuleId } from './RuleId'
 import { swappingPlayer } from './swap'
 
@@ -89,13 +89,13 @@ const becomesDesert = (item: MaterialItem<number, LocationType, TileId>): boolea
 /**
  * Everything activating a tile gives, whichever rule asked for it: what the face it shows gives, and the Desert a
  * temporary tile becomes once it has given it (see {@link becomesDesert}).
- * The square is handed to the effects, some of which are read against it (see {@link EffectSource}).
+ * The tile is handed to the effects, some of which are read against what gives them (see {@link EffectSource}).
  */
 export const activateTile = (rule: PlayerTurnRule<number, MaterialType, LocationType>, index: number): MaterialMove<number, MaterialType, LocationType>[] => {
   const tiles = rule.material(MaterialType.Tile)
   const tile = tiles.getItem<TileId>(index)
   if (tile === undefined) return []
-  const moves = resolveEffects(rule, tileEffects(tile.id, tile.location.rotation === true), { cell: cellOf(tile.location) })
+  const moves = resolveEffects(rule, tileEffects(tile.id, tile.location.rotation === true), { item: { type: MaterialType.Tile, index } })
   if (becomesDesert(tile)) moves.push(tiles.index(index).moveItem({ ...tile.location, rotation: true }))
   return moves
 }
@@ -141,7 +141,11 @@ export const rotatableCells = (rules: Rules, player: number): XYCoordinates[] =>
  */
 export const activateCard = (rule: PlayerTurnRule<number, MaterialType, LocationType>, cell: XYCoordinates): MaterialMove<number, MaterialType, LocationType>[] => {
   const effects = cardEffectsOn(rule, rule.player, cell)
-  return effects === undefined ? [] : resolveEffects(rule, effects, { cell })
+  const index = topCardIndexOn(rule, rule.player, cell)
+  if (effects === undefined || index === undefined) return []
+  // The card itself is handed to the effects, and not the square it is being activated on: what it still owes once
+  // it has asked its owner something is owed by the card, wherever it stands by then (see {@link EffectSource}).
+  return resolveEffects(rule, effects, { item: { type: MaterialType.ClanCard, index } })
 }
 
 /**

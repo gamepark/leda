@@ -4,7 +4,7 @@ import { MaterialType } from '../material/MaterialType'
 import { rotatableCells } from './activation'
 import { CustomMoveType } from './CustomMoveType'
 import { EffectRule } from './EffectRule'
-import { rotateCard } from './playedCards'
+import { rotateCardOn } from './playedCards'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
@@ -38,7 +38,7 @@ export class RotateCatCardRule extends EffectRule {
     if (!isCustomMoveType<CustomMoveType, XYCoordinates>(CustomMoveType.RotateCatCard)(move)) return []
     const cell = move.data
     if (cell === undefined || !this.cells.some((rotatable) => rotatable.x === cell.x && rotatable.y === cell.y)) return []
-    return rotateCard(this, this.player, cell)
+    return rotateCardOn(this, this.player, cell)
   }
 
   /** The half turn is the whole of the effect: the game moves on as soon as the card has taken it. */

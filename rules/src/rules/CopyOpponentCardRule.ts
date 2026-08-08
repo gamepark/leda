@@ -56,10 +56,12 @@ export class CopyOpponentCardRule extends EffectRule {
     const effects = squareEffects(this, this.opponent, cell)
     if (effects === undefined) return []
     /**
-     * No square is handed to the effects, unlike every other activation: the square they were read on is not the
-     * square they are resolved on, and the one they are resolved on is the card that copied them, which the rule
-     * an effect queues is never told about (see {@link resolveEffects}). Nothing is lost by that: what a square
-     * is read for is the Shark tokens around it, and there are none around a Cat card to read.
+     * Nothing is handed to the effects as what gives them, unlike every other activation: what was read is a
+     * square of the opponent, and what resolves it is the card that copied it, so neither of the two is what these
+     * effects are read against (see {@link EffectSource}). Nothing is lost by that: what such an effect reads is
+     * the Shark tokens around itself, and there are none around a Cat card to read.
+     * The card that copied still takes the half turn it prints, that half turn being its own and not part of what
+     * it copies (see {@link activateCard}).
      */
     return [...resolveEffects(this, effects), ...this.resume()]
   }

@@ -101,8 +101,15 @@ describe('A card that asks the player several things', () => {
   it('asks them in the order it is written, and hands the zone back at the end', () => {
     const rules = new LedaRules(game([ClanCardId.PandaSpyAndDiscount], [ClanCardId.PandaUpgrade], 5))
     activate(rules, 0)
+    // The Spy first, and what the card writes after it waits for that answer: whatever is left of a card is read
+    // again once the question it comes after is answered (see {@link PendingEffectsRule}).
     expect(rules.game.rule?.id).toBe(RuleId.Spy)
-    expect(pendingRules(rules)).toEqual([RuleId.PlayCard, RuleId.ActivateZone])
+    expect(pendingRules(rules)).toEqual([RuleId.PendingEffects, RuleId.ActivateZone])
+    playAll(rules, rules.getLegalMoves(1)[0])
+    playAll(rules, rules.getLegalMoves(1)[0])
+    // Then the card it lets the player play, and the zone once they are done with it.
+    expect(rules.game.rule?.id).toBe(RuleId.PlayCard)
+    expect(pendingRules(rules)).toEqual([RuleId.ActivateZone])
   })
 
   it('takes the discount off the price of the card it lets the player play', () => {

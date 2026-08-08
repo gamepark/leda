@@ -26,6 +26,9 @@ export type ClanCardProperties = {
    * shares (see {@link Effect}). A card covers the tile of its square: what it gives is given instead of what the
    * tile gave, which is why a card showing a face with none at all leaves its square with nothing to activate.
    * Absent for the 4 cheap Shark cards, which print nothing outside of their Pack.
+   *
+   * Written in the order the card prints them, which is the order they are resolved in: "Spy, then draw 1 card"
+   * is not the same card as "draw 1 card, then Spy" (see {@link resolveEffects}).
    */
   effects?: EffectSet
 

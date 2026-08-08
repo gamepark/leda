@@ -1,7 +1,8 @@
-import { getEnumValues, MaterialMove, MaterialRulesPart, PlayerTurnRule, XYCoordinates } from '@gamepark/rules-api'
-import { Effect, EffectChoice, EffectQuantity, EffectSet, EffectSource, isEffectChoice } from '../material/Effect'
+import { MaterialMove, MaterialRulesPart, PlayerTurnRule, XYCoordinates } from '@gamepark/rules-api'
+import { Effect, EffectChoice, effectEntries, EffectQuantity, EffectSet, EffectSource, isEffectChoice } from '../material/Effect'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
+import { cellOf } from '../material/PlayerGrid'
 import { Rules } from '../Rules'
 import { Memory } from './Memory'
 import { rotateCard } from './playedCards'
@@ -52,6 +53,23 @@ export const startNextRule = (rule: AnyRule): Move[] => {
 /** The choices waiting to be made, the first one being the one the player is being asked (see {@link Memory.EffectChoices}). */
 export const pendingChoices = (rules: Rules): EffectChoice[] => rules.game.memory[Memory.EffectChoices] ?? []
 
+/**
+ * What is left of a set of effects once one of them has asked the player something, which waits for the answer
+ * (see {@link PendingEffectsRule}).
+ *
+ * The quantities are the numbers they had come to when the set was read, and not the formulas some of them are
+ * written as (see {@link EffectQuantity}): what is waiting has to survive in the memory of the game, where a
+ * function cannot go. The order is the one the card prints, which the record keeps for the same reason it keeps
+ * it anywhere else (see {@link effectEntries}).
+ */
+export type PendingEffects = { effects: Partial<Record<Effect, number>>; source: EffectSource }
+
+/** The sets waiting to be resolved, the first one being the next (see {@link Memory.PendingEffects}). */
+export const pendingEffects = (rules: Rules): PendingEffects[] => rules.game.memory[Memory.PendingEffects] ?? []
+
+/** The set being resolved is off the list, the way a choice being made is. */
+export const forgetPendingEffects = (rule: AnyRule) => rule.memorize(Memory.PendingEffects, pendingEffects(rule).slice(1))
+
 /** The Food the card a player is being offered to play is discounted by (see {@link Effect.PlayCard}). */
 export const cardDiscount = (rules: Rules): number => rules.game.memory[Memory.CardDiscount] ?? 0
 
@@ -59,7 +77,7 @@ export const cardDiscount = (rules: Rules): number => rules.game.memory[Memory.C
 export const forgetChoice = (rule: AnyRule) => rule.memorize(Memory.EffectChoices, pendingChoices(rule).slice(1))
 
 /** What the rules an effect asks for are gathered into while the effects are read, one card being read as a whole. */
-type Asked = { rules: RuleId[]; choices: EffectChoice[] }
+type Asked = { rules: RuleId[]; choices: EffectChoice[]; pending: PendingEffects[] }
 
 /**
  * Everything an effect set gives: the moves for what it gives on its own, and the rules it needs queued for what
@@ -67,13 +85,27 @@ type Asked = { rules: RuleId[]; choices: EffectChoice[] }
  * (see {@link EffectSource}).
  */
 export const resolveEffects = (rule: Rule, effects: EffectSet, source: EffectSource = {}): Move[] => {
-  const asked: Asked = { rules: [], choices: [] }
+  const asked: Asked = { rules: [], choices: [], pending: [] }
   const moves = collect(rule, effects, source, asked)
   if (asked.rules.length > 0) queueFirst(rule, asked.rules)
   if (asked.choices.length > 0) rule.memorize(Memory.EffectChoices, [...asked.choices, ...pendingChoices(rule)])
+  // What is left over goes in front of what was already waiting, exactly as the rules that will resolve it do:
+  // each of those takes the first set of the list, so the two lists are only ever read in step with each other.
+  if (asked.pending.length > 0) rule.memorize(Memory.PendingEffects, [...asked.pending, ...pendingEffects(rule)])
   return moves
 }
 
+/**
+ * The effects of a set, resolved left to right, in the order they were written down: a card is read the way it is
+ * printed, and that order is the whole of what tells "Spy, then draw 1 card" from a card drawn before its owner
+ * has looked at the top of their deck (see {@link effectEntries}).
+ *
+ * An effect either gives something on the spot, and its moves are returned here, or it asks the player something,
+ * and opens a rule of its own. Everything written after a question waits for the answer instead of being given
+ * ahead of it: it is written down as it stands and handed to a rule queued behind the question, which gives it
+ * once it has been answered (see {@link PendingEffectsRule}). What is waiting is read the same way from there, so
+ * a card that asks twice waits twice, and each part of it lands where the card puts it.
+ */
 const collect = (rule: Rule, effects: EffectSet, source: EffectSource, asked: Asked): Move[] => {
   if (isEffectChoice(effects)) {
     asked.rules.push(RuleId.ChooseEffect)
@@ -81,20 +113,62 @@ const collect = (rule: Rule, effects: EffectSet, source: EffectSource, asked: As
     asked.choices.push({ ...effects, ...source })
     return []
   }
-  return getEnumValues(Effect).flatMap((effect) => resolve(rule, effect, quantityOf(rule, effects[effect], source), asked, source))
+  const moves: Move[] = []
+  const entries = effectEntries(effects)
+  for (let read = 0; read < entries.length; read++) {
+    // Something has been asked, whether by an effect written above this one or by the set this one is being read
+    // through: what is left of the card is for once the player has answered.
+    if (asked.rules.length > 0) {
+      queuePending(rule, asked, entries.slice(read), source)
+      return moves
+    }
+    const [effect, written] = entries[read]
+    const quantity = quantityOf(rule, written, source)
+    if (quantity > 0) moves.push(...resolve(rule, effect, quantity, asked, source))
+  }
+  return moves
+}
+
+/**
+ * What is left of a set, written down as it stands and queued behind the question it is waiting on
+ * (see {@link PendingEffects}). Nothing is queued when there is nothing left to give: a card whose last effect is
+ * the one that asked, or one whose remainder comes to nothing on this game.
+ */
+const queuePending = (rule: Rule, asked: Asked, entries: [Effect, EffectQuantity][], source: EffectSource) => {
+  const left = entries.map(([effect, written]): [Effect, number] => [effect, quantityOf(rule, written, source)]).filter(([, quantity]) => quantity > 0)
+  if (left.length === 0) return
+  asked.rules.push(RuleId.PendingEffects)
+  asked.pending.push({ effects: Object.fromEntries(left) as Partial<Record<Effect, number>>, source })
 }
 
 /**
  * How many times an effect applies, which a card may read off the game rather than print (see {@link EffectQuantity}).
  * The app reads it the same way, to draw as many symbols as an effect is about to give.
  */
-export const effectQuantity = (rules: Rules, player: number, quantity: EffectQuantity | undefined, cell?: XYCoordinates): number => {
+export const effectQuantity = (rules: Rules, player: number, quantity: EffectQuantity | undefined, source: EffectSource = {}): number => {
   if (quantity === undefined) return 0
-  return typeof quantity === 'number' ? quantity : quantity(rules, player, cell)
+  return typeof quantity === 'number' ? quantity : quantity(rules, player, sourceCell(rules, source))
 }
 
 const quantityOf = (rule: Rule, quantity: EffectQuantity | undefined, source: EffectSource): number =>
-  effectQuantity(rule, rule.player, quantity, source.cell)
+  effectQuantity(rule, rule.player, quantity, source)
+
+/**
+ * The square the thing that gives a set of effects stands on, as it stands right now: what a card reading its own
+ * surroundings is read against (see {@link EffectQuantity}). A tile is on its square, and a card is on the square
+ * of the tile it was played over, being parented to that tile and following it wherever it goes.
+ * Undefined when nothing on the grid gives them, which is what a Military Victory token is, and undefined too for
+ * a card that has left the grid.
+ */
+export const sourceCell = (rules: Rules, source: EffectSource): XYCoordinates | undefined => {
+  if (source.item === undefined) return undefined
+  const item = rules.material(source.item.type).getItem(source.item.index)
+  if (item === undefined) return undefined
+  if (source.item.type === MaterialType.Tile) return cellOf(item.location)
+  // A card is parented to the tile of its square, so its square is wherever that tile stands.
+  const tile = item.location.parent === undefined ? undefined : rules.material(MaterialType.Tile).getItem(item.location.parent)
+  return tile === undefined ? undefined : cellOf(tile.location)
+}
 
 /** One effect of a set, applied as many times as it is given. */
 const resolve = (rule: Rule, effect: Effect, quantity: number, asked: Asked, source: EffectSource): Move[] => {
@@ -136,10 +210,10 @@ const resolve = (rule: Rule, effect: Effect, quantity: number, asked: Asked, sou
       asked.rules.push(...times(quantity, RuleId.DowngradeTile))
       return []
     case Effect.HalfTurn:
-      // The card taking it is the one that gave it, which is to say the card on the square the effects are being
-      // resolved on, in the grid of the player resolving them (see {@link EffectSource}).
+      // The card taking it is the one that gave it, and that card itself rather than whatever stands on the square
+      // it stood on when it gave it (see {@link EffectSource}).
       // Given once however many times it is given: a card has 2 faces, and turning it twice is turning nothing.
-      return source.cell === undefined ? [] : rotateCard(rule, player, source.cell)
+      return source.item === undefined ? [] : rotateCard(rule, source.item)
     case Effect.BlockMilitaryVictory:
       // Nothing to ask and nothing to move: the round simply stops handing tokens out (see {@link canWinMilitaryVictory}).
       rule.memorize(Memory.MilitaryVictoryBlocked, true)

@@ -78,5 +78,14 @@ export enum Memory {
    * Written down when the card is played rather than read off it: what has already been paid would otherwise have
    * to be counted against a card that is by then one of several on its square.
    */
-  CardsOwed
+  CardsOwed,
+
+  /**
+   * What is left of the effects of a square once one of them has asked the player something, in the order the
+   * card writes them (see {@link PendingEffects}). The set being resolved is the first, and it is forgotten as
+   * soon as it is, exactly like a choice.
+   * Written down rather than given ahead of the question, because the answer is what the rest of the card lands
+   * on: the card drawn by "Spy, then draw 1 card" is whichever card the Spy leaves on top of the deck.
+   */
+  PendingEffects
 }

@@ -2,7 +2,7 @@ import { MaterialMove, XYCoordinates } from '@gamepark/rules-api'
 import { Clan } from '../Clan'
 import { ClanCardId, ClanCardItemId, clanOf } from '../material/ClanCardId'
 import { clanCardEffects } from '../material/clanCards/cardProperties'
-import { Effect, EffectSet, hasEffect, hasHalfTurn, isEffectChoice } from '../material/Effect'
+import { Effect, EffectItem, EffectSet, hasEffect, hasHalfTurn, isEffectChoice } from '../material/Effect'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { tileAt } from '../material/PlayerGrid'
@@ -70,19 +70,28 @@ export const cardEffectsOn = (rules: Rules, player: number, cell: XYCoordinates)
  * The half turn a card takes, the one move there is to it: the rotation of the location is which of its 2 effects
  * is up, and turning the card is flipping that.
  *
- * Only a card that has 2 effects to alternate between ever takes it, which is asked of the square rather than of
- * whoever is turning it: a bare square holds no card to turn, a Ring prints one effect and no second one, and a
- * card of a clan that alternates nothing would be turned onto a face it does not have. Nothing happens to any of
- * them, exactly as nothing happens to a card told to become a Desert (see {@link becomesDesert}).
- * That the effect turns the card that gave it is therefore never assumed here: it is a half turn reaching a
- * square, and the square says whether there is anything to turn (see {@link Effect.HalfTurn}).
+ * Only a card that has 2 effects to alternate between ever takes it, which is asked of the card rather than of
+ * whoever is turning it: a Ring prints one effect and no second one, and a card of a clan that alternates nothing
+ * would be turned onto a face it does not have. Nothing happens to either, exactly as nothing happens to a card
+ * told to become a Desert (see {@link becomesDesert}). Neither does anything happen to a tile handed here: what a
+ * half turn reaches is whatever gave it, and only a card has a second face (see {@link Effect.HalfTurn}).
  */
-export const rotateCard = (rules: Rules, player: number, cell: XYCoordinates): MaterialMove<number, MaterialType, LocationType>[] => {
-  const index = topCardIndexOn(rules, player, cell)
-  if (index === undefined || !hasHalfTurn(cardEffectsOn(rules, player, cell))) return []
+export const rotateCard = (rules: Rules, { type, index }: EffectItem): MaterialMove<number, MaterialType, LocationType>[] => {
+  if (type !== MaterialType.ClanCard) return []
   const cards = rules.material(MaterialType.ClanCard)
-  const rotated = cards.getItem(index).location.rotation === true
+  const card = cards.getItem<ClanCardItemId>(index)
+  const rotated = card?.location.rotation === true
+  if (card?.id?.front === undefined || !hasHalfTurn(clanCardEffects(card.id.front, rotated))) return []
   return [cards.index(index).moveItem((item) => ({ ...item.location, rotation: !rotated }))]
+}
+
+/**
+ * The same half turn, taken by the card standing on a square: what a Ring asks for, the player naming a square of
+ * their grid rather than a card (see {@link RotateCatCardRule}). A bare square holds no card to turn.
+ */
+export const rotateCardOn = (rules: Rules, player: number, cell: XYCoordinates): MaterialMove<number, MaterialType, LocationType>[] => {
+  const index = topCardIndexOn(rules, player, cell)
+  return index === undefined ? [] : rotateCard(rules, { type: MaterialType.ClanCard, index })
 }
 
 /**

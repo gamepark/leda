@@ -63,7 +63,7 @@ export const ChooseEffectLog = ({ move, context }: MaterialLogProps<CustomMove>)
     <LogText
       code="log.choose-effect"
       values={{ player: name }}
-      components={{ effects: <EffectIcons effects={branch} rules={rules} player={player} cell={choice.cell} /> }}
+      components={{ effects: <EffectIcons effects={branch} rules={rules} player={player} source={choice} /> }}
     />
   )
 }

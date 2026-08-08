@@ -261,21 +261,32 @@ describe('The Scorpion card that scales with the Portals in play', () => {
     expect(rules.game.rule?.id).not.toBe(RuleId.Spy)
   })
 
+  /** The 2 moves of a Spy: the top of a pile looked at, then put back where it was. */
+  const spy = (rules: LedaRules) => {
+    playAll(rules, rules.getLegalMoves(1)[0])
+    playAll(rules, rules.getLegalMoves(1)[0])
+  }
+
   it('adds a Spy with 1 Portal, the Military with 2, and a Desert to activate with 3', () => {
     const one = new LedaRules(game({ cards: [{ card: ClanCardId.ScorpionFoodAndPortalBonus, cell: played }, ...portalsInPlay(1)] }))
     activate(one, played)
     expect(one.game.rule?.id).toBe(RuleId.Spy)
     expect(military(one)).toBe(0)
 
+    // The card reads "1 Food, then Spy, then 1 Military, then activate a Desert", and is resolved in that order:
+    // what comes after the Spy is given once it has been answered (see {@link PendingEffectsRule}).
     const two = new LedaRules(game({ cards: [{ card: ClanCardId.ScorpionFoodAndPortalBonus, cell: played }, ...portalsInPlay(2)] }))
     activate(two, played)
-    expect(military(two)).toBe(1)
+    expect(military(two)).toBe(0)
     expect(pendingRules(two)).toContain(RuleId.ActivateZone)
+    spy(two)
+    expect(military(two)).toBe(1)
 
     const three = new LedaRules(game({ cards: [{ card: ClanCardId.ScorpionFoodAndPortalBonus, cell: played }, ...portalsInPlay(3)] }))
     activate(three, played)
+    spy(three)
     expect(military(three)).toBe(1)
-    expect(pendingRules(three)).toContain(RuleId.ActivateDesert)
+    expect(three.game.rule?.id).toBe(RuleId.ActivateDesert)
   })
 })
 

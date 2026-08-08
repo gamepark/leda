@@ -42,9 +42,11 @@ export class ActivateDesertRule extends EffectRule {
     if (!isCustomMoveType<CustomMoveType, XYCoordinates>(CustomMoveType.ActivateSquare)(move)) return []
     const cell = move.data
     if (cell === undefined || !this.cells.some((desert) => sameCell(desert, cell))) return []
-    const tile = tileAt(this.material(MaterialType.Tile), this.player, cell).getItem<TileId>()
+    const desert = tileAt(this.material(MaterialType.Tile), this.player, cell)
+    const tile = desert.getItem<TileId>()
     if (tile === undefined) return []
     // The front of the tile, which is what its Desert side reminds, read while the tile keeps showing its back.
-    return [...resolveEffects(this, tileEffects(tile.id, false), { cell }), ...this.resume()]
+    const source = { item: { type: MaterialType.Tile, index: desert.getIndex() } }
+    return [...resolveEffects(this, tileEffects(tile.id, false), source), ...this.resume()]
   }
 }

@@ -87,5 +87,15 @@ export enum Memory {
    * Written down rather than given ahead of the question, because the answer is what the rest of the card lands
    * on: the card drawn by "Spy, then draw 1 card" is whichever card the Spy leaves on top of the deck.
    */
-  PendingEffects
+  PendingEffects,
+
+  /**
+   * The swaps made while organising this round: whose grid, and the 2 squares that changed places
+   * (see {@link OrganisationSwap}). Emptied when the next round starts, like the Spies above.
+   *
+   * Only the swaps of an organisation, and not the ones a Scorpion Portal offers: a player organises while their
+   * opponent is watching their own grid being handed back to them, which is exactly when 2 squares changing
+   * places goes unnoticed. A Portal is played in the middle of an activation everyone is already watching.
+   */
+  OrganisationSwaps
 }

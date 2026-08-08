@@ -24,6 +24,7 @@ import TemporaryFoodBack from '../images/tiles/verso/temporary-food.jpg'
 import TemporaryMilitaryBack from '../images/tiles/verso/temporary-military.jpg'
 import TemporarySpecialActivationBack from '../images/tiles/verso/temporary-special-activation.jpg'
 import TemporaryUpgradeBack from '../images/tiles/verso/temporary-upgrade.jpg'
+import { SwapHistoryButton } from './SwapHistoryButton'
 import { TileHelp } from './TileHelp'
 import { TileMenuButton } from './TileMenuButton'
 
@@ -89,10 +90,18 @@ export class TileDescription extends CardDescription<number, MaterialType, Locat
    * Both grids, and not only the one of the player looking: a Cat card copying the opponent is answered on their
    * squares, which is where what is being copied stands (see {@link CopyOpponentCardRule}). Whose grid a square is
    * in is handed over, since almost every button belongs to its owner alone.
+   *
+   * The mark of a swap hangs beside it, and belongs to nobody: it says what happened to the square this round
+   * rather than offering anything (see {@link SwapHistoryButton}).
    */
   getItemMenu(item: MaterialItem<number, LocationType, TileId>, context: ItemContext<number, MaterialType, LocationType>) {
     if (item.location.type !== LocationType.PlayerGrid || item.location.player === undefined) return
-    return <TileMenuButton index={context.index} owner={item.location.player} />
+    return (
+      <>
+        <TileMenuButton index={context.index} owner={item.location.player} />
+        <SwapHistoryButton tile={context.index} />
+      </>
+    )
   }
 
   /**

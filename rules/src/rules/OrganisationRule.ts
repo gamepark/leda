@@ -7,7 +7,7 @@ import { queueLast } from './effects'
 import { Memory } from './Memory'
 import { afterOrganisation, cardCardCost, cardFoodCost, playCardMoves } from './organisation'
 import { RuleId } from './RuleId'
-import { swapBackMove, swapMoves } from './swap'
+import { rememberSwap, swapBackMove, swapMoves } from './swap'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
@@ -60,6 +60,8 @@ export class OrganisationRule extends PlayerTurnRule<number, MaterialType, Locat
    * A swap: the other half of it, the tile that was on the square being moved to. Nothing is due for that second
    * half, which lands on the square the first one has just left, and is not a swap of its own. The Food the swap
    * is worth is gained once it is done, and it is what takes the organisation to its end.
+   * This is also where the swap is written down for the rest of the round, the 2 squares it is made of being
+   * known here and nowhere else (see {@link Memory.OrganisationSwaps}).
    *
    * A card being played: its price, while it is still in the hand a Portal counts (see {@link FoodCost}).
    */
@@ -70,7 +72,10 @@ export class OrganisationRule extends PlayerTurnRule<number, MaterialType, Locat
     }
     if (!isMoveItemType(MaterialType.Tile)(move)) return []
     const back = swapBackMove(this, this.player, move.itemIndex, cellOf(move.location))
-    return back === undefined ? [] : [back, this.gainFood]
+    if (back === undefined) return []
+    const from = cellOf(this.material(MaterialType.Tile).getItem(move.itemIndex).location)
+    rememberSwap(this, { player: this.player, cells: [from, cellOf(move.location)] })
+    return [back, this.gainFood]
   }
 
   /**

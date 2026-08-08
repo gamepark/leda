@@ -1,11 +1,15 @@
-import { MaterialMove, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
+import { MaterialMove, MaterialRules, MaterialRulesPart, XYCoordinates } from '@gamepark/rules-api'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
-import { cellOf, gridTiles, tileAt } from '../material/PlayerGrid'
+import { cellOf, gridTiles, sameCell, tileAt } from '../material/PlayerGrid'
+import { Memory } from './Memory'
 import { RuleId } from './RuleId'
 
 /** All these helpers need, which a part of the rules and the MaterialRules instance of the app both satisfy. */
 type Rules = Pick<MaterialRules<number, MaterialType, LocationType>, 'game' | 'material'>
+
+/** Writing a swap down is a rule's, unlike everything the app reads here. */
+type Rule = MaterialRulesPart<number, MaterialType, LocationType>
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
@@ -62,4 +66,30 @@ export const isGridSettled = (rules: Rules, player: number): boolean => {
     .getItems()
     .map((tile) => cellOf(tile.location))
   return new Set(cells.map(({ x, y }) => `${x},${y}`)).size === cells.length
+}
+
+/**
+ * What a swap made while organising leaves behind for the rest of the round: whose grid it was, and the 2 squares
+ * that changed places (see {@link Memory.OrganisationSwaps}).
+ * The squares and not the tiles: what a player has to be told is which 2 squares of that grid are not what they
+ * were, and a square is read the same way whether it carries a bare tile or a card played on it.
+ */
+export type OrganisationSwap = { player: number; cells: [XYCoordinates, XYCoordinates] }
+
+/** The swaps of the round, in the order they were made. */
+export const roundSwaps = (rules: Rules): OrganisationSwap[] => rules.game.memory[Memory.OrganisationSwaps] ?? []
+
+/** One more of them, written down while the state still says which tile was where (see {@link OrganisationRule}). */
+export const rememberSwap = (rule: Rule, swap: OrganisationSwap) =>
+  rule.memorize<OrganisationSwap[]>(Memory.OrganisationSwaps, (swaps: OrganisationSwap[] = []) => [...swaps, swap])
+
+/**
+ * The swap of the round the square of a tile took part in, if any, which is what that square has to show for
+ * itself (see {@link SwapHistoryButton}). Read off the tile rather than given its coordinates, so that a card
+ * played on a square asks the same question through the tile it is laid on.
+ */
+export const swapOnTile = (rules: Rules, index: number): OrganisationSwap | undefined => {
+  const location = rules.material(MaterialType.Tile).getItem(index)?.location
+  if (location?.type !== LocationType.PlayerGrid || location.player === undefined) return undefined
+  return roundSwaps(rules).find((swap) => swap.player === location.player && swap.cells.some((cell) => sameCell(cell, cellOf(location))))
 }

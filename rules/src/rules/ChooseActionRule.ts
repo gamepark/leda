@@ -23,6 +23,8 @@ export class ChooseActionRule extends PlayerTurnRule<number, MaterialType, Locat
     this.memorize(Memory.MilitaryVictoryBlocked, undefined)
     // What the piles have to show for themselves is what happened to them this round, and nothing before it.
     this.memorize(Memory.Spies, undefined)
+    // The same goes for the squares that changed places while the players were organising their grids.
+    this.memorize(Memory.OrganisationSwaps, undefined)
     for (const player of this.game.players) {
       this.memorize(Memory.MilitarySymbols, 0, player)
       this.memorize(Memory.ActivatedCells, [], player)

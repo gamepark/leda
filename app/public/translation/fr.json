@@ -10,6 +10,12 @@
       "close": "Fermer"
     }
   },
+  "swap": {
+    "history": {
+      "text": "{player} a échangé ces 2 éléments.",
+      "close": "Fermer"
+    }
+  },
   "organisation": {
     "food": {
       "explain": "Échangez la position de 2 cartes, et ensuite gagner 1 <food/>. Vous n'êtes pas obligé d'échanger pour prendre 1 <food/>.",

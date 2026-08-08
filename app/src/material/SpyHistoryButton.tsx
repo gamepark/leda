@@ -1,12 +1,11 @@
-import { css } from '@emotion/react'
 import { faEye } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { LedaRules } from '@gamepark/leda/LedaRules'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { isPileTop, spiesOnPile } from '@gamepark/leda/rules/spy'
 import { useRules } from '@gamepark/react-game'
 import { useState } from 'react'
 import { SpyHistoryDialog } from '../dialogs/SpyHistoryDialog'
+import { HistoryMark } from './HistoryMark'
 import { LedaMenuButton } from './LedaMenuButton'
 import { spyButtonX } from './spiedItem'
 
@@ -36,22 +35,9 @@ export const SpyHistoryButton = ({ type, index, player }: { type: MaterialType; 
   return (
     <>
       <LedaMenuButton x={-spyButtonX(type)} labelPosition="left" onClick={() => setOpen(true)}>
-        {/* Wrapped so that the mark is not a span the medallion can reach: it paints its direct spans as the label of the framework. */}
-        <div css={mark}>
-          <FontAwesomeIcon icon={faEye} />
-          <span>?</span>
-        </div>
+        <HistoryMark icon={faEye} />
       </LedaMenuButton>
       <SpyHistoryDialog open={open} close={() => setOpen(false)} spies={spies} />
     </>
   )
 }
-
-/** The eye and its question mark side by side, small enough for the two of them to fit the medallion. */
-const mark = css`
-  display: flex;
-  align-items: center;
-  gap: 0.1em;
-  font-size: 0.75em;
-  font-weight: 700;
-`

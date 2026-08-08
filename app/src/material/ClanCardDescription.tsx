@@ -65,6 +65,7 @@ import { isSpiedByOther } from './spiedItem'
 import { SpiedItemButtons } from './SpiedItemButtons'
 import { SpyHistoryButton } from './SpyHistoryButton'
 import { SpyPileButton } from './SpyPileButton'
+import { SwapHistoryButton } from './SwapHistoryButton'
 import { tileSize } from './TileDescription'
 
 /** All the cards of a clan share one back, the emblem of that clan, including their Victory condition card. */
@@ -165,10 +166,19 @@ export class ClanCardDescription extends CardDescription<number, MaterialType, L
    * A player only ever looks into their own deck, hence the Spy button on that one alone. What a deck was looked
    * into is another matter: both decks carry that mark, since a player is owed the news that their opponent read
    * the top of their own pile and maybe buried it (see {@link SpyHistoryButton}).
+   *
+   * A card played on a grid covers the tile of its square, buttons included, so it carries the mark of a swap in
+   * place of the tile it hides, and asks for it through that very tile (see {@link SwapHistoryButton}).
    */
   getItemMenu(item: MaterialItem<number, LocationType, ClanCardItemId>, context: ItemContext<number, MaterialType, LocationType>) {
     if (item.location.type === LocationType.SpiedItem) return <SpiedItemButtons type={MaterialType.ClanCard} />
-    if (item.location.type === LocationType.PlayedCard) return <PlayedCardMenuButton index={context.index} />
+    if (item.location.type === LocationType.PlayedCard)
+      return (
+        <>
+          <PlayedCardMenuButton index={context.index} />
+          {item.location.parent !== undefined && <SwapHistoryButton tile={item.location.parent} />}
+        </>
+      )
     if (item.location.type === LocationType.PlayerHand) return <PutUnderDeckButton index={context.index} />
     if (item.location.type !== LocationType.PlayerDeck) return
     return (

@@ -1,10 +1,8 @@
 import { isMoveItemType, ItemMove, MaterialMove } from '@gamepark/rules-api'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
-import { cellOf } from '../material/PlayerGrid'
 import { activateTile } from './activation'
 import { EffectRule } from './EffectRule'
-import { topCardOn } from './playedCards'
 import { upgradableTiles } from './tileChoices'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
@@ -15,11 +13,10 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  * the upgraded face rather than the one the tile was showing.
  *
  * The tile is picked once, for both halves: it is the tile just upgraded that is activated, never another one.
- * Only a permanent tile still on its front can be upgraded at all, so a player whose permanent tiles are all
- * upgraded already loses the whole effect, not just its second half.
- *
- * "If possible" is about the activation: a tile a card covers is upgraded under that card, and gives nothing,
- * the card being what the square holds.
+ * Only a bare permanent tile still on its front can be upgraded at all (see {@link upgradableTiles}), so a player
+ * whose permanent tiles are all upgraded or covered loses the whole effect, not just its second half. What is left
+ * to pick is a tile nothing covers, which is a tile there is nothing to stop from being activated once it is
+ * turned over: "if possible" is about the upgrade, and the activation follows it every time.
  */
 export class UpgradeAndActivateTileRule extends EffectRule {
   /** Nothing left to upgrade leaves nothing to do, and the effect is lost. */
@@ -38,12 +35,6 @@ export class UpgradeAndActivateTileRule extends EffectRule {
   /** The tile is activated once it is upgraded, so that it gives what its upgraded face gives. */
   afterItemMove(move: ItemMove<number, MaterialType, LocationType>): Move[] {
     if (!isMoveItemType(MaterialType.Tile)(move)) return []
-    return [...this.activate(move.itemIndex), ...this.resume()]
-  }
-
-  activate(index: number): Move[] {
-    const tile = this.material(MaterialType.Tile).getItem(index)
-    if (tile === undefined || topCardOn(this, this.player, cellOf(tile.location)) !== undefined) return []
-    return activateTile(this, index)
+    return [...activateTile(this, move.itemIndex), ...this.resume()]
   }
 }

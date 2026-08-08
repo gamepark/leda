@@ -9,7 +9,7 @@ import { gridTiles } from '../material/PlayerGrid'
 import { Rules } from '../Rules'
 import { roundZone } from './activation'
 import { isMilitaryConflictPhase, militaryLead } from './militaryConflict'
-import { topCardOn } from './playedCards'
+import { topCardOn } from './squares'
 import { upgradedTiles } from './tileChoices'
 
 /**

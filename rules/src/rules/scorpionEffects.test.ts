@@ -45,6 +45,8 @@ type Setup = {
   food?: number
   /** The squares of the opponent that hold something else than a Desert. */
   opponentSquares?: { cell: XYCoordinates; square: Square }[]
+  /** The cards the opponent has in play, which cover the tiles of their squares as the ones of the player do. */
+  opponentCards?: { card: ClanCardId; cell: XYCoordinates }[]
 }
 
 const index = ({ x, y }: XYCoordinates) => y * 4 + x
@@ -77,7 +79,11 @@ const handOf = (hand: ClanCardId[] | number): ClanCardId[] =>
  * of the round set on row 1, which is where the cards below are played.
  * The opponent has a grid of their own, since one of the Portals has them turn one of its tiles over.
  */
-const game = ({ cards = [], squares = [], won = [], hand = 0, food = 0, opponentSquares = [] }: Setup): MaterialGame<number, MaterialType, LocationType> => ({
+const game = ({ cards = [], squares = [], won = [], hand = 0, food = 0, opponentSquares = [], opponentCards = [] }: Setup): MaterialGame<
+  number,
+  MaterialType,
+  LocationType
+> => ({
   players: [1, 2],
   rule: { id: RuleId.ActivateZone, player: 1 },
   memory: {
@@ -96,6 +102,11 @@ const game = ({ cards = [], squares = [], won = [], hand = 0, food = 0, opponent
       ...cards.map(({ card, cell }) => ({
         id: { front: card, back: Clan.Scorpion },
         location: { type: LocationType.PlayedCard, player: 1, parent: index(cell) }
+      })),
+      // The 16 tiles of the player come first in the grid, so a square of the opponent is 16 tiles further on.
+      ...opponentCards.map(({ card, cell }) => ({
+        id: { front: card, back: Clan.Cat },
+        location: { type: LocationType.PlayedCard, player: 2, parent: 16 + index(cell) }
       })),
       ...handOf(hand).map((front, x) => ({ id: { front, back: Clan.Scorpion }, location: { type: LocationType.PlayerHand, player: 1, x } })),
       { id: { back: Clan.Scorpion }, location: { type: LocationType.PlayerDeck, player: 1, x: 0 } }
@@ -245,6 +256,23 @@ describe('The Scorpion card that upgrades and activates', () => {
     // That upgraded tile would have given 2 Food had it been activated on its own.
     expect(food(rules)).toBe(0)
   })
+
+  it('leaves out a tile another card covers, which is no tile to turn over', () => {
+    const permanent = elsewhere[0]
+    const rules = new LedaRules(
+      game({
+        cards: [
+          { card: ClanCardId.ScorpionUpgradeAndActivate, cell: played },
+          // The one permanent tile of the grid is under a card, and a card covers the tile of its square: what is
+          // hidden is not turned over, so there is nothing left to upgrade at all.
+          { card: ClanCardId.ScorpionDrawAndFood, cell: permanent }
+        ],
+        squares: [{ cell: permanent, square: 'permanent' }]
+      })
+    )
+    activate(rules, played)
+    expect(rules.game.rule?.id).not.toBe(RuleId.UpgradeAndActivateTile)
+  })
 })
 
 describe('The Scorpion card that scales with the Portals in play', () => {
@@ -339,6 +367,23 @@ describe('The Scorpion Portals', () => {
     // Every tile of the opponent is a Desert already: the turn never leaves the player.
     expect(rules.game.rule?.player).toBe(1)
     expect(rules.game.rule?.id).not.toBe(RuleId.DowngradeTile)
+  })
+
+  it('reaches none of the tiles the opponent has under a card', () => {
+    const upgraded = { x: 0, y: 0 }
+    const rules = new LedaRules(
+      game({
+        cards: [{ card: ClanCardId.ScorpionPortalFlipOpponentTile, cell: played }],
+        // The one tile of theirs that is not on its worse face already, and a card of their own played over it.
+        opponentSquares: [{ cell: upgraded, square: 'upgraded' }],
+        opponentCards: [{ card: ClanCardId.CatFoodAndMilitary, cell: upgraded }]
+      })
+    )
+    activate(rules, played)
+    // Nothing of theirs is showing a face they could lose, so they are never asked and the tile keeps its own.
+    expect(rules.game.rule?.id).not.toBe(RuleId.DowngradeTile)
+    const tile = rules.material(MaterialType.Tile).location((location) => location.player === 2 && location.x === upgraded.x && location.y === upgraded.y)
+    expect(tile.getItem()!.location.rotation).toBe(true)
   })
 
   it('swaps 2 squares of its owner, with what is played on them', () => {
@@ -437,6 +482,13 @@ describe('The price of a Scorpion Portal', () => {
     expect(price(ClanCardId.ScorpionPortalFlipOpponentTile, { squares: upgraded })).toBe(7)
   })
 
+  it('counts none of the upgraded tiles a card covers', () => {
+    const upgraded = elsewhere.slice(0, 2).map((cell) => ({ cell, square: 'upgraded' as const }))
+    // One of the 2 under a card, which leaves 1 upgraded tile on the table and 1 Food more to pay.
+    const covered = [{ card: ClanCardId.ScorpionDrawAndFood, cell: elsewhere[0] }]
+    expect(price(ClanCardId.ScorpionPortalFlipOpponentTile, { squares: upgraded, cards: covered })).toBe(8)
+  })
+
   it('costs 9 minus the Portals its owner has already played', () => {
     expect(price(ClanCardId.ScorpionPortalSwap)).toBe(9)
     const inPlay = [ClanCardId.ScorpionPortalDoubleSpy, ClanCardId.ScorpionPortalBlockMilitaryVictory].map((card, position) => ({
@@ -444,6 +496,17 @@ describe('The price of a Scorpion Portal', () => {
       cell: elsewhere[position]
     }))
     expect(price(ClanCardId.ScorpionPortalSwap, { cards: inPlay })).toBe(7)
+  })
+
+  it('counts none of the Portals another card covers', () => {
+    // The 2 Portals in play again, the second of them buried under a card played on its square afterwards: a
+    // Portal nobody can see is out of play, and it is no more counted here than by the victory it is played for.
+    const inPlay = [
+      { card: ClanCardId.ScorpionPortalDoubleSpy, cell: elsewhere[0] },
+      { card: ClanCardId.ScorpionPortalBlockMilitaryVictory, cell: elsewhere[1] },
+      { card: ClanCardId.ScorpionDrawAndFood, cell: elsewhere[1] }
+    ]
+    expect(price(ClanCardId.ScorpionPortalSwap, { cards: inPlay })).toBe(8)
   })
 
   it('costs 9 minus the Military Victory tokens its owner has won', () => {

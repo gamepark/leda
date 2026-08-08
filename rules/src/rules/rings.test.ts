@@ -17,10 +17,10 @@ import { RuleId } from './RuleId'
  * A card of the player in play, on the square of the zone of the round whose x it is given. Showing its blank
  * second face unless the test asks for the first one, which is the one that gives something when activated.
  */
-type Played = { card: ClanCardId; x: number; rotated?: boolean }
+type Played = { card: ClanCardId; x: number; y?: number; rotated?: boolean }
 
 type Setup = {
-  /** The cards the player has on the zone of the round, which is the first row of their grid. */
+  /** The cards the player has in play, on the zone of the round, which is the first row of their grid, unless a row of their own is given. */
   cards?: Played[]
   /** The cards they hold, which is where a Ring is played from. */
   hand?: ClanCardId[]
@@ -93,9 +93,9 @@ const game = ({ cards = [], hand = [], deck = 0, upgraded = 0, symbols = { 1: 0,
     ],
     [MaterialType.ClanCard]: [
       // Played on their square showing their blank second face, so that the zone stays one square long to activate.
-      ...cards.map(({ card, x, rotated = true }) => ({
+      ...cards.map(({ card, x, y = 0, rotated = true }) => ({
         id: { front: card, back: Clan.Cat },
-        location: { type: LocationType.PlayedCard, player: 1, parent: tileIndex({ x, y: 0 }), rotation: rotated }
+        location: { type: LocationType.PlayedCard, player: 1, parent: tileIndex({ x, y }), rotation: rotated }
       })),
       ...hand.map((front, x) => ({ id: { front, back: Clan.Cat }, location: { type: LocationType.PlayerHand, player: 1, x } })),
       ...Array.from({ length: deck }, (_, x) => ({ id: { front: ClanCardId.CatDrawAndFood, back: Clan.Cat }, location: { type: LocationType.PlayerDeck, player: 1, x } }))
@@ -203,11 +203,12 @@ describe('The window a Ring is put in play in', () => {
     const rules = new LedaRules(game({ hand: [ClanCardId.CatRingEmptyDeck, ClanCardId.CatRingFiveUpgradedTiles], upgraded: 5 }))
     endActivation(rules)
     expect(offeredRings(rules).sort()).toEqual([ClanCardId.CatRingEmptyDeck, ClanCardId.CatRingFiveUpgradedTiles])
-    placeRing(rules, ClanCardId.CatRingEmptyDeck, { x: 0, y: 1 })
+    // On a square holding none of the 5 upgraded tiles, which putting a Ring on would take out of the count.
+    placeRing(rules, ClanCardId.CatRingEmptyDeck, { x: 3, y: 3 })
     // Still the same window, with the second Ring left to put in play.
     expect(rules.game.rule?.id).toBe(RuleId.PlaceRing)
     expect(offeredRings(rules)).toEqual([ClanCardId.CatRingFiveUpgradedTiles])
-    placeRing(rules, ClanCardId.CatRingFiveUpgradedTiles, { x: 1, y: 1 })
+    placeRing(rules, ClanCardId.CatRingFiveUpgradedTiles, { x: 2, y: 3 })
     expect(rules.game.rule?.id).toBe(RuleId.ActivateZone)
   })
 
@@ -278,6 +279,19 @@ describe('The Orange Ring', () => {
     const rules = new LedaRules(game({ hand: [ClanCardId.CatRingFiveUpgradedTiles], deck: 1, upgraded: 4 }))
     endActivation(rules)
     expect(rules.game.rule?.id).not.toBe(RuleId.PlaceRing)
+  })
+
+  it('does not count an upgraded tile a card covers', () => {
+    // 5 tiles turned over, the first of them under a card: what that square shows is the card, and the tile below
+    // it counts no more than it gives, which leaves 4 upgraded tiles on the table.
+    const covered = { card: blankCard, x: 0, y: 1 }
+    const rules = new LedaRules(game({ cards: [covered], hand: [ClanCardId.CatRingFiveUpgradedTiles], deck: 1, upgraded: 5 }))
+    endActivation(rules)
+    expect(rules.game.rule?.id).not.toBe(RuleId.PlaceRing)
+    // The same grid with a 6th tile turned over is back to 5 the player can see, and the Ring is offered again.
+    const more = new LedaRules(game({ cards: [covered], hand: [ClanCardId.CatRingFiveUpgradedTiles], deck: 1, upgraded: 6 }))
+    endActivation(more)
+    expect(offeredRings(more)).toEqual([ClanCardId.CatRingFiveUpgradedTiles])
   })
 })
 

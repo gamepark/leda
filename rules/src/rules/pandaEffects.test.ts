@@ -15,10 +15,19 @@ import { Memory } from './Memory'
 import { RuleId } from './RuleId'
 
 /**
+ * A card of the fixture: played on the square of its own position in the list, or on the square another card of
+ * the list is on, which it covers there.
+ */
+type Played = ClanCardId | { card: ClanCardId; on: number }
+
+const squareOf = (played: Played, position: number): { card: ClanCardId; parent: number } =>
+  typeof played === 'object' ? { card: played.card, parent: played.on } : { card: played, parent: position }
+
+/**
  * The 4 squares of row 1 hold the tiles below, and the cards given to the fixture are played on them, one per
  * square, in the order they are given. The zone of the round is that row, so every one of them can be activated.
  */
-const game = (cards: ClanCardId[], hand: ClanCardId[] = [], food = 0): MaterialGame<number, MaterialType, LocationType> => ({
+const game = (cards: Played[], hand: ClanCardId[] = [], food = 0): MaterialGame<number, MaterialType, LocationType> => ({
   players: [1, 2],
   rule: { id: RuleId.ActivateZone, player: 1 },
   memory: {
@@ -31,7 +40,10 @@ const game = (cards: ClanCardId[], hand: ClanCardId[] = [], food = 0): MaterialG
     [MaterialType.VictoryConditionCard]: [{ id: Clan.Panda, location: { type: LocationType.PlayerVictoryCondition, player: 1 } }],
     [MaterialType.Tile]: [0, 1, 2, 3].map((x) => ({ id: TileId.PermanentFood, location: { type: LocationType.PlayerGrid, player: 1, x, y: 0 } })),
     [MaterialType.ClanCard]: [
-      ...cards.map((front, parent) => ({ id: { front, back: Clan.Panda }, location: { type: LocationType.PlayedCard, player: 1, parent } })),
+      ...cards.map((played, position) => {
+        const { card, parent } = squareOf(played, position)
+        return { id: { front: card, back: Clan.Panda }, location: { type: LocationType.PlayedCard, player: 1, parent } }
+      }),
       ...hand.map((front) => ({ id: { front, back: Clan.Panda }, location: { type: LocationType.PlayerHand, player: 1 } })),
       { id: { back: Clan.Panda }, location: { type: LocationType.PlayerDeck, player: 1, x: 0 } }
     ],
@@ -160,6 +172,34 @@ describe('An Awakening', () => {
     const rules = new LedaRules(game([ClanCardId.PandaUpgrade, ClanCardId.PandaFoodOrMilitary]))
     resolveAwakenings(rules, 2)
     expect(food(rules)).toBe(2)
+  })
+
+  it('leaves out a Panda another card covers, which is no part of the group', () => {
+    // 2 Bronze Pandas played, the second of them buried under a card that is no Panda at all: 1 Bronze Panda is
+    // left in play, the group is not there, and the Awakening is worth its Food instead.
+    const rules = new LedaRules(
+      game([ClanCardId.PandaUpgrade, ClanCardId.PandaFoodOrMilitary, { card: ClanCardId.PandaDrawAndSpecialActivation, on: 1 }], [ClanCardId.PandaMilitary])
+    )
+    resolveAwakenings(rules, 1)
+    expect(food(rules)).toBe(1)
+    expect(rules.game.memory[Memory.Awakenings][1]).toBe(0)
+  })
+})
+
+describe('An Upgrade', () => {
+  it('offers the tiles no card covers, and only those', () => {
+    // The card is on the first square, so the 3 tiles left showing are the ones that may be turned over.
+    const rules = new LedaRules(game([ClanCardId.PandaUpgrade]))
+    activate(rules, 0)
+    expect(rules.game.rule?.id).toBe(RuleId.UpgradeTile)
+    expect(rules.getLegalMoves(1).filter(isMoveItemType(MaterialType.Tile))).toHaveLength(3)
+  })
+
+  it('is lost when every tile of the grid is under a card', () => {
+    // A tile a card covers is off the table: what it shows is hidden, and it is not turned over for being hidden.
+    const rules = new LedaRules(game([ClanCardId.PandaUpgrade, ClanCardId.PandaMilitary, ClanCardId.PandaMilitary, ClanCardId.PandaMilitary]))
+    activate(rules, 0)
+    expect(rules.game.rule?.id).not.toBe(RuleId.UpgradeTile)
   })
 })
 

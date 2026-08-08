@@ -1,7 +1,7 @@
 import { LedaRules } from '@gamepark/leda/LedaRules'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { tileAt } from '@gamepark/leda/material/PlayerGrid'
-import { topCardIndexOn } from '@gamepark/leda/rules/playedCards'
+import { topCardIndexOn } from '@gamepark/leda/rules/squares'
 import { XYCoordinates } from '@gamepark/rules-api'
 import { MaterialLink } from '../MaterialLink'
 

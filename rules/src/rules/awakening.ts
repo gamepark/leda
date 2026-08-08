@@ -5,6 +5,7 @@ import { PandaLevel } from '../material/clanCards/PandaLevel'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { Rules } from '../Rules'
+import { visibleCards } from './squares'
 
 /**
  * What an Awakening looks at: the Pandas a player has on their grid and the ones they still hold.
@@ -34,9 +35,12 @@ export const pandaLevel = (card?: ClanCardId): PandaLevel | undefined => (card =
 const pandas = (cards: Material<number, MaterialType, LocationType>, level: PandaLevel) =>
   cards.id<ClanCardItemId>((id) => pandaLevel(id.front) === level)
 
-/** The Pandas of a level a player has in play, which for a card means played onto a square of their grid. */
-export const pandasInPlay = (rules: Rules, player: number, level: PandaLevel) =>
-  pandas(rules.material(MaterialType.ClanCard).location(LocationType.PlayedCard).player(player), level)
+/**
+ * The Pandas of a level a player has in play, which for a card means played onto a square of their grid and left
+ * uncovered there: a Panda under another card is out of play, so it is neither part of the group of 2 an Awakening
+ * takes nor a Panda one may replace (see {@link visibleCards}).
+ */
+export const pandasInPlay = (rules: Rules, player: number, level: PandaLevel) => pandas(visibleCards(rules, player), level)
 
 /** The Pandas of a level a player still holds. */
 export const pandasInHand = (rules: Rules, player: number, level: PandaLevel) =>

@@ -5,34 +5,15 @@ import { clanCardEffects } from '../material/clanCards/cardProperties'
 import { Effect, EffectItem, EffectSet, hasEffect, hasHalfTurn, isEffectChoice } from '../material/Effect'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
-import { tileAt } from '../material/PlayerGrid'
 import { Rules } from '../Rules'
 import { isPackActive } from './sharkPack'
+import { topCardIndexOn, topCardOn, visibleCards } from './squares'
 
 /**
- * The clan cards a player has played onto their grid. What one gives is read here rather than off its tile: a card
- * covers the square it sits on, so activating that square resolves the card and not the tile under it.
+ * What the clan cards a player has played onto their grid give. Which card a square holds is read off the squares
+ * (see {@link squares}), and what it gives is read here rather than off its tile: a card covers the square it sits
+ * on, so activating that square resolves the card and not the tile under it.
  */
-
-/** Every card a player has in play, covered ones included. */
-const playedCards = (rules: Rules, player: number) => rules.material(MaterialType.ClanCard).location(LocationType.PlayedCard).player(player)
-
-/**
- * The index of the card on top of a square, the only one that counts: cards pile up on a square as they are
- * played, and the one the player sees is the last of them.
- */
-export const topCardIndexOn = (rules: Rules, player: number, cell: XYCoordinates): number | undefined => {
-  const tiles = tileAt(rules.material(MaterialType.Tile), player, cell).getIndexes()
-  if (tiles.length === 0) return undefined
-  const cards = playedCards(rules, player).parent(tiles[0]).getIndexes()
-  return cards.length === 0 ? undefined : Math.max(...cards)
-}
-
-/** Which card that is. Undefined when the square holds none, and undefined too for a card nobody here may read. */
-export const topCardOn = (rules: Rules, player: number, cell: XYCoordinates): ClanCardId | undefined => {
-  const index = topCardIndexOn(rules, player, cell)
-  return index === undefined ? undefined : rules.material(MaterialType.ClanCard).getItem<ClanCardItemId>(index).id?.front
-}
 
 /**
  * Which of the 2 effects a Cat card is showing: the second one once the card has been turned half a turn, which
@@ -101,16 +82,8 @@ export const rotateCardOn = (rules: Rules, player: number, cell: XYCoordinates):
  * A card that would activate a card is left out too: with 1 Queen per clan that means the Queen herself, and
  * activating her over and over is not something the rulebook ever asks a player to stop doing.
  */
-export const activableCards = (rules: Rules, player: number) => {
-  const tiles = playedCards(rules, player)
-    .getItems()
-    .map((card) => card.location.parent!)
-  const tops = [...new Set(tiles)].map((tile) => Math.max(...playedCards(rules, player).parent(tile).getIndexes()))
-  return rules
-    .material(MaterialType.ClanCard)
-    .index(tops)
-    .id<ClanCardItemId>((id) => id.front !== undefined && isActivableCard(clanCardEffects(id.front)))
-}
+export const activableCards = (rules: Rules, player: number) =>
+  visibleCards(rules, player).id<ClanCardItemId>((id) => id.front !== undefined && isActivableCard(clanCardEffects(id.front)))
 
 const isActivableCard = (effects: EffectSet): boolean =>
   hasEffect(effects) && (isEffectChoice(effects) || (effects[Effect.ActivateCard] ?? 0) === 0)

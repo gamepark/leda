@@ -1,16 +1,16 @@
 import { XYCoordinates } from '@gamepark/rules-api'
 import { Clan } from '../Clan'
-import { ClanCardId } from '../material/ClanCardId'
+import { ClanCardItemId } from '../material/ClanCardId'
 import { isRing } from '../material/clanCards/catCards'
 import { PandaLevel } from '../material/clanCards/PandaLevel'
 import { isPortal } from '../material/clanCards/scorpionCards'
-import { gridCells, gridCorners } from '../material/PlayerGrid'
+import { gridCorners } from '../material/PlayerGrid'
 import { Rules } from '../Rules'
 import { pandaLevel } from './awakening'
 import { victorySymbols } from './militaryConflict'
-import { topCardOn } from './playedCards'
 import { placedSharkTokens, sharkTokens } from './sharkPack'
 import { playerClan } from './specialActivation'
+import { topCardOn, visibleCards } from './squares'
 
 /**
  * How a game of LEDA is won. Both players run 2 races at once: the military victory, counted on the Military
@@ -62,18 +62,15 @@ export const militaryVictoryProgress = (rules: Rules, player: number): VictoryPr
 export const hasMilitaryVictory = (rules: Rules, player: number): boolean => isWon(militaryVictoryProgress(rules, player))
 
 /**
- * The cards a player has face up on their grid, at most one per square: cards pile up on a square as they are
- * played, and one covered by another is out of sight and out of play (see {@link topCardOn}).
- * Every special victory below is read off these, so a clan that buries its own win condition under a card loses
- * it, exactly as it loses what that card gave.
+ * What each clan counts towards its own victory, read off its Victory condition card.
+ *
+ * Every one of them counts what the player has face up on their grid, at most one card per square: a card covered
+ * by another is out of sight and out of play (see {@link visibleCards}). So a clan that buries its own win
+ * condition under a card loses it, exactly as it loses what that card gave.
  */
-const visibleCards = (rules: Rules, player: number): ClanCardId[] =>
-  gridCells.map((cell) => topCardOn(rules, player, cell)).filter((card): card is ClanCardId => card !== undefined)
-
-/** What each clan counts towards its own victory, read off its Victory condition card. */
 const specialVictoryCounts: Record<Clan, (rules: Rules, player: number) => number> = {
   /** The Gold Pandas in play: the King and the Queen, which only Awakenings bring onto the grid. */
-  [Clan.Panda]: (rules, player) => visibleCards(rules, player).filter((card) => pandaLevel(card) === PandaLevel.Gold).length,
+  [Clan.Panda]: (rules, player) => visibleCards(rules, player).id<ClanCardItemId>((id) => pandaLevel(id.front) === PandaLevel.Gold).length,
 
   /**
    * The supply of the clan placed on the grid: 9 tokens for 16 squares.
@@ -83,7 +80,7 @@ const specialVictoryCounts: Record<Clan, (rules: Rules, player: number) => numbe
   [Clan.Shark]: (rules, player) => placedSharkTokens(rules, player).getQuantity(),
 
   /** The Rings in play, whichever they are. */
-  [Clan.Cat]: (rules, player) => visibleCards(rules, player).filter(isRing).length,
+  [Clan.Cat]: (rules, player) => visibleCards(rules, player).id<ClanCardItemId>((id) => isRing(id.front)).length,
 
   /** The Portals standing in a corner of the grid, which a swap of 2 squares is another way of reaching. */
   [Clan.Scorpion]: (rules, player) => gridCorners.filter((corner) => isPortalOn(rules, player, corner)).length

@@ -9,8 +9,9 @@ import { TileId } from '../material/TileId'
 import { Rules } from '../Rules'
 import { pendingRules, resolveEffects } from './effects'
 import { Memory } from './Memory'
-import { cardEffectsOn, topCardIndexOn } from './playedCards'
+import { cardEffectsOn } from './playedCards'
 import { RuleId } from './RuleId'
+import { topCardIndexOn, visibleCards } from './squares'
 import { swappingPlayer } from './swap'
 
 /**
@@ -118,13 +119,11 @@ export const copiableCells = (rules: Rules, player: number): XYCoordinates[] => 
  * The squares a Ring may turn a card over on: the ones whose card takes a half turn when it is activated, which
  * is to say the ones with 2 effects to alternate between (see {@link Effect.HalfTurn}).
  * The Rings are left out by that alone, giving no such turn: they print one effect and no second one.
+ * Read off the cards their owner can see, a card under another one being no more turned over than activated.
  */
 export const rotatableCells = (rules: Rules, player: number): XYCoordinates[] => {
   const tiles = rules.material(MaterialType.Tile)
-  return rules
-    .material(MaterialType.ClanCard)
-    .location(LocationType.PlayedCard)
-    .player(player)
+  return visibleCards(rules, player)
     .getItems()
     .map((card) => cellOf(tiles.getItem(card.location.parent!).location))
     .filter((cell) => hasHalfTurn(cardEffectsOn(rules, player, cell)))

@@ -1,12 +1,10 @@
-import { visibleDeserts } from '../../rules/tileChoices'
+import { visibleCards } from '../../rules/squares'
+import { upgradedTiles, visibleDeserts } from '../../rules/tileChoices'
 import { Rules } from '../../Rules'
 import { ClanCardId, ClanCardItemId } from '../ClanCardId'
 import { Effect, EffectQuantity } from '../Effect'
 import { LocationType } from '../LocationType'
 import { MaterialType } from '../MaterialType'
-import { gridTiles } from '../PlayerGrid'
-import { isPermanent } from '../TileEffect'
-import { TileId } from '../TileId'
 import { ClanCardProperties, FoodCost } from './ClanCardProperties'
 
 /**
@@ -76,7 +74,7 @@ export const scorpionCards = {
 
   /** Portal. Your opponent flips one of their tiles to its Desert or non-upgraded side. */
   [ClanCardId.ScorpionPortalFlipOpponentTile]: {
-    cost: { food: portalCost(upgradedTiles) },
+    cost: { food: portalCost(visibleUpgradedTiles) },
     effects: { [Effect.FlipOpponentTile]: 1 }
   },
 
@@ -131,18 +129,20 @@ function cardsInHand(rules: Rules, player: number): number {
   return rules.material(MaterialType.ClanCard).location(LocationType.PlayerHand).player(player).length
 }
 
-/** Upgraded tiles, which only permanent ones can be: the flipped face of a temporary tile is a Desert. */
-function upgradedTiles(rules: Rules, player: number): number {
-  return gridTiles(rules.material(MaterialType.Tile), player).getItems<TileId>().filter((tile) => tile.location.rotation === true && isPermanent(tile.id))
-    .length
+/**
+ * The upgraded tiles their owner can see, which only permanent ones ever are: the flipped face of a temporary tile
+ * is a Desert. A tile under a card is left out, exactly as it is everywhere else (see {@link upgradedTiles}).
+ */
+function visibleUpgradedTiles(rules: Rules, player: number): number {
+  return upgradedTiles(rules, player).length
 }
 
-/** The Portals their owner has already played onto their grid. */
+/**
+ * The Portals their owner has already played onto their grid and can still see: a Portal buried under another card
+ * is out of play, and no more counted here than it is by the victory it is played for (see {@link visibleCards}).
+ */
 function portalsPlayed(rules: Rules, player: number): number {
-  return rules
-    .material(MaterialType.ClanCard)
-    .location(LocationType.PlayedCard)
-    .player(player)
+  return visibleCards(rules, player)
     .getItems<ClanCardItemId>()
     .filter((card) => isPortal(card.id!.front)).length
 }

@@ -5,7 +5,8 @@ import { MaterialLogProps, usePlayerName } from '@gamepark/react-game'
 import { CustomMove, MoveItem, XYCoordinates } from '@gamepark/rules-api'
 import { LogText } from '../LogText'
 import { MaterialLink } from '../MaterialLink'
-import { materialImage, revealedId } from '../logMaterial'
+import { materialImage } from '../logMaterial'
+import { revealedId } from '../revealedId'
 import { SquareMaterial } from './SquareMaterial'
 
 /** What a player does with the clan cards they hold, and with the ones they have already played. */

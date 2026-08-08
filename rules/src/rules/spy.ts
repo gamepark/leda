@@ -89,14 +89,14 @@ export const roundSpies = (rules: Rules): Spy[] => rules.game.memory[Memory.Spie
 export const rememberSpy = (rule: Rule, spy: Spy) => rule.memorize<Spy[]>(Memory.Spies, (spies: Spy[] = []) => [...spies, spy])
 
 /**
- * The Spies of the round that looked into one pile, which is what that pile has to show for itself
- * (see {@link SpyHistoryButton}). A deck is a pile of its own, hence its owner: the 2 decks of the table are 2
- * piles, and a Spy on one of them says nothing about the other.
+ * Whether a Spy of the round is one of those a pile has to show for itself (see {@link SpyHistoryButton}).
+ * A deck is a pile of its own, hence its owner: the 2 decks of the table are 2 piles, and a Spy on one of them
+ * says nothing about the other.
  */
-export const spiesOnPile = (rules: Rules, type: MaterialType, owner?: number): Spy[] => {
+export const isSpyOnPile = (spy: Spy, type: MaterialType, owner?: number): boolean => {
   const pile = spiedPiles.find((spiable) => spiable.type === type)
-  if (pile === undefined) return []
-  return roundSpies(rules).filter((spy) => spy.pile === type && (!pile.owned || spy.player === owner))
+  if (pile === undefined) return false
+  return spy.pile === type && (!pile.owned || spy.player === owner)
 }
 
 /**

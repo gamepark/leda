@@ -5,7 +5,8 @@ import { MaterialLogProps, usePlayerName } from '@gamepark/react-game'
 import { CreateItem, DeleteItem, MoveItem } from '@gamepark/rules-api'
 import { LogText } from '../LogText'
 import { MaterialLink } from '../MaterialLink'
-import { materialImage, revealedId } from '../logMaterial'
+import { materialImage } from '../logMaterial'
+import { revealedId } from '../revealedId'
 
 /** The 2 things a player gathers that are counted rather than played: their Food, and the cards of their hand. */
 

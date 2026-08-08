@@ -10,7 +10,7 @@ import { CustomMove, MaterialMove, MoveItem } from '@gamepark/rules-api'
 import { useTranslation } from 'react-i18next'
 import { LogText } from '../LogText'
 import { MaterialLink } from '../MaterialLink'
-import { revealedId } from '../logMaterial'
+import { revealedId } from '../revealedId'
 
 /** The 3 phases of a round, as far as any of them is something the players are told rather than something they do. */
 

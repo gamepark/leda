@@ -4,7 +4,8 @@ import { MaterialLogProps, usePlayerName } from '@gamepark/react-game'
 import { MoveItem } from '@gamepark/rules-api'
 import { LogText } from '../LogText'
 import { MaterialLink } from '../MaterialLink'
-import { materialImage, revealedId } from '../logMaterial'
+import { materialImage } from '../logMaterial'
+import { revealedId } from '../revealedId'
 
 /**
  * A Spy effect: the player looks in secret at the first item of a pile, then puts it back on top of it or under it

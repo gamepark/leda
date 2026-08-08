@@ -1,10 +1,11 @@
 import { faEye } from '@fortawesome/free-solid-svg-icons'
 import { LedaRules } from '@gamepark/leda/LedaRules'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
-import { isPileTop, spiesOnPile } from '@gamepark/leda/rules/spy'
+import { isPileTop, isSpyOnPile } from '@gamepark/leda/rules/spy'
 import { useRules } from '@gamepark/react-game'
 import { useState } from 'react'
 import { SpyHistoryDialog } from '../dialogs/SpyHistoryDialog'
+import { useRoundSpies } from '../history/spiedLooks'
 import { HistoryMark } from './HistoryMark'
 import { LedaMenuButton } from './LedaMenuButton'
 import { spyButtonX } from './spiedItem'
@@ -20,16 +21,17 @@ import { spyButtonX } from './spiedItem'
  * On the opposite side of the pile from the button that makes a Spy, so that the 2 never sit on one another: a
  * Spy may well land on a pile that has already been looked into (see {@link SpyPileButton}).
  * Read through the hooks rather than through the context handed to the material description: what it shows lives
- * in the memory of the game, so the pile it hangs on never changes when it does. And through {@link useRules}
- * rather than the guarded reading the buttons that play a move need: this one plays none, and a spectator, who has
- * no seat and therefore no move to play, is entitled to it like anybody else.
+ * in the memory of the game and in the history of the moves, so the pile it hangs on never changes when it does.
+ * And through {@link useRules} rather than the guarded reading the buttons that play a move need: this one plays
+ * none, and a spectator, who has no seat and therefore no move to play, is entitled to it like anybody else.
  */
 export const SpyHistoryButton = ({ type, index, player }: { type: MaterialType; index: number; player?: number }) => {
   const rules = useRules<LedaRules>()
+  const roundSpies = useRoundSpies()
   const [open, setOpen] = useState(false)
 
   if (rules === undefined) return null
-  const spies = spiesOnPile(rules, type, player)
+  const spies = roundSpies.filter((spy) => isSpyOnPile(spy, type, player))
   if (spies.length === 0 || !isPileTop(rules, type, index, player)) return null
 
   return (

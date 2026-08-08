@@ -6,7 +6,7 @@ import { MaterialLogProps, usePlayerName } from '@gamepark/react-game'
 import { CustomMove, MoveItem } from '@gamepark/rules-api'
 import { LogText } from '../LogText'
 import { MaterialLink } from '../MaterialLink'
-import { revealedId } from '../logMaterial'
+import { revealedId } from '../revealedId'
 
 /** The 2 kinds of token a player collects: the Military Victory tokens, and the Shark tokens of their own clan. */
 

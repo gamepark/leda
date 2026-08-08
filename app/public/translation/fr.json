@@ -7,6 +7,7 @@
       "title": "Qui a consulté cette pile à cette manche ?",
       "on-top": "{player} a scruté cette pile, et a remis l'élément au-dessus.",
       "under": "{player} a scruté cette pile, et a remis l'élément au-dessous.",
+      "seen": "Vous aviez vu :",
       "close": "Fermer"
     }
   },

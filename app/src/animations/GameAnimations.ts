@@ -1,11 +1,20 @@
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { spiedPiles } from '@gamepark/leda/rules/spy'
-import { MaterialGameAnimations } from '@gamepark/react-game'
-import { isMoveItem, MaterialMove } from '@gamepark/rules-api'
+import { MaterialAnimationContext, MaterialGameAnimations } from '@gamepark/react-game'
+import { isCreateItemType, isMoveItem, MaterialMove } from '@gamepark/rules-api'
 import { underPileApproach } from '../locators/Locators'
 
 export const gameAnimations = new MaterialGameAnimations<number, MaterialType, LocationType>()
+
+type Context = MaterialAnimationContext<number, MaterialType, LocationType>
+
+/**
+ * Half the second an animation takes by default, for the small things the game repeats over and over: a tile or a
+ * card turning over, and a Food taken from the reserve. They punctuate a turn rather than being what it is about,
+ * and at full length they make the resolution of an effect feel like it is being spelled out.
+ */
+const shortAnimation = 500
 
 /**
  * A move that puts an item back under the pile it came from: the second of the 2 moves a Spy effect offers (see
@@ -28,3 +37,27 @@ gameAnimations.configure(goesUnderPile).trajectory((context, move) => ({
   elevation: false,
   waypoints: [{ at: 0.7, coordinates: underPileApproach(move, context) }]
 }))
+
+/**
+ * An item turned over where it lies: a tile changing face, whether it becomes a Desert, is turned back onto its
+ * front, or is upgraded and downgraded, and a Cat card taking the half turn that swaps which of its 2 effects is
+ * up (see {@link rotateCard}).
+ * All of them are moves that change nothing but the rotation of the location, which is what the face up is
+ * written in, so that is what they are read by: a tile carried to another square by an organisation swap keeps
+ * the face it shows, and is left alone. The state the animation runs against is the one before the move, hence
+ * the rotation the item is still showing being the one compared to.
+ */
+const turnsOver = (move: MaterialMove<number, MaterialType, LocationType>, context: Context): boolean => {
+  if (!isMoveItem(move) || (move.itemType !== MaterialType.Tile && move.itemType !== MaterialType.ClanCard)) return false
+  const item = context.rules.material(move.itemType).getItem(move.itemIndex)
+  return item !== undefined && (move.location.rotation === true) !== (item.location.rotation === true)
+}
+
+gameAnimations.configure(turnsOver).duration(shortAnimation)
+
+/**
+ * A Food gained, which is created rather than moved: the reserve holds no item, and the token flies in from where
+ * the app draws it (see {@link FoodTokenDescription}). Spending one is left alone: it is the price of something,
+ * and it reads better paid at full length.
+ */
+gameAnimations.configure(isCreateItemType(MaterialType.FoodToken)).duration(shortAnimation)

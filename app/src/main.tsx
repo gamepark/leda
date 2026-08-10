@@ -9,6 +9,7 @@ import { App } from './App'
 import { LedaHistory } from './history/LedaHistory'
 import { Locators } from './locators/Locators'
 import { Material } from './material/Material'
+import { LedaScoring } from './result/LedaScoring'
 import { ledaTheme } from './theme'
 
 createRoot(document.getElementById('root')!).render(
@@ -22,6 +23,7 @@ createRoot(document.getElementById('root')!).render(
       locators={Locators}
       animations={gameAnimations}
       logs={new LedaHistory()}
+      scoring={new LedaScoring()}
       theme={ledaTheme}
     >
       <App />

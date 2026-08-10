@@ -354,6 +354,34 @@
       "player": "{player} peut poser un Anneau sur son plateau"
     }
   },
+  "game-over": {
+    "military": {
+      "you": "Vous avez gagné avec {count} <victory/>",
+      "player": "{player} a gagné avec {count} <victory/>"
+    },
+    "clan": {
+      "1": {
+        "you": "Vous avez gagné avec vos {count} Pandas <gold/> en jeu",
+        "player": "{player} a gagné avec ses {count} Pandas <gold/> en jeu"
+      },
+      "2": {
+        "you": "Vous avez gagné avec vos {count} pions Requin <shark/> en jeu",
+        "player": "{player} a gagné avec ses {count} pions Requin <shark/> en jeu"
+      },
+      "3": {
+        "you": "Vous avez gagné avec {count} Anneaux <ring/> en jeu",
+        "player": "{player} a gagné avec {count} Anneaux <ring/> en jeu"
+      },
+      "4": {
+        "you": "Vous avez gagné avec vos {count} Portails <portal/> dans les 4 coins",
+        "player": "{player} a gagné avec ses {count} Portails <portal/> dans les 4 coins"
+      }
+    },
+    "race": {
+      "clan": "Victoire de clan",
+      "military": "Victoire militaire"
+    }
+  },
   "log": {
     "choose-clan": "{player} choisit le clan des {clan}",
     "mulligan": "{player} remélange sa main de départ et pioche autant de cartes",

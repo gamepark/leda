@@ -4,31 +4,14 @@ import { LedaRules } from '@gamepark/leda/LedaRules'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { militarySymbols } from '@gamepark/leda/rules/militaryConflict'
 import { playerFood } from '@gamepark/leda/rules/organisation'
-import { militaryVictoryProgress, specialVictoryProgress, VictoryProgress } from '@gamepark/leda/rules/victory'
+import { militaryVictoryProgress, specialVictoryProgress } from '@gamepark/leda/rules/victory'
 import { StyledPlayerPanel, usePlayers, useRules } from '@gamepark/react-game'
 import { createPortal } from 'react-dom'
-import CatRingImage from '../images/icons/CatRing.png'
 import MilitarySymbolImage from '../images/icons/Military.png'
 import MilitaryVictoryImage from '../images/icons/MilitaryVictory.png'
-import PandaGoldImage from '../images/icons/PandaGold.png'
-import ScorpionPortalImage from '../images/icons/ScorpionPortal.png'
-import SharkImage from '../images/icons/Shark.png'
 import FoodTokenImage from '../images/tokens/food.png'
 import { clanColors, clanGold, translucent } from '../theme'
-
-/** A counter shows the 2 numbers of a race, and the one number of a resource. */
-const race = ({ count, goal }: VictoryProgress) => `${count}/${goal}`
-
-/**
- * What each clan gathers towards its own victory, as the symbol its Victory condition card prints next to the
- * number of them it takes: the Gold Pandas, the Shark tokens, the Rings, the Portals in the corners.
- */
-const specialVictoryImages: Record<Clan, string> = {
-  [Clan.Panda]: PandaGoldImage,
-  [Clan.Shark]: SharkImage,
-  [Clan.Cat]: CatRingImage,
-  [Clan.Scorpion]: ScorpionPortalImage
-}
+import { race, specialVictoryImages } from '../victoryProgress'
 
 export const PlayerPanels = () => {
   const players = usePlayers<number>({ sortFromMe: true })

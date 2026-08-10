@@ -34,6 +34,13 @@ export const clanColors: Record<Clan, string> = {
 export const clanGold = '#e8c851'
 
 /**
+ * The player panels sit at the bottom of the table, over the row of Food a player owns (see Locators.foodRowY),
+ * so they are laid slightly translucent: enough to tell how many tokens are hidden under a panel, and little
+ * enough that the counters and the name printed on it stay as readable as over the solid color.
+ */
+export const translucent = (color: string) => `${color}cc`
+
+/**
  * The colors the zones of an Action tile are drawn in while the active player picks one, in the order the tile
  * lists them: the row, the column and the square for tiles 1 to 4, the 4 corners and the 4 central squares for
  * tile 5. A row is therefore always the first color, a column the second and a square the third, round after round.
@@ -136,10 +143,10 @@ export const ledaTheme: LedaTheme = {
     `
   },
 
-  /** The panels sit right next to the grids, on the same parchment as the dialogs. */
+  /** The panels sit right next to the grids, on the same parchment as the dialogs (see {@link translucent}). */
   playerPanel: {
     panel: css`
-      background: ${parchment};
+      background: ${translucent(parchment)};
     `,
     activeRingColors: [copper, deepBlue]
   }

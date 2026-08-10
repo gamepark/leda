@@ -14,7 +14,7 @@ import PandaGoldImage from '../images/icons/PandaGold.png'
 import ScorpionPortalImage from '../images/icons/ScorpionPortal.png'
 import SharkImage from '../images/icons/Shark.png'
 import FoodTokenImage from '../images/tokens/food.png'
-import { clanColors, clanGold } from '../theme'
+import { clanColors, clanGold, translucent } from '../theme'
 
 /** A counter shows the 2 numbers of a race, and the one number of a resource. */
 const race = ({ count, goal }: VictoryProgress) => `${count}/${goal}`
@@ -84,13 +84,14 @@ const panel = css`
 /**
  * Once a player picked a clan, their panel takes the color of that clan, with the gold rule its cards are framed
  * with. Before that it keeps the parchment of the theme. The name and the timer are white on a dark badge, so they
- * stay readable over any of the 3 clan colors.
+ * stay readable over any of the 3 clan colors. Laid as translucent as the parchment it replaces, so a panel shows
+ * the Food under it whichever clan its owner picked (see {@link translucent}).
  */
 const clanPanel = (clan?: Clan) => {
   const color = clan !== undefined ? clanColors[clan] : undefined
   if (!color) return undefined
   return css`
-    background: ${color};
+    background: ${translucent(color)};
     box-shadow: inset 0 0 0 0.15em ${clanGold};
   `
 }

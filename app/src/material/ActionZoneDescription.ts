@@ -5,6 +5,7 @@ import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { cellOf } from '@gamepark/leda/material/PlayerGrid'
 import { LocationDescription, MaterialContext } from '@gamepark/react-game'
 import { Location } from '@gamepark/rules-api'
+import { ActionZoneComponent } from './ActionZoneComponent'
 import { offeredZones, zoneColor, zoneInset, zoneLine, zoneRectangleAt } from './actionZones'
 import { gridGap, tileSize } from './TileDescription'
 
@@ -20,6 +21,9 @@ import { gridGap, tileSize } from './TileDescription'
 export class ActionZoneDescription extends LocationDescription<number, MaterialType, LocationType, ActionZone> {
   /** As round as the squares it is drawn around. */
   borderRadius = 0.5
+
+  /** Drawn only once the table has stopped moving (see {@link ActionZoneComponent}). */
+  Component = ActionZoneComponent
 
   /**
    * A rectangle covers whole squares, half a gap outside of them on every side, so that it falls in the middle of

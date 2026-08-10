@@ -2,6 +2,7 @@ import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { cellOf } from '@gamepark/leda/material/PlayerGrid'
 import { CustomMoveType } from '@gamepark/leda/rules/CustomMoveType'
+import { useAnimation } from '@gamepark/react-game'
 import { MaterialMoveBuilder, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
 import { offeredZones, zoneChosenOn, zoneColor } from './actionZones'
 import { LedaMenuButton } from './LedaMenuButton'
@@ -16,9 +17,11 @@ import { ZoneIcon } from './ZoneIcon'
  * and its rim is the color that rectangle is drawn in.
  */
 export const ChooseZoneButton = ({ rules, cell }: { rules: MaterialRules<number, MaterialType, LocationType>; cell: XYCoordinates }) => {
+  // Nothing is read off the Action tile while the table is still moving (see {@link ActionZoneComponent}).
+  const animation = useAnimation()
   const zones = offeredZones(rules)
   const zone = zoneChosenOn(zones, cell)
-  if (zone === undefined) return null
+  if (animation !== undefined || zone === undefined) return null
   return (
     <LedaMenuButton
       {...zoneButtonPosition}

@@ -1,5 +1,5 @@
 import { MaterialItem, MaterialMove, PlayerTurnRule, XYCoordinates } from '@gamepark/rules-api'
-import { ActionZone, actionZoneCells, zoneContains } from '../material/ActionZone'
+import { ActionZone, actionZoneCells } from '../material/ActionZone'
 import { EffectSet, hasEffect, hasHalfTurn } from '../material/Effect'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
@@ -30,21 +30,6 @@ export const roundZone = (rules: Rules): ActionZone | undefined => rules.game.me
 export const isActivationPhase = (rules: Rules): boolean =>
   rules.game.rule?.id === RuleId.ActivateZone || pendingRules(rules).includes(RuleId.ActivateZone)
 
-/**
- * Whether a square belongs to the zone being activated, in the grid of either player: what the app shines for as
- * long as the phase lasts, on the tile of the square and on everything laid over it alike.
- *
- * Except while a player is being asked to swap 2 of their squares, which a Scorpion Portal asks in the middle of
- * that very activation (see {@link swappingPlayer}): the zone stops shining, in both grids, so that the only thing
- * left shining is what may be dragged. What is being asked then is not about the zone, and a table saying
- * otherwise would point at the 4 squares of it while all 16 may be moved.
- */
-export const isCellOfActivatedZone = (rules: Rules, cell: XYCoordinates): boolean => {
-  if (!isActivationPhase(rules) || swappingPlayer(rules) !== undefined) return false
-  const zone = roundZone(rules)
-  return zone !== undefined && zoneContains(zone, cell)
-}
-
 /** The squares of the zone a player has already resolved this round. */
 const activatedCells = (rules: Rules, player: number): XYCoordinates[] => rules.game.memory[Memory.ActivatedCells]?.[player] ?? []
 
@@ -58,6 +43,25 @@ export const activableCells = (rules: Rules, player: number): XYCoordinates[] =>
   if (zone === undefined) return []
   const activated = activatedCells(rules, player)
   return actionZoneCells[zone].filter((cell) => !activated.some((done) => sameCell(done, cell)) && isActivable(rules, player, cell))
+}
+
+/**
+ * Whether a square of the grid of a player is one they still have to activate: what the app shines for as long as
+ * the phase lasts, on the tile of the square and on everything laid over it alike.
+ *
+ * Read per player and not per zone: a square already resolved, and a square holding nothing to resolve, are done
+ * with for the round and stop shining on the spot, so that what shines is always what is still going to be
+ * activated (see {@link activableCells}). Each grid therefore empties as its owner goes through it, and the grid
+ * of a player who is done stops shining while their opponent goes through theirs.
+ *
+ * Except while a player is being asked to swap 2 of their squares, which a Scorpion Portal asks in the middle of
+ * that very activation (see {@link swappingPlayer}): the zone stops shining, in both grids, so that the only thing
+ * left shining is what may be dragged. What is being asked then is not about the zone, and a table saying
+ * otherwise would point at the 4 squares of it while all 16 may be moved.
+ */
+export const isCellLeftToActivate = (rules: Rules, player: number, cell: XYCoordinates): boolean => {
+  if (!isActivationPhase(rules) || swappingPlayer(rules) !== undefined) return false
+  return activableCells(rules, player).some((activable) => sameCell(activable, cell))
 }
 
 /**

@@ -2,7 +2,7 @@ import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { cellOf } from '@gamepark/leda/material/PlayerGrid'
 import { TileId } from '@gamepark/leda/material/TileId'
-import { isActivationPhase, isCellOfActivatedZone } from '@gamepark/leda/rules/activation'
+import { isActivationPhase, isCellLeftToActivate } from '@gamepark/leda/rules/activation'
 import { swappingPlayer } from '@gamepark/leda/rules/swap'
 import { CardDescription, ItemContext } from '@gamepark/react-game'
 import { MaterialItem, MaterialMoveBuilder } from '@gamepark/rules-api'
@@ -105,20 +105,22 @@ export class TileDescription extends CardDescription<number, MaterialType, Locat
   }
 
   /**
-   * Once the zone is picked, it shines in both grids until both players have activated it, the rules an effect
-   * opens along the way included: the phase is not over, and the player has to keep seeing where they are.
+   * Once the zone is picked, the squares of it that are still going to be activated shine in both grids, until
+   * both players are done with the phase, the rules an effect opens along the way included: the phase is not over,
+   * and the player has to keep seeing what is left to do, in their grid and in the one across the table
+   * (see {@link isCellLeftToActivate}).
    * Unlike the css below, this is read by the parent of the item on every render, so it is refreshed for every
    * square as soon as the rules move on, and not only for the squares whose own item changed.
    *
    * Except while a player is being asked to swap 2 of their squares, which a Scorpion Portal asks in the middle of
    * that very activation: nothing is said of any square then, in either grid, and what the framework shines on its
    * own is exactly what is being asked, the squares it has a move for. Saying no here would be saying it of the
-   * whole grid to be swapped as well, and turn that shine off with it (see {@link isCellOfActivatedZone}).
+   * whole grid to be swapped as well, and turn that shine off with it.
    */
   highlight(item: MaterialItem<number, LocationType, TileId>, context: ItemContext<number, MaterialType, LocationType>) {
     if (!isActivationPhase(context.rules) || item.location.type !== LocationType.PlayerGrid) return undefined
-    if (swappingPlayer(context.rules) !== undefined) return undefined
-    return isCellOfActivatedZone(context.rules, cellOf(item.location))
+    if (item.location.player === undefined || swappingPlayer(context.rules) !== undefined) return undefined
+    return isCellLeftToActivate(context.rules, item.location.player, cellOf(item.location))
   }
 
   /**

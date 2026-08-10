@@ -8,7 +8,7 @@ import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { MilitaryVictoryTokenId } from '../material/MilitaryVictoryTokenId'
 import { TileId } from '../material/TileId'
-import { isCellOfActivatedZone } from './activation'
+import { isCellLeftToActivate } from './activation'
 import { CustomMoveType } from './CustomMoveType'
 import { cardDiscount, pendingRules } from './effects'
 import { Memory } from './Memory'
@@ -411,19 +411,27 @@ describe('The Scorpion Portals', () => {
    * that may be moved rather than on the zone being activated (see {@link swappingPlayer}).
    */
   it('has the table offer the whole grid of its owner while it asks', () => {
-    const rules = new LedaRules(game({ cards: [{ card: ClanCardId.ScorpionPortalSwap, cell: played }] }))
-    // Nothing to swap while the zone is simply being activated, and the zone shines.
+    // A square of the zone the opponent has to activate, which is what the table keeps shining on while the
+    // player goes through their own grid, and stops shining on while the swap is asked.
+    const opponentCell = { x: 1, y: 0 }
+    const rules = new LedaRules(
+      game({ cards: [{ card: ClanCardId.ScorpionPortalSwap, cell: played }], opponentSquares: [{ cell: opponentCell, square: 'permanent' }] })
+    )
+    // Nothing to swap while the zone is simply being activated, and what is left to activate shines in both grids.
     expect(swappingPlayer(rules)).toBeUndefined()
-    expect(isCellOfActivatedZone(rules, played)).toBe(true)
+    expect(isCellLeftToActivate(rules, 1, played)).toBe(true)
+    expect(isCellLeftToActivate(rules, 2, opponentCell)).toBe(true)
     activate(rules, played)
     expect(rules.game.rule?.id).toBe(RuleId.SwapSquares)
     expect(swappingPlayer(rules)).toBe(1)
     // The zone stops shining while the swap is asked: the 4 squares of it are not what is being pointed at.
-    expect(isCellOfActivatedZone(rules, played)).toBe(false)
-    // And once the swap is made, the activation goes on where it was.
+    expect(isCellLeftToActivate(rules, 2, opponentCell)).toBe(false)
+    // And once the swap is made, the activation goes on where it was, the opponent still having their grid to do.
     playAll(rules, rules.getLegalMoves(1).filter(isMoveItemType(MaterialType.Tile))[0])
     expect(swappingPlayer(rules)).toBeUndefined()
-    expect(isCellOfActivatedZone(rules, played)).toBe(true)
+    expect(isCellLeftToActivate(rules, 2, opponentCell)).toBe(true)
+    // The square the player has activated is done with, and stops shining rather than shining until the phase ends.
+    expect(isCellLeftToActivate(rules, 1, played)).toBe(false)
   })
 
   it('closes the round to Military Victory tokens, for both players', () => {

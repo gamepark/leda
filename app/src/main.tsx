@@ -11,6 +11,7 @@ import { Locators } from './locators/Locators'
 import { Material } from './material/Material'
 import { LedaScoring } from './result/LedaScoring'
 import { ledaTheme } from './theme'
+import { ai } from './tutorial/TutorialAI'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -24,6 +25,7 @@ createRoot(document.getElementById('root')!).render(
       animations={gameAnimations}
       logs={new LedaHistory()}
       scoring={new LedaScoring()}
+      ai={ai}
       theme={ledaTheme}
     >
       <App />

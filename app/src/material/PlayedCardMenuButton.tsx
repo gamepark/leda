@@ -3,15 +3,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { LedaRules } from '@gamepark/leda/LedaRules'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { cellOf, sameCell } from '@gamepark/leda/material/PlayerGrid'
-import { activableCells, copiableCells, rotatableCells } from '@gamepark/leda/rules/activation'
 import { CustomMoveType } from '@gamepark/leda/rules/CustomMoveType'
 import { activableCards } from '@gamepark/leda/rules/playedCards'
 import { RuleId } from '@gamepark/leda/rules/RuleId'
-import { MaterialMoveBuilder } from '@gamepark/rules-api'
+import { MaterialMoveBuilder, XYCoordinates } from '@gamepark/rules-api'
 import { ActivateSquareButton } from './ActivateSquareButton'
 import { ChooseZoneButton } from './ChooseActionTileButton'
 import { LedaMenuButton } from './LedaMenuButton'
-import { useMenuButtonRules } from './menuButtons'
+import { offeredCells, useMenuButtonRules } from './menuButtons'
 import { tileButtonPosition } from './tileButtonPosition'
 
 /**
@@ -68,14 +67,19 @@ const ActivateCardSquareButton = ({ index, rules, player }: CardButtonProps) => 
   const card = rules.material(MaterialType.ClanCard).getItem(index)
   const cell = cardCell(rules, index)
   if (card.location.player !== player || cell === undefined) return null
-  if (!activableCells(rules, player).some((activable) => sameCell(activable, cell))) return null
+  if (!activatable(rules, player, cell)) return null
   return <ActivateSquareButton cell={cell} />
 }
 
-/** The card itself, when the player is being asked which of their cards in play they activate. */
+/**
+ * The card itself, when the player is being asked which of their cards in play they activate. A move names the
+ * square and not the card, and a square may hold a pile of them, so which card of the pile it means is asked of
+ * the rules: the one no other covers (see {@link activableCards}).
+ */
 const ActivateCardButton = ({ index, rules, player }: CardButtonProps) => {
   const cell = cardCell(rules, index)
-  if (!activableCards(rules, player).getIndexes().includes(index) || cell === undefined) return null
+  if (cell === undefined || !activableCards(rules, player).getIndexes().includes(index)) return null
+  if (!activatable(rules, player, cell)) return null
   return <ActivateSquareButton cell={cell} />
 }
 
@@ -89,9 +93,13 @@ const CopyOpponentCardButton = ({ index, rules, player }: CardButtonProps) => {
   const opponent = rules.game.players.find((other) => other !== player)
   const cell = cardCell(rules, index)
   if (card.location.player !== opponent || cell === undefined) return null
-  if (!copiableCells(rules, player).some((copiable) => sameCell(copiable, cell))) return null
+  if (!activatable(rules, player, cell)) return null
   return <ActivateSquareButton cell={cell} />
 }
+
+/** Whether the square a card stands on is one of those the rules are offering to activate right now. */
+const activatable = (rules: LedaRules, player: number, cell: XYCoordinates): boolean =>
+  offeredCells(rules, player, CustomMoveType.ActivateSquare).some((activable) => sameCell(activable, cell))
 
 /**
  * A Cat card of the player, when a Ring offers to turn one of them over. The Rings themselves carry none: they
@@ -101,7 +109,7 @@ const RotateCatCardButton = ({ index, rules, player }: CardButtonProps) => {
   const card = rules.material(MaterialType.ClanCard).getItem(index)
   const cell = cardCell(rules, index)
   if (card.location.player !== player || cell === undefined) return null
-  if (!rotatableCells(rules, player).some((rotatable) => sameCell(rotatable, cell))) return null
+  if (!offeredCells(rules, player, CustomMoveType.RotateCatCard).some((rotatable) => sameCell(rotatable, cell))) return null
   return (
     <LedaMenuButton {...tileButtonPosition} move={MaterialMoveBuilder.customMove(CustomMoveType.RotateCatCard, cell)}>
       <FontAwesomeIcon icon={faRotate} />

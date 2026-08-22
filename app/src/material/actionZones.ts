@@ -1,8 +1,10 @@
-import { actionTileZones, ActionZone, actionZoneCells, revealedActionTile, zoneContains } from '@gamepark/leda/material/ActionZone'
+import { ActionZone, actionZoneCells, zoneContains } from '@gamepark/leda/material/ActionZone'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { sameCell } from '@gamepark/leda/material/PlayerGrid'
-import { MaterialRules, XYCoordinates } from '@gamepark/rules-api'
+import { CustomMoveType } from '@gamepark/leda/rules/CustomMoveType'
+import { RuleId } from '@gamepark/leda/rules/RuleId'
+import { isCustomMoveType, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
 import { zoneColors } from '../theme'
 import { gridGap } from './TileDescription'
 
@@ -11,17 +13,28 @@ import { gridGap } from './TileDescription'
  * around the squares it covers, in a color of its own (see {@link ActionZoneDescription}), and one square of each
  * carries the button that picks it (see {@link ChooseZoneButton}).
  *
- * Everything here is read off the tile that was revealed, so the rules hear nothing until a zone is picked: what
+ * Everything here is read off the moves the rules offer, so the rules hear nothing until a zone is picked: what
  * they receive is the move naming it, and nothing else.
  * The rules are taken as the framework hands them over, since none of this needs more than the material.
  */
 
 type Rules = MaterialRules<number, MaterialType, LocationType>
 
-/** The zones the Action tile of the round offers, in the order the tile lists them. */
+/**
+ * The zones the active player may pick right now, in the order the Action tile of the round lists them.
+ *
+ * Read off the moves the rules hand that player rather than off the tile they are printed on, so that a rectangle
+ * is only ever drawn around squares that pressing it would really activate: none is drawn outside of phase 1, and
+ * none is drawn on a tutorial step that is not the one asking for a zone (see {@link LedaTutorial}).
+ */
 export const offeredZones = (rules: Rules): ActionZone[] => {
-  const tile = revealedActionTile(rules.material(MaterialType.ActionTile))
-  return tile !== undefined ? actionTileZones[tile] : []
+  const rule = rules.game.rule
+  if (rule?.id !== RuleId.ChooseAction || rule.player === undefined) return []
+  return rules
+    .getLegalMoves(rule.player)
+    .filter(isCustomMoveType<CustomMoveType, ActionZone>(CustomMoveType.ChooseAction))
+    .map((move) => move.data)
+    .filter((zone) => zone !== undefined)
 }
 
 /** The rank of a zone on its tile, which is what its color, its line and its inset are all read from. */

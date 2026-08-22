@@ -158,6 +158,13 @@ Translation files are located in `app/public/translation/` (one JSON file per la
 - `Headers.tsx` — uses `useTranslation()` to display in-game messages
 - `materialI18n` prop on `GameProvider` — localized material descriptions
 
+### Apostrophes before a tag
+
+The texts are ICU messages, where `'` opens a quoted literal when the character right after it is one the
+format treats as syntax — `{`, `}` and `<` included. So `l'<strong>Éveil</strong>` loses its apostrophe, while
+`<strong>l'Éveil</strong>` keeps it. Move the apostrophe inside the tag rather than doubling it: `''` works too,
+but reads as a typo to whoever translates the line next.
+
 ### Translation keys convention
 Follow existing key naming patterns in the JSON files. Keep keys descriptive and organized by feature/screen.
 

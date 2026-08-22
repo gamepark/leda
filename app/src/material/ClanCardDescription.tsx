@@ -6,7 +6,7 @@ import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { cellOf } from '@gamepark/leda/material/PlayerGrid'
 import { isCellLeftToActivate } from '@gamepark/leda/rules/activation'
 import { swappingPlayer } from '@gamepark/leda/rules/swap'
-import { CardDescription, ItemContext, MaterialContext } from '@gamepark/react-game'
+import { ItemContext, MaterialContext } from '@gamepark/react-game'
 import { MaterialItem } from '@gamepark/rules-api'
 import CatBack from '../images/cards/cat/back.jpg'
 import CatCopyOpponentCard from '../images/cards/cat/cat-copy-opponent-card.jpg'
@@ -59,6 +59,7 @@ import SharkPackSpy from '../images/cards/shark/shark-pack-spy.jpg'
 import SharkSpyOrTriggerToken from '../images/cards/shark/shark-spy-or-trigger-token.jpg'
 import SharkUpgrade from '../images/cards/shark/shark-upgrade.jpg'
 import { ClanCardHelp } from './ClanCardHelp'
+import { LedaCardDescription } from './LedaCardDescription'
 import { PlayedCardMenuButton } from './PlayedCardMenuButton'
 import { PutUnderDeckButton } from './PutUnderDeckButton'
 import { isSpiedByOther } from './spiedItem'
@@ -133,7 +134,7 @@ export const clanCardFronts: Record<ClanCardId, string> = {
  * The clan cards a player draws and plays onto their grid. They are square, like the tiles they are played on.
  * Generated from the ClanCardId enum: an image file is named after the value it belongs to.
  */
-export class ClanCardDescription extends CardDescription<number, MaterialType, LocationType, ClanCardItemId> {
+export class ClanCardDescription extends LedaCardDescription<ClanCardItemId> {
   width = tileSize
   height = tileSize
   borderRadius = 0.5

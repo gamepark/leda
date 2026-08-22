@@ -1,6 +1,12 @@
 import { LedaRules } from '@gamepark/leda/LedaRules'
+import { LocationType } from '@gamepark/leda/material/LocationType'
+import { MaterialType } from '@gamepark/leda/material/MaterialType'
+import { CustomMoveType } from '@gamepark/leda/rules/CustomMoveType'
 // DisplayedAction is a type the framework re-exports from its store, and only a type: hence the modifier.
 import { type DisplayedAction, useActions, usePlayerId, useRules } from '@gamepark/react-game'
+import { isCustomMoveType, isMoveItemType, MaterialMove, XYCoordinates } from '@gamepark/rules-api'
+
+type Move = MaterialMove<number, MaterialType, LocationType>
 
 /**
  * What a button of an item reads to know what it offers: the state of the game, and who is looking at it.
@@ -9,7 +15,9 @@ import { type DisplayedAction, useActions, usePlayerId, useRules } from '@gamepa
  *
  * Read through the hooks rather than through the context handed to the material description: an item is only
  * re-rendered when its own item changes, which is far from every time its buttons have to change.
- * Never from the legal moves: they are filtered in the tutorial, and they come and go during animations.
+ * The rules are the ones the table is showing, and the moves a button offers are read off them
+ * (see {@link offeredCells}): the guard below is what keeps them in step with what has been played, which the
+ * legal moves the store keeps are not while an animation is still running.
  */
 export const useMenuButtonRules = (): { rules: LedaRules; player: number } | undefined => {
   const rules = useRules<LedaRules>()
@@ -31,3 +39,27 @@ export const useMenuButtonRules = (): { rules: LedaRules; player: number } | und
  */
 const tableIsLate = (action: DisplayedAction) =>
   action.delayed === true || (action.cancelled ? action.played > 0 : action.played <= action.consequences.length)
+
+/**
+ * The squares the rules are offering a move on right now, read off the moves they hand the player rather than
+ * worked out a second time beside them (see {@link ActivateSquareButton}).
+ *
+ * Reading them off the moves is what keeps a button and what pressing it does the same thing: there is one button
+ * exactly where there is one move, and never one more. The tutorial narrows the moves of a step down to the one it
+ * is asking for, and every other button of the table goes away with them, so that what the reader is being told
+ * to press is the only thing there is to press (see {@link LedaTutorial}).
+ */
+export const offeredCells = (rules: LedaRules, player: number, type: CustomMoveType): XYCoordinates[] =>
+  rules
+    .getLegalMoves(player)
+    .filter(isCustomMoveType<CustomMoveType, XYCoordinates>(type))
+    .map((move) => move.data)
+    .filter((cell) => cell !== undefined)
+
+/**
+ * The move the rules are offering on a tile of a grid, if there is one, for the rules that offer one move per
+ * tile: turning it over, one way or the other (see {@link UpgradeTileButton}).
+ * The button plays the very move it was read from, so what it offers cannot drift from what the rules allow.
+ */
+export const offeredTileMove = (rules: LedaRules, player: number, tile: number): Move | undefined =>
+  rules.getLegalMoves(player).find((move) => isMoveItemType(MaterialType.Tile)(move) && move.itemIndex === tile)

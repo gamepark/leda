@@ -1,7 +1,5 @@
 import { LedaRules } from '@gamepark/leda/LedaRules'
-import { activableCells, copiableCells } from '@gamepark/leda/rules/activation'
 import { RuleId } from '@gamepark/leda/rules/RuleId'
-import { bareCells, visibleDesertCells } from '@gamepark/leda/rules/tileChoices'
 import { ActivateSquareOnTile } from './ActivateSquareButton'
 import { ChooseActionTileButton } from './ChooseActionTileButton'
 import { DowngradeTileButton } from './DowngradeTileButton'
@@ -39,21 +37,19 @@ export const TileMenuButton = ({ index, owner }: { index: number; owner: number 
    */
   if (owner !== me) {
     if (rules.game.rule?.id !== RuleId.CopyOpponentCard) return null
-    return <ActivateSquareOnTile index={index} rules={rules} cells={copiableCells(rules, me)} />
+    return <ActivateSquareOnTile index={index} rules={rules} player={me} />
   }
 
   switch (rules.game.rule?.id) {
     case RuleId.ChooseAction:
       return <ChooseActionTileButton index={index} rules={rules} player={me} />
 
-    /** The 3 rules that have a player activate a square, which only differ in the squares they offer. */
+    /** The 4 rules that have a player activate a square of their own grid, whichever squares they offer. */
     case RuleId.ActivateZone:
-      return <ActivateSquareOnTile index={index} rules={rules} cells={activableCells(rules, me)} />
     case RuleId.ActivateAndUpgradeTile:
     case RuleId.ActivateTile:
-      return <ActivateSquareOnTile index={index} rules={rules} cells={bareCells(rules, me)} />
     case RuleId.ActivateDesert:
-      return <ActivateSquareOnTile index={index} rules={rules} cells={visibleDesertCells(rules, me)} />
+      return <ActivateSquareOnTile index={index} rules={rules} player={me} />
 
     case RuleId.UpgradeTile:
       return <UpgradeTileButton index={index} rules={rules} player={me} />

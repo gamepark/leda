@@ -4,7 +4,6 @@ import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { cellOf } from '@gamepark/leda/material/PlayerGrid'
 import { SharkSlot } from '@gamepark/leda/material/SharkSlot'
 import { actionTileRoundPlayer } from '@gamepark/leda/rules/round'
-import { RuleId } from '@gamepark/leda/rules/RuleId'
 import { sharkSlotOn } from '@gamepark/leda/rules/sharkPack'
 import { DeckLocator, HandLocator, ItemContext, ListLocator, Locator, MaterialContext, ParentFace, PileLocator } from '@gamepark/react-game'
 import { Coordinates, isMoveItem, Location, MaterialItem, MaterialMove } from '@gamepark/rules-api'
@@ -190,9 +189,9 @@ class ActionZoneLocator extends Locator {
   locationDescription = new ActionZoneDescription()
 
   getLocations(context: MaterialContext) {
-    if (context.rules.game.rule?.id !== RuleId.ChooseAction) return []
+    const zones = offeredZones(context.rules)
     return context.rules.players.flatMap((player) =>
-      offeredZones(context.rules).flatMap((zone) => zoneRectangles(zone).map(({ x, y }) => ({ player, id: zone, x, y })))
+      zones.flatMap((zone) => zoneRectangles(zone).map(({ x, y }) => ({ player, id: zone, x, y })))
     )
   }
 
@@ -230,6 +229,13 @@ const militaryVictoryDeck = {
   x: 0,
   y: revealedActionTileY + revealedActionTileRow + halfActionTile + middleColumnGap + militaryVictoryToken.height / 2
 }
+
+/**
+ * How far a Military Victory token travels as it is won: from the pile of the middle column to the column of its
+ * winner, which is at the edge of the table and higher up than the pile. Read by the tutorial, whose focus keeps
+ * the whole way in sight while the token flies over it (see {@link LedaTutorial}).
+ */
+export const militaryVictoryFlight = { left: sideColumnX, top: militaryVictoryDeck.y - tokenColumnTop }
 
 /**
  * The Food reserve closes the column, under the pile of Military Victory tokens. It is a heap scattered around

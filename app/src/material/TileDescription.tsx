@@ -4,7 +4,7 @@ import { cellOf } from '@gamepark/leda/material/PlayerGrid'
 import { TileId } from '@gamepark/leda/material/TileId'
 import { isActivationPhase, isCellLeftToActivate } from '@gamepark/leda/rules/activation'
 import { swappingPlayer } from '@gamepark/leda/rules/swap'
-import { CardDescription, ItemContext } from '@gamepark/react-game'
+import { ItemContext } from '@gamepark/react-game'
 import { MaterialItem, MaterialMoveBuilder } from '@gamepark/rules-api'
 import PermanentDrawFront from '../images/tiles/recto/permanent-draw.jpg'
 import PermanentFoodFront from '../images/tiles/recto/permanent-food.jpg'
@@ -24,6 +24,7 @@ import TemporaryFoodBack from '../images/tiles/verso/temporary-food.jpg'
 import TemporaryMilitaryBack from '../images/tiles/verso/temporary-military.jpg'
 import TemporarySpecialActivationBack from '../images/tiles/verso/temporary-special-activation.jpg'
 import TemporaryUpgradeBack from '../images/tiles/verso/temporary-upgrade.jpg'
+import { LedaCardDescription } from './LedaCardDescription'
 import { SwapHistoryButton } from './SwapHistoryButton'
 import { TileHelp } from './TileHelp'
 import { TileMenuButton } from './TileMenuButton'
@@ -43,7 +44,7 @@ export const tileSize = 7
 export const gridGap = 0.3
 
 /** The 16 double sided tiles of a player's grid. They are square, hence the same width and height. */
-export class TileDescription extends CardDescription<number, MaterialType, LocationType, TileId> {
+export class TileDescription extends LedaCardDescription<TileId> {
   width = tileSize
   height = tileSize
   borderRadius = 0.5

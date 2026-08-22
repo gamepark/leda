@@ -1,13 +1,12 @@
 import { Clan } from '@gamepark/leda/Clan'
 import { LocationType } from '@gamepark/leda/material/LocationType'
-import { MaterialType } from '@gamepark/leda/material/MaterialType'
-import { CardDescription } from '@gamepark/react-game'
 import { MaterialItem } from '@gamepark/rules-api'
 import CatVictoryCondition from '../images/cards/cat/victory-condition.jpg'
 import PandaVictoryCondition from '../images/cards/panda/victory-condition.jpg'
 import ScorpionVictoryCondition from '../images/cards/scorpion/victory-condition.jpg'
 import SharkVictoryCondition from '../images/cards/shark/victory-condition.jpg'
 import { AwakeningButtons } from './AwakeningButtons'
+import { LedaCardDescription } from './LedaCardDescription'
 import { tileSize } from './TileDescription'
 import { VictoryConditionCardHelp } from './VictoryConditionCardHelp'
 
@@ -16,7 +15,7 @@ import { VictoryConditionCardHelp } from './VictoryConditionCardHelp'
  * It has no back here: it is never shown face down. Its back, the emblem of the clan, is what illustrates the clan
  * in the choice dialog, where it is used directly (see clanBacks in ClanCardDescription).
  */
-export class VictoryConditionCardDescription extends CardDescription<number, MaterialType, LocationType, Clan> {
+export class VictoryConditionCardDescription extends LedaCardDescription<Clan> {
   width = tileSize
   height = tileSize
   borderRadius = 0.5

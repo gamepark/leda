@@ -61,14 +61,24 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  * doing its job (see {@link spy}), and everything else it reads is on the table for both players to see.
  */
 export const ai = (game: Game, player: number): Promise<Move[]> => {
+  const move = aiMove(game, player)
+  return Promise.resolve(move === undefined ? [] : [move])
+}
+
+/**
+ * The same opponent, answered on the spot: what the scripted part of the tutorial plays for them, where the
+ * framework would otherwise pick one of their legal moves at random (see {@link LedaTutorial.getNextMove}).
+ * Everything it decides is decided here anyway - the promise above is only the shape the framework asks for.
+ */
+export const aiMove = (game: Game, player: number): Move | undefined => {
   const rules = new LedaRules(game)
   const legalMoves = rules.getLegalMoves(player)
-  if (legalMoves.length === 0) return Promise.resolve([])
-  if (legalMoves.length === 1) return Promise.resolve(legalMoves)
+  if (legalMoves.length === 0) return undefined
+  if (legalMoves.length === 1) return legalMoves[0]
   // What the opponent can still reach off their own side of the zone, which is what a military symbol is worth
   // this round: every decision below is priced against it (see {@link militaryScore}).
   const context = aiPlayer(rules, player, militaryNeed(rules, player))
-  return Promise.resolve([decide(context, legalMoves) ?? sample(legalMoves)!])
+  return decide(context, legalMoves) ?? sample(legalMoves)!
 }
 
 const decide = (ai: Ai, moves: Move[]): Move | undefined => {

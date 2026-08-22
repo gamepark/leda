@@ -1,11 +1,12 @@
 import { faBolt } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { LedaRules } from '@gamepark/leda/LedaRules'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { cellOf, sameCell } from '@gamepark/leda/material/PlayerGrid'
 import { CustomMoveType } from '@gamepark/leda/rules/CustomMoveType'
 import { MaterialMoveBuilder, XYCoordinates } from '@gamepark/rules-api'
 import { LedaMenuButton } from './LedaMenuButton'
+import { offeredCells } from './menuButtons'
+import { TileButtonProps } from './TileMenuButton'
 import { tileButtonPosition } from './tileButtonPosition'
 
 /**
@@ -20,17 +21,13 @@ export const ActivateSquareButton = ({ cell }: { cell: XYCoordinates }) => (
   </LedaMenuButton>
 )
 
-type ActivateSquareOnTileProps = {
-  /** Index of the tile in the game state, which is stable, unlike the item a stale render would carry. */
-  index: number
-  rules: LedaRules
-  /** The squares the rule waiting offers, named with the very helper that rule reads to know what is legal. */
-  cells: XYCoordinates[]
-}
-
-/** The medallion on a bare tile, carried by the squares the rule waiting is offering and by no other. */
-export const ActivateSquareOnTile = ({ index, rules, cells }: ActivateSquareOnTileProps) => {
+/**
+ * The medallion on a bare tile, carried by the squares the rule waiting is offering and by no other: which squares
+ * those are is read off the moves that rule hands the player (see {@link offeredCells}), whichever of the rules
+ * that activate a square is the one waiting.
+ */
+export const ActivateSquareOnTile = ({ index, rules, player }: TileButtonProps) => {
   const cell = cellOf(rules.material(MaterialType.Tile).getItem(index).location)
-  if (!cells.some((activable) => sameCell(activable, cell))) return null
+  if (!offeredCells(rules, player, CustomMoveType.ActivateSquare).some((activable) => sameCell(activable, cell))) return null
   return <ActivateSquareButton cell={cell} />
 }

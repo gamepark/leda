@@ -66,6 +66,10 @@
     "explain": "L'effet Éveil se résout après avoir résolu toutes les autres activations.",
     "close": "Fermer"
   },
+  "choose-effect": {
+    "choose": "Choisissez un effet",
+    "or": "ou"
+  },
   "search-ring": {
     "choose": "Choisissez un Anneau de votre pioche",
     "condition": "Condition de pose :",
@@ -294,6 +298,10 @@
     "activate-zone": {
       "you": "Activez les cases de la zone, dans l'ordre de votre choix",
       "player": "{player} active les cases de la zone"
+    },
+    "choose-effect": {
+      "you": "Choisissez un effet",
+      "player": "{player} choisit un effet"
     },
     "awakening": {
       "you": "<awakening/> : Éveillez un Panda",

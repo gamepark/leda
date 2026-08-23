@@ -1,5 +1,7 @@
 import { css } from '@emotion/react'
-import { Effect } from '@gamepark/leda/material/Effect'
+import { LedaRules } from '@gamepark/leda/LedaRules'
+import { Effect, effectEntries, Effects, EffectSource } from '@gamepark/leda/material/Effect'
+import { effectQuantity } from '@gamepark/leda/rules/effects'
 import { Picture } from '@gamepark/react-game'
 import DrawImage from '../images/icons/Draw.png'
 import FlipImage from '../images/icons/Flip.png'
@@ -44,3 +46,20 @@ const icon = css`
     top: 0;
   }
 `
+
+/**
+ * What a set of effects gives, one symbol per time it gives it: 2 military symbols are 2 crossed swords, as on
+ * the cards. How many times is asked of the rules, since a card may read it off the game rather than print it.
+ * Left to right in the order the set is written, which is the order it will be resolved in.
+ *
+ * Drawn wherever the branches of an "OR" are shown: in the header of the choice (see {@link ChooseEffectHeader}),
+ * in the dialog that asks it (see {@link ChooseEffectDialog}), and in the journal, which says what a player
+ * picked with the very symbols they picked between (see {@link ChooseEffectLog}).
+ */
+export const EffectIcons = ({ effects, rules, player, source }: { effects: Effects; rules: LedaRules; player: number; source?: EffectSource }) => (
+  <>
+    {effectEntries(effects).flatMap(([effect, quantity]) =>
+      Array.from({ length: effectQuantity(rules, player, quantity, source) }, (_, time) => <EffectIcon key={`${effect}-${time}`} effect={effect} />)
+    )}
+  </>
+)

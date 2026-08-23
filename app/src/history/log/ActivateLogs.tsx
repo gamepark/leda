@@ -3,7 +3,7 @@ import { pendingChoices } from '@gamepark/leda/rules/effects'
 import { RuleId } from '@gamepark/leda/rules/RuleId'
 import { MaterialLogProps, usePlayerName } from '@gamepark/react-game'
 import { CustomMove, XYCoordinates } from '@gamepark/rules-api'
-import { EffectIcons } from '../../headers/ChooseEffectHeader'
+import { EffectIcons } from '../../headers/EffectIcon'
 import { LogText } from '../LogText'
 import { SquareMaterial } from './SquareMaterial'
 

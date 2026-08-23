@@ -3,6 +3,7 @@ import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { DropAreaDescription, MaterialContext } from '@gamepark/react-game'
 import { isMoveItem, Location, MaterialMove } from '@gamepark/rules-api'
 import { DeckCounter } from './DeckCounter'
+import { PlayerDeckHelp } from './PlayerDeckHelp'
 import { tileSize } from './TileDescription'
 
 /**
@@ -21,6 +22,13 @@ export class PlayerDeckDescription extends DropAreaDescription<number, MaterialT
   borderRadius = 0.5
 
   content = DeckCounter
+
+  /**
+   * The pile is what a click on it opens, and what a click on any of its cards opens too
+   * (see ClanCardDescription.displayHelp): a card of a deck is face down and shuffled, so it has nothing of its
+   * own to say (see {@link PlayerDeckHelp}).
+   */
+  help = PlayerDeckHelp
 
   /**
    * Everything the deck takes is dragged onto it: a price paid in cards (see {@link PayCardCostRule}) and a Ring

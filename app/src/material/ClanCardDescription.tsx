@@ -7,7 +7,7 @@ import { cellOf } from '@gamepark/leda/material/PlayerGrid'
 import { isCellLeftToActivate } from '@gamepark/leda/rules/activation'
 import { swappingPlayer } from '@gamepark/leda/rules/swap'
 import { ItemContext, MaterialContext } from '@gamepark/react-game'
-import { MaterialItem } from '@gamepark/rules-api'
+import { MaterialItem, MaterialMoveBuilder } from '@gamepark/rules-api'
 import CatBack from '../images/cards/cat/back.jpg'
 import CatCopyOpponentCard from '../images/cards/cat/cat-copy-opponent-card.jpg'
 import CatDrawAndFood from '../images/cards/cat/cat-draw-and-food.jpg'
@@ -146,6 +146,19 @@ export class ClanCardDescription extends LedaCardDescription<ClanCardItemId> {
 
   /** Clicking a card opens what it costs and what it gives, spelled out beside the card (see {@link ClanCardHelp}). */
   help = ClanCardHelp
+
+  /**
+   * All but a card of a deck, which opens the help of that deck instead (see {@link PlayerDeckHelp}): the cards of
+   * a pile are face down and shuffled, so the one on top is nothing more than the back of a clan, and reading
+   * "this card is face down" off it says less than the pile it belongs to does.
+   */
+  displayHelp(item: MaterialItem<number, LocationType, ClanCardItemId>, context: ItemContext<number, MaterialType, LocationType>) {
+    if (item.location.type !== LocationType.PlayerDeck) return super.displayHelp(item, context)
+    return MaterialMoveBuilder.displayLocationHelp<number, MaterialType, LocationType>({
+      type: LocationType.PlayerDeck,
+      player: item.location.player
+    })
+  }
 
   /**
    * Which face is up is decided by the location rather than left to the default, which flips a card whose front id

@@ -125,6 +125,12 @@
     "military-victory": "Victoire militaire :",
     "none": "Aucun.",
     "hidden": "Cette carte est face cachée : seul le clan auquel elle appartient est visible.",
+    "deck": {
+      "title": "Pioche",
+      "clan-title": "Pioche des {clan}",
+      "count": "Il reste {count, plural, one {# carte} other {# cartes}} dans la pioche.",
+      "all": "Toutes les cartes du clan :"
+    },
     "food-cost": "{count} <food/>",
     "cards-cost": "{count, plural, one {# carte} other {# cartes}} de votre main, à remettre sous votre pioche.",
     "current": "(actuellement {count} <food/>)",

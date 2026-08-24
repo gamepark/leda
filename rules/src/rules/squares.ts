@@ -1,4 +1,4 @@
-import { XYCoordinates } from '@gamepark/rules-api'
+import { MaterialItem, XYCoordinates } from '@gamepark/rules-api'
 import { ClanCardId, ClanCardItemId } from '../material/ClanCardId'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
@@ -23,14 +23,26 @@ import { Rules } from '../Rules'
 export const cardsInPlay = (rules: Rules, player: number) => rules.material(MaterialType.ClanCard).location(LocationType.PlayedCard).player(player)
 
 /**
- * The index of the card on top of a square, the only one that counts: cards pile up on a square as they are
- * played, and the one the player sees is the last of them.
+ * How high a card stands on its square: 0 for the one played there first, one more for each card laid over it
+ * (see {@link LedaRules.locationsStrategies}). It is the only record of the order the cards were played in, the
+ * index of an item being the slot it was created in and nothing else.
  */
+const cardHeight = (card: MaterialItem<number, LocationType>): number => card.location.z ?? 0
+
+/** The cards standing on one square, named by the index of its tile, the covered ones included. */
+const cardsOnTile = (rules: Rules, parent: number) =>
+  rules.material(MaterialType.ClanCard).location(LocationType.PlayedCard).parent(parent)
+
+/**
+ * The index of the card on top of a square, the only one that counts: cards pile up on a square as they are
+ * played, and the one the player sees is the last of them, the highest one.
+ */
+export const topCardIndexOnTile = (rules: Rules, parent: number): number | undefined => cardsOnTile(rules, parent).maxBy(cardHeight).getIndexes()[0]
+
+/** The same square, named by its cell of the grid of its owner rather than by the tile that stands on it. */
 export const topCardIndexOn = (rules: Rules, player: number, cell: XYCoordinates): number | undefined => {
   const tiles = tileAt(rules.material(MaterialType.Tile), player, cell).getIndexes()
-  if (tiles.length === 0) return undefined
-  const cards = cardsInPlay(rules, player).parent(tiles[0]).getIndexes()
-  return cards.length === 0 ? undefined : Math.max(...cards)
+  return tiles.length === 0 ? undefined : topCardIndexOnTile(rules, tiles[0])
 }
 
 /** Which card that is. Undefined when the square holds none, and undefined too for a card nobody here may read. */
@@ -45,7 +57,7 @@ export const topCardOn = (rules: Rules, player: number, cell: XYCoordinates): Cl
  */
 export const visibleCards = (rules: Rules, player: number) => {
   const cards = cardsInPlay(rules, player)
-  const tops = new Set(cards.getItems().map((card) => Math.max(...cards.parent(card.location.parent!).getIndexes())))
+  const tops = new Set(cards.getItems().map((card) => topCardIndexOnTile(rules, card.location.parent!)))
   return cards.index((index) => tops.has(index))
 }
 

@@ -336,9 +336,10 @@ class PlayedCardLocator extends Locator {
   /** A card is played on the square, not on a face of its tile: it stays there once the tile is turned over. */
   parentFace = ParentFace.Up
 
+  /** How high a card sits: the cards played on the square before it, which its own location counts (see {@link squares}). */
   getItemCoordinates(item: MaterialItem<number, LocationType>, context: ItemContext<number, MaterialType, LocationType>) {
     const thickness = context.material[context.type]?.getThickness(item, context) ?? 0
-    return { z: this.cardsUnder(item, context) * thickness }
+    return { z: (item.location.z ?? 0) * thickness }
   }
 
   /**
@@ -348,16 +349,6 @@ class PlayedCardLocator extends Locator {
    */
   getItemRotateZ(item: MaterialItem<number, LocationType>) {
     return item.location.rotation === true ? 180 : 0
-  }
-
-  cardsUnder(item: MaterialItem<number, LocationType>, context: ItemContext<number, MaterialType, LocationType>): number {
-    const cards = context.rules.material(MaterialType.ClanCard).location(LocationType.PlayedCard).parent(item.location.parent)
-    return cards.getIndexes().filter((index) => index < context.index).length
-  }
-
-  /** How high a card sits depends on how many are already on its square, which is not part of its own location. */
-  getPositionDependencies(location: Location, context: MaterialContext) {
-    return this.countItems(location, context)
   }
 }
 

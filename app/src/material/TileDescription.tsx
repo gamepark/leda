@@ -3,6 +3,7 @@ import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { cellOf } from '@gamepark/leda/material/PlayerGrid'
 import { TileId } from '@gamepark/leda/material/TileId'
 import { isActivationPhase, isCellLeftToActivate } from '@gamepark/leda/rules/activation'
+import { topCardIndexOnTile } from '@gamepark/leda/rules/squares'
 import { swappingPlayer } from '@gamepark/leda/rules/swap'
 import { ItemContext } from '@gamepark/react-game'
 import { MaterialItem, MaterialMoveBuilder } from '@gamepark/rules-api'
@@ -131,15 +132,9 @@ export class TileDescription extends LedaCardDescription<TileId> {
    * underneath, which no click could reach any more.
    */
   displayHelp(item: MaterialItem<number, LocationType, TileId>, context: ItemContext<number, MaterialType, LocationType>) {
-    const cardIndex = this.topCardIndex(context)
+    const cardIndex = topCardIndexOnTile(context.rules, context.index)
     if (cardIndex === undefined) return super.displayHelp(item, context)
     const card = context.rules.material(MaterialType.ClanCard).getItem(cardIndex)
     return MaterialMoveBuilder.displayMaterialHelp<number, MaterialType, LocationType>(MaterialType.ClanCard, card, cardIndex)
-  }
-
-  /** The card laid last on the square of this tile, hence the one over all the others, if the square carries any. */
-  topCardIndex(context: ItemContext<number, MaterialType, LocationType>): number | undefined {
-    const indexes = context.rules.material(MaterialType.ClanCard).location(LocationType.PlayedCard).parent(context.index).getIndexes()
-    return indexes.length > 0 ? Math.max(...indexes) : undefined
   }
 }

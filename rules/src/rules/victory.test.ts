@@ -43,6 +43,20 @@ const tileIndex = (cell: XYCoordinates) => cell.y * 4 + cell.x
 const opponentClan = (clan: Clan) => (clan === Clan.Panda ? Clan.Shark : Clan.Panda)
 
 /**
+ * The cards of the player in play, each numbered by how high it stands on its square: the engine numbers them
+ * that way as they are played, and several cards on one square pile up in the order they are given here
+ * (see {@link squares}).
+ */
+const played = (cards: Played[], clan: Clan) => {
+  const heights: Record<number, number> = {}
+  return cards.map(({ card, cell }) => {
+    const parent = tileIndex(cell)
+    heights[parent] = (heights[parent] ?? -1) + 1
+    return { id: { front: card, back: clan }, location: { type: LocationType.PlayedCard, player: 1, parent, z: heights[parent] } }
+  })
+}
+
+/**
  * A player of the clan under test and their opponent, both with a grid of bare permanent tiles. Everything the
  * victories are read on is given by the test: what is in play, what has been won, what has been placed.
  */
@@ -68,7 +82,7 @@ const game = ({ clan, cards = [], hand = [], won = [], top, tokens = [], food = 
       [0, 1, 2, 3].flatMap((y) => [0, 1, 2, 3].map((x) => ({ id: TileId.PermanentFood, location: { type: LocationType.PlayerGrid, player, x, y } })))
     ),
     [MaterialType.ClanCard]: [
-      ...cards.map(({ card, cell }) => ({ id: { front: card, back: clan }, location: { type: LocationType.PlayedCard, player: 1, parent: tileIndex(cell) } })),
+      ...played(cards, clan),
       ...hand.map((front, x) => ({ id: { front, back: clan }, location: { type: LocationType.PlayerHand, player: 1, x } }))
     ],
     [MaterialType.SharkToken]: [

@@ -135,6 +135,12 @@ export class LedaRules
    * Without it, identical items sharing a location would merge into a single item with a quantity, which is what
    * we do want for the Food and the Shark tokens, but not for a pile we draw from.
    * PlayerGrid is left out on purpose: x and y are the coordinates of a square there.
+   *
+   * A square is a pile too: cards played on the same square stack up on one another, and z is how high each one
+   * stands there, 0 for the first, one more for each card laid over it. Nothing else records the order they were
+   * played in, the index of an item being the slot it was created in, that is the printed order of the clan deck
+   * (see {@link ChooseClanRule}). What is read off it is which card covers the square (see {@link squares}) and
+   * how high the card is drawn (see PlayedCardLocator).
    */
   locationsStrategies = {
     [MaterialType.ActionTile]: {
@@ -147,7 +153,8 @@ export class LedaRules
     },
     [MaterialType.ClanCard]: {
       [LocationType.PlayerDeck]: new PositiveSequenceStrategy(),
-      [LocationType.PlayerHand]: new PositiveSequenceStrategy()
+      [LocationType.PlayerHand]: new PositiveSequenceStrategy(),
+      [LocationType.PlayedCard]: new PositiveSequenceStrategy('z')
     }
   }
 

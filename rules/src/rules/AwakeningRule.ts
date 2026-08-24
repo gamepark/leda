@@ -8,6 +8,7 @@ import { resolveEffects } from './effects'
 import { Memory } from './Memory'
 import { RuleId } from './RuleId'
 import { awakenings } from './specialActivation'
+import { topCardIndexOnTile } from './squares'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
@@ -67,9 +68,9 @@ export class AwakeningRule extends PlayerTurnRule<number, MaterialType, Location
    */
   beforeItemMove(move: ItemMove<number, MaterialType, LocationType>): Move[] {
     if (!this.isAwakening(move)) return []
-    const replaced = this.playedCards.parent(move.location.parent)
-    if (!replaced.length) return []
-    return [this.material(MaterialType.ClanCard).index(Math.max(...replaced.getIndexes())).moveItem({ type: LocationType.PlayerHand, player: this.player })]
+    const replaced = topCardIndexOnTile(this, move.location.parent!)
+    if (replaced === undefined) return []
+    return [this.material(MaterialType.ClanCard).index(replaced).moveItem({ type: LocationType.PlayerHand, player: this.player })]
   }
 
   /**
@@ -86,9 +87,5 @@ export class AwakeningRule extends PlayerTurnRule<number, MaterialType, Location
 
   isAwakening(move: ItemMove<number, MaterialType, LocationType>): move is MoveItem<number, MaterialType, LocationType> {
     return isMoveItemType(MaterialType.ClanCard)(move) && move.location.type === LocationType.PlayedCard
-  }
-
-  get playedCards() {
-    return this.material(MaterialType.ClanCard).location(LocationType.PlayedCard).player(this.player)
   }
 }

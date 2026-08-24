@@ -42,7 +42,9 @@ const game = (cards: Played[], hand: ClanCardId[] = [], food = 0): MaterialGame<
     [MaterialType.ClanCard]: [
       ...cards.map((played, position) => {
         const { card, parent } = squareOf(played, position)
-        return { id: { front: card, back: Clan.Panda }, location: { type: LocationType.PlayedCard, player: 1, parent } }
+        // How high the card stands on its square, which the engine numbers as cards are played (see {@link squares}).
+        const z = cards.slice(0, position).filter((before, index) => squareOf(before, index).parent === parent).length
+        return { id: { front: card, back: Clan.Panda }, location: { type: LocationType.PlayedCard, player: 1, parent, z } }
       }),
       ...hand.map((front) => ({ id: { front, back: Clan.Panda }, location: { type: LocationType.PlayerHand, player: 1 } })),
       { id: { back: Clan.Panda }, location: { type: LocationType.PlayerDeck, player: 1, x: 0 } }

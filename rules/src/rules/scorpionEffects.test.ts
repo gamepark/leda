@@ -29,9 +29,12 @@ type Square =
   /** A permanent tile already upgraded. */
   | 'upgraded'
 
+/** A card in play, several on one square piling up in the order they are given, the last one on top. */
+type Played = { card: ClanCardId; cell: XYCoordinates }
+
 type Setup = {
-  /** The cards in play, one per square of the grid. */
-  cards?: { card: ClanCardId; cell: XYCoordinates }[]
+  /** The cards in play, one per square of the grid unless a test piles them up. */
+  cards?: Played[]
   /** The squares that hold something else than a Desert. */
   squares?: { cell: XYCoordinates; square: Square }[]
   /** The Military Victory tokens their owner has already won, which is what one of the Portals is priced on. */
@@ -46,7 +49,7 @@ type Setup = {
   /** The squares of the opponent that hold something else than a Desert. */
   opponentSquares?: { cell: XYCoordinates; square: Square }[]
   /** The cards the opponent has in play, which cover the tiles of their squares as the ones of the player do. */
-  opponentCards?: { card: ClanCardId; cell: XYCoordinates }[]
+  opponentCards?: Played[]
 }
 
 const index = ({ x, y }: XYCoordinates) => y * 4 + x
@@ -75,6 +78,20 @@ const handOf = (hand: ClanCardId[] | number): ClanCardId[] =>
   typeof hand === 'number' ? Array.from({ length: hand }, () => ClanCardId.ScorpionDrawAndFood) : hand
 
 /**
+ * The cards of one player in play, each numbered by how high it stands on its square: the engine numbers them
+ * that way as they are played, and several cards on one square pile up in the order they are given here
+ * (see {@link squares}).
+ */
+const playedCards = (cards: Played[], player: number, clan: Clan, offset = 0) => {
+  const heights: Record<number, number> = {}
+  return cards.map(({ card, cell }) => {
+    const parent = offset + index(cell)
+    heights[parent] = (heights[parent] ?? -1) + 1
+    return { id: { front: card, back: clan }, location: { type: LocationType.PlayedCard, player, parent, z: heights[parent] } }
+  })
+}
+
+/**
  * A Scorpion player, their grid covered with Deserts so that nothing but the cards gives anything, and the zone
  * of the round set on row 1, which is where the cards below are played.
  * The opponent has a grid of their own, since one of the Portals has them turn one of its tiles over.
@@ -99,15 +116,9 @@ const game = ({ cards = [], squares = [], won = [], hand = 0, food = 0, opponent
     ],
     [MaterialType.Tile]: [...grid(1, squares), ...grid(2, opponentSquares)],
     [MaterialType.ClanCard]: [
-      ...cards.map(({ card, cell }) => ({
-        id: { front: card, back: Clan.Scorpion },
-        location: { type: LocationType.PlayedCard, player: 1, parent: index(cell) }
-      })),
+      ...playedCards(cards, 1, Clan.Scorpion),
       // The 16 tiles of the player come first in the grid, so a square of the opponent is 16 tiles further on.
-      ...opponentCards.map(({ card, cell }) => ({
-        id: { front: card, back: Clan.Cat },
-        location: { type: LocationType.PlayedCard, player: 2, parent: 16 + index(cell) }
-      })),
+      ...playedCards(opponentCards, 2, Clan.Cat, 16),
       ...handOf(hand).map((front, x) => ({ id: { front, back: Clan.Scorpion }, location: { type: LocationType.PlayerHand, player: 1, x } })),
       { id: { back: Clan.Scorpion }, location: { type: LocationType.PlayerDeck, player: 1, x: 0 } }
     ],

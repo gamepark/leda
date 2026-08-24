@@ -10,6 +10,7 @@ import {
   MaterialMove,
   MaterialMoveRandomized,
   MaterialMoveView,
+  MoveKind,
   PlayMoveContext,
   PositiveSequenceStrategy,
   SecretMaterialRules,
@@ -192,16 +193,25 @@ export class LedaRules
    * squares swapped, in the middle of any step there is (see {@link gameWinner}).
    *
    * Hooked to every move rather than to the move that wins, because the winning move is rarely the last one
-   * played: the 9th Shark token is placed by the card that was played, whose other consequence hands the turn to
-   * the opponent, and a game closed before that turn started would be reopened by it. So the game is closed after
-   * every move for as long as it is not, which is over as soon as the moves that were owed run out.
+   * played: the 9th Shark token is placed by the card that was played, and the Gold Panda that wins the game is
+   * put in play by a move whose other half hands the square back to the card it replaced. So the game is closed
+   * behind every move for as long as it is not, which happens as soon as a move owes nothing more.
    *
-   * Never on a move a client is only previewing, which the framework plays and takes back on its own.
+   * And once it is closed, nothing else is played: the moves that were still owed are dropped here rather than
+   * applied, since the framework keeps handing them over — the end of the game only empties what one move
+   * returned, not what the moves before it had queued behind them. Those moves are exactly what must not happen:
+   * the military conflict of the round would hand the opponent the Victory token they were about to win, and the
+   * turn a card was handing over would reopen the game it was closing.
+   *
+   * Never on a move a client is only previewing, which the framework plays and takes back on its own, and never
+   * on a local move, which changes nothing of the game: the players still open the help dialogs of a game they
+   * have finished.
    */
   play(
     move: MaterialMoveRandomized<number, MaterialType, LocationType> | MaterialMoveView<number, MaterialType, LocationType>,
     context?: PlayMoveContext
   ): MaterialMove<number, MaterialType, LocationType>[] {
+    if (this.isOver() && move.kind !== MoveKind.LocalMove) return []
     const consequences = super.play(move, context)
     if (context?.transient || this.isOver() || gameWinner(this) === undefined) return consequences
     return [...consequences, this.endGame()]

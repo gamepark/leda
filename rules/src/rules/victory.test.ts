@@ -193,6 +193,30 @@ describe('The special victory of the Pandas', () => {
     expect(winner(rules)).toBe(1)
   })
 
+  /**
+   * The Awakening that brings the second Gold Panda in play ends the game there and then: what the round still
+   * owed, the military conflict first of all, never happens (see {@link LedaRules.play}). Settling it would let
+   * the opponent win the Victory token that was theirs to win, and a game already lost with it.
+   */
+  it('ends the game before the military conflict of the round is settled', () => {
+    const rules = new LedaRules(
+      game({
+        clan: Clan.Panda,
+        cards: [king, { card: ClanCardId.PandaMilitary, cell: { x: 1, y: 0 } }, { card: ClanCardId.PandaMilitaryAndUpgrade, cell: { x: 2, y: 0 } }],
+        hand: [ClanCardId.PandaQueen],
+        top: MilitaryVictoryTokenId.Victory,
+        rule: RuleId.Awakening
+      })
+    )
+    // 1 Awakening owed, the opponent opened the round, and the conflict about to be settled is theirs to win.
+    rules.game.memory[Memory.Awakenings] = { 1: 1 }
+    rules.game.memory[Memory.RoundPlayer] = 2
+    rules.game.memory[Memory.MilitarySymbols] = { 1: 0, 2: 1 }
+    play(rules, ClanCardId.PandaQueen, { x: 1, y: 0 })
+    expect(winner(rules)).toBe(1)
+    expect(rules.material(MaterialType.MilitaryVictoryToken).location(LocationType.PlayerMilitaryVictory).player(2).length).toBe(0)
+  })
+
   it('leaves the game on with the King alone', () => {
     const rules = new LedaRules(game({ clan: Clan.Panda, cards: [king] }))
     expect(hasSpecialVictory(rules, 1)).toBe(false)

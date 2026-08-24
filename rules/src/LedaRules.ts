@@ -206,12 +206,16 @@ export class LedaRules
    * Never on a move a client is only previewing, which the framework plays and takes back on its own, and never
    * on a local move, which changes nothing of the game: the players still open the help dialogs of a game they
    * have finished.
+   *
+   * A game over is a player who has won and no rule left to play, and not the absence of a rule alone: the setup
+   * has no rule either, being what happens before the first one starts, and dropping its moves would leave the
+   * game with no material at all (see {@link LedaSetup}).
    */
   play(
     move: MaterialMoveRandomized<number, MaterialType, LocationType> | MaterialMoveView<number, MaterialType, LocationType>,
     context?: PlayMoveContext
   ): MaterialMove<number, MaterialType, LocationType>[] {
-    if (this.isOver() && move.kind !== MoveKind.LocalMove) return []
+    if (this.isOver() && gameWinner(this) !== undefined && move.kind !== MoveKind.LocalMove) return []
     const consequences = super.play(move, context)
     if (context?.transient || this.isOver() || gameWinner(this) === undefined) return consequences
     return [...consequences, this.endGame()]

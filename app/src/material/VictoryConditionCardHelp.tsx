@@ -3,8 +3,10 @@ import { Clan, clanStart } from '@gamepark/leda/Clan'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { awakeningGroup } from '@gamepark/leda/rules/awakening'
+import { CustomMoveType } from '@gamepark/leda/rules/CustomMoveType'
 import { specialVictoryGoals, victorySymbolsToWin } from '@gamepark/leda/rules/victory'
-import { MaterialHelpProps, ThemeButton } from '@gamepark/react-game'
+import { MaterialHelpProps, PlayMoveButton, ThemeButton, useLegalMoves } from '@gamepark/react-game'
+import { CustomMove, isCustomMoveType } from '@gamepark/rules-api'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ClanCardsGrid } from './ClanCardsGrid'
@@ -25,7 +27,7 @@ import { HelpText, HelpTitle, Line, Note } from './helpLayout'
  * opened for, and the 11 to 13 cards of a clan are 3 rows that would push it out of sight
  * (see {@link ClanCardsGrid}).
  */
-export const VictoryConditionCardHelp = ({ item }: MaterialHelpProps<number, MaterialType, LocationType>) => {
+export const VictoryConditionCardHelp = ({ item, closeDialog }: MaterialHelpProps<number, MaterialType, LocationType>) => {
   const { t } = useTranslation()
   const [cardsShown, setCardsShown] = useState(false)
   const cards = useRef<HTMLDivElement>(null)
@@ -61,6 +63,7 @@ export const VictoryConditionCardHelp = ({ item }: MaterialHelpProps<number, Mat
       <Note code="help.note.special-activation" />
       {/* The Pandas are the only clan whose crystal opens onto a keyword of its own, and whose win condition is one. */}
       {clan === Clan.Panda && <Note code="help.note.awakening" values={{ count: awakeningGroup }} />}
+      <ChooseClanButton clan={clan} close={closeDialog} />
       <ThemeButton css={showCardsButton} onClick={() => setCardsShown(!cardsShown)}>
         {t(cardsShown ? 'help.victory.hide-cards' : 'help.victory.show-cards')}
       </ThemeButton>
@@ -72,6 +75,33 @@ export const VictoryConditionCardHelp = ({ item }: MaterialHelpProps<number, Mat
     </>
   )
 }
+
+/**
+ * The way out of this dialog and into the game, for the one reader who opened it to decide: a player who is being
+ * offered this clan right now, and who came here from the choice dialog to read it before taking it
+ * (see {@link ChooseClanDialog}). Everyone else never sees it, since taking a clan is only ever legal during
+ * setup step 6 and only for the clans still in the box: the move is looked up rather than deduced, which is also
+ * what makes it playable.
+ *
+ * The dialog is closed on the click for the same reason the choice dialog is: taking a clan creates a deck,
+ * shuffles it and draws from it, and the card would be left open over the animation of the hand it just dealt.
+ */
+const ChooseClanButton = ({ clan, close }: { clan: Clan; close: () => void }) => {
+  const { t } = useTranslation()
+  const moves = useLegalMoves<CustomMove<CustomMoveType, Clan>>(isCustomMoveType(CustomMoveType.ChooseClan))
+  const move = moves.find((move) => move.data === clan)
+  if (move === undefined) return null
+  return (
+    <PlayMoveButton move={move} onPlay={close} css={chooseClanButton}>
+      {t('help.victory.choose')}
+    </PlayMoveButton>
+  )
+}
+
+/** The one button of this dialog that plays a move, hence read at the size of what the card says rather than under it. */
+const chooseClanButton = css`
+  margin-right: 0.5em;
+`
 
 /**
  * Sized down from the text of the dialog, which is the size of a paragraph and would give the card a button read

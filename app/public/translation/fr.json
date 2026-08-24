@@ -87,6 +87,8 @@
     "3": "Chats",
     "4": "Scorpions",
     "choose": "Choisissez votre clan",
+    "pick": "Choisir",
+    "view": "Voir le détail du clan",
     "random": "Au hasard !"
   },
   "zone": {
@@ -191,6 +193,7 @@
         "3": "Jouer {count} Anneaux <ring/>.",
         "4": "Placer vos {count} Portails <portal/> dans les 4 coins de votre grille d'action."
       },
+      "choose": "Choisir ce Clan",
       "show-cards": "Voir toutes les cartes du clan",
       "hide-cards": "Masquer les cartes du clan"
     },

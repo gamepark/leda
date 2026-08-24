@@ -1,10 +1,13 @@
 import { css } from '@emotion/react'
 import { Clan } from '@gamepark/leda/Clan'
+import { LocationType } from '@gamepark/leda/material/LocationType'
+import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { CustomMoveType } from '@gamepark/leda/rules/CustomMoveType'
 import { Dialog, PlayMoveButton, ThemeButton, useLegalMoves, usePlay } from '@gamepark/react-game'
-import { CustomMove, isCustomMoveType } from '@gamepark/rules-api'
+import { CustomMove, isCustomMoveType, MaterialMoveBuilder } from '@gamepark/rules-api'
 import { useTranslation } from 'react-i18next'
 import { clanBacks } from '../material/ClanCardDescription'
+import { medallionFace } from '../material/medallion'
 import { copper } from '../theme'
 
 type ChooseClanDialogProps = {
@@ -13,10 +16,21 @@ type ChooseClanDialogProps = {
 }
 
 /**
+ * Opens the Victory condition card of a clan, which is the whole of what taking that clan means: its 2 races,
+ * what its crystal is worth, and, behind a button of its own, the cards of its deck
+ * (see {@link VictoryConditionCardHelp}). The card is opened by its clan alone, as the card of a player who has
+ * not taken it does not exist yet, and there is nothing to page through.
+ */
+const showClan = (clan: Clan) =>
+  MaterialMoveBuilder.displayMaterialHelp<number, MaterialType, LocationType>(MaterialType.VictoryConditionCard, { id: clan })
+
+/**
  * Setup step 6: the player picks a clan among those still in the box.
  * A clan is shown by the back of its cards, which is its emblem, and which is also the back of the Victory
- * condition card the player is about to take.
- * Opening and closing is owned by ChooseClanHeader, which is what reopens the dialog once it has been dismissed.
+ * condition card the player is about to take. Under it, the 2 things one may do with a clan one is offered: take
+ * it, or read it first, which is the same help dialog its card opens once it is on the table.
+ * Opening and closing is owned by ChooseClanHeader, which is what reopens the dialog once it has been dismissed,
+ * and what steps aside while a clan is being read.
  */
 export const ChooseClanDialog = ({ open, close }: ChooseClanDialogProps) => {
   const { t } = useTranslation()
@@ -42,10 +56,25 @@ export const ChooseClanDialog = ({ open, close }: ChooseClanDialogProps) => {
         <h2 css={title}>{t('clan.choose')}</h2>
         <div css={clanList}>
           {moves.map((move) => (
-            <PlayMoveButton key={move.data} move={move} onPlay={close} css={clanButton}>
-              <img src={clanBacks[move.data!]} alt="" css={clanImage} />
+            <div key={move.data} css={clan}>
+              {/*
+               * The emblem is what opens the clan, the way a card of the table is opened by being clicked, and the
+               * mark in its corner is what says so. Transient: reading a clan is not a move of the game, and leaves
+               * nothing behind in the history.
+               * A button of its own rather than a PlayMoveButton, whose parchment frame would be drawn around the
+               * emblem, and a plain one rather than the medallion of an item, which the mark alone borrows.
+               */}
+              <button type="button" css={clanCard} onClick={() => play(showClan(move.data!), { transient: true })} title={t('clan.view')}>
+                <img src={clanBacks[move.data!]} alt={t(`clan.${move.data}`)} css={clanImage} />
+                <span css={helpMark} aria-hidden="true">
+                  ?
+                </span>
+              </button>
               <span>{t(`clan.${move.data}`)}</span>
-            </PlayMoveButton>
+              <PlayMoveButton move={move} onPlay={close} css={pickButton}>
+                {t('clan.pick')}
+              </PlayMoveButton>
+            </div>
           ))}
         </div>
         <ThemeButton css={randomButton} onClick={chooseAtRandom}>
@@ -72,19 +101,28 @@ const clanList = css`
   gap: 2em;
 `
 
-const clanButton = css`
+/**
+ * The em of a clan, which the emblem, the name and the buttons are all sized in: the column is one thing read as
+ * a whole, and giving each of its 3 parts its own size against the dialog is what would let them drift apart.
+ */
+const clan = css`
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.5em;
-  padding: 0 0 0.5em;
+  font-size: 1.8em;
+`
+
+/** Nothing of its own to show: it is the frame the emblem and its mark are laid in, and it lifts as one. */
+const clanCard = css`
+  position: relative;
+  display: block;
+  padding: 0;
   border: none;
   background: none;
-  cursor: pointer;
   color: inherit;
-  font-size: 1.8em;
+  cursor: pointer;
   transition: transform 0.1s ease-in-out;
-  border-radius: 1em;
 
   &:hover,
   &:focus {
@@ -93,10 +131,33 @@ const clanButton = css`
 `
 
 const clanImage = css`
+  display: block;
   width: 8em;
   border-radius: 0.4em;
   border: 0.1em solid ${copper};
   box-shadow: 0 0.15em 0.4em rgba(0, 0, 0, 0.45);
+`
+
+/**
+ * The mark that says the emblem opens onto something, in the corner where the material of the table carries its
+ * own buttons, and struck as the same coin (see {@link LedaMenuButton}). Read and not pressed: what is pressed is
+ * the emblem underneath, which is the whole of what a player aims at, so the mark is hidden from a screen reader
+ * and the button is named instead.
+ */
+const helpMark = css`
+  ${medallionFace};
+  position: absolute;
+  top: 0.3em;
+  right: 0.3em;
+  width: 1.8em;
+  height: 1.8em;
+  font-weight: 700;
+`
+
+/** As wide as the emblem over it, so the 4 columns come out the same width whatever the names of their clans. */
+const pickButton = css`
+  align-self: stretch;
+  padding: 0.3em 0;
 `
 
 /** Sized between the clan labels and the title, so it reads as a choice of its own rather than as a footnote. */

@@ -190,7 +190,9 @@
         "2": "Avoir vos {count} pions Requin <shark/> en jeu.",
         "3": "Jouer {count} Anneaux <ring/>.",
         "4": "Placer vos {count} Portails <portal/> dans les 4 coins de votre grille d'action."
-      }
+      },
+      "show-cards": "Voir toutes les cartes du clan",
+      "hide-cards": "Masquer les cartes du clan"
     },
     "token": {
       "title": "Jeton Victoire militaire",

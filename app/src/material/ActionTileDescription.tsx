@@ -2,7 +2,7 @@ import { ActionTileId } from '@gamepark/leda/material/ActionTileId'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { ItemContext, MaterialContext, TokenDescription } from '@gamepark/react-game'
-import { MaterialItem } from '@gamepark/rules-api'
+import { MaterialItem, MaterialMoveBuilder } from '@gamepark/rules-api'
 import ActionTileBack from '../images/action-tiles/back.png'
 import ActionTileBottomLeft from '../images/action-tiles/bottom-left.png'
 import ActionTileBottomRight from '../images/action-tiles/bottom-right.png'
@@ -46,6 +46,16 @@ export class ActionTileDescription extends TokenDescription<number, MaterialType
 
   /** Clicking a tile opens the zones it offers, and what the round does with them (see {@link ActionTileHelp}). */
   help = ActionTileHelp
+
+  /**
+   * All but a tile of the pile, which opens the help of that pile instead (see {@link ActionTileDeckHelp}): the
+   * tiles of a pile are face down and shuffled, so the one on top is nothing more than the back of a tile, while
+   * the pile is 5 known tiles minus the ones already revealed.
+   */
+  displayHelp(item: MaterialItem<number, LocationType, ActionTileId>, context: ItemContext<number, MaterialType, LocationType>) {
+    if (item.location.type !== LocationType.ActionTileDeck) return super.displayHelp(item, context)
+    return MaterialMoveBuilder.displayLocationHelp<number, MaterialType, LocationType>({ type: LocationType.ActionTileDeck })
+  }
 
   /** The pile between the players is face down: a tile is only visible once revealed, or while it is spied. */
   isFlipped(item: Partial<MaterialItem<number, LocationType, ActionTileId>>, context: MaterialContext) {

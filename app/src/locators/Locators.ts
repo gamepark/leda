@@ -7,6 +7,7 @@ import { actionTileRoundPlayer } from '@gamepark/leda/rules/round'
 import { sharkSlotOn } from '@gamepark/leda/rules/sharkPack'
 import { DeckLocator, HandLocator, ItemContext, ListLocator, Locator, MaterialContext, ParentFace, PileLocator } from '@gamepark/react-game'
 import { Coordinates, isMoveItem, Location, MaterialItem, MaterialMove } from '@gamepark/rules-api'
+import { ActionTileDeckDescription } from '../material/ActionTileDeckDescription'
 import { actionTile } from '../material/ActionTileDescription'
 import { ActionZoneDescription } from '../material/ActionZoneDescription'
 import { offeredZones, zoneRectangleAt, zoneRectangles } from '../material/actionZones'
@@ -603,7 +604,15 @@ export const Locators: Partial<Record<LocationType, Locator<number, MaterialType
    * tiles, the tiles revealed since the last shuffle, the pile of Military Victory tokens, and the Food reserve.
    * The column is as wide as the 2 columns of revealed tiles, and the grids are pushed apart to make room for it.
    */
-  [LocationType.ActionTileDeck]: new DeckLocator({ coordinates: actionTileDeck }),
+  [LocationType.ActionTileDeck]: new DeckLocator({
+    coordinates: actionTileDeck,
+    /**
+     * The spot itself is always on the table, and carries the help of the pile: what is left in it, which is the
+     * 5 tiles minus the ones revealed in front of the players (see {@link ActionTileDeckHelp}).
+     */
+    location: { type: LocationType.ActionTileDeck },
+    locationDescription: new ActionTileDeckDescription()
+  }),
   [LocationType.ActionTileRevealed]: new RevealedActionTileLocator(),
 
   /**

@@ -2,7 +2,7 @@ import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { MilitaryVictoryTokenId } from '@gamepark/leda/material/MilitaryVictoryTokenId'
 import { ItemContext, MaterialContext, TokenDescription } from '@gamepark/react-game'
-import { MaterialItem } from '@gamepark/rules-api'
+import { MaterialItem, MaterialMoveBuilder } from '@gamepark/rules-api'
 import MilitaryVictoryBack from '../images/military-victory/back.png'
 import MilitaryVictoryDoubleVictory from '../images/military-victory/double-victory.png'
 import MilitaryVictoryDraw from '../images/military-victory/draw.png'
@@ -48,6 +48,16 @@ export class MilitaryVictoryTokenDescription extends TokenDescription<number, Ma
 
   /** Clicking a token opens what it is worth, and how one is won (see {@link MilitaryVictoryTokenHelp}). */
   help = MilitaryVictoryTokenHelp
+
+  /**
+   * All but a token of the pile, which opens the help of that pile instead (see {@link MilitaryVictoryDeckHelp}):
+   * the tokens of a pile are face down and shuffled, so the one on top is nothing more than the back of a token,
+   * while the pile is how many are left and the 8 tokens any of them may turn out to be.
+   */
+  displayHelp(item: MaterialItem<number, LocationType, MilitaryVictoryTokenId>, context: ItemContext<number, MaterialType, LocationType>) {
+    if (item.location.type !== LocationType.MilitaryVictoryDeck) return super.displayHelp(item, context)
+    return MaterialMoveBuilder.displayLocationHelp<number, MaterialType, LocationType>({ type: LocationType.MilitaryVictoryDeck })
+  }
 
   /** The pile between the players is face down. A token a player has won is face up, and so is a spied one. */
   isFlipped(item: Partial<MaterialItem<number, LocationType, MilitaryVictoryTokenId>>, context: MaterialContext) {

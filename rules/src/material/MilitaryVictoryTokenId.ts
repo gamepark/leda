@@ -46,8 +46,12 @@ export const militaryVictoryEffects: Partial<Record<MilitaryVictoryTokenId, Effe
 /** How many Victory symbols a token is worth: every token shows 1, and one of them shows 2. */
 export const militaryVictorySymbols = (token: MilitaryVictoryTokenId): number => (token === MilitaryVictoryTokenId.DoubleVictory ? 2 : 1)
 
-/** How many copies of each token are in the pile. */
-const militaryVictoryTokenQuantities: Record<MilitaryVictoryTokenId, number> = {
+/**
+ * How many copies of each token are in the pile. Read by the app as well, where the pile is what a click on it
+ * opens: 18 tokens for 8 different ones, so a list of the 8 says nothing without the number of copies of each
+ * (see {@link MilitaryVictoryDeckHelp}).
+ */
+export const militaryVictoryTokenQuantities: Record<MilitaryVictoryTokenId, number> = {
   [MilitaryVictoryTokenId.Victory]: 3,
   [MilitaryVictoryTokenId.DoubleVictory]: 2,
   [MilitaryVictoryTokenId.Spy]: 2,

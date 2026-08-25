@@ -66,8 +66,11 @@ export const MilitaryVictoryTokenHelp = ({ item }: MaterialHelpProps<number, Mat
  * players, and reading one number without the other says nothing about who is ahead (see {@link victorySymbolsToWin}).
  *
  * A clan that has not been taken yet is left out rather than guessed at, which is only true of the setup.
+ *
+ * Read from the pile of tokens as well, where the question is the same one and the token is unknown
+ * (see {@link MilitaryVictoryDeckHelp}).
  */
-const ClanGoals = () => {
+export const ClanGoals = () => {
   const { t } = useTranslation()
   const rules = useRules<LedaRules>()
   if (rules === undefined) return null

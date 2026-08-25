@@ -8,6 +8,7 @@ import { sharkSlotOn } from '@gamepark/leda/rules/sharkPack'
 import { DeckLocator, HandLocator, ItemContext, ListLocator, Locator, MaterialContext, ParentFace, PileLocator } from '@gamepark/react-game'
 import { Coordinates, isMoveItem, Location, MaterialItem, MaterialMove } from '@gamepark/rules-api'
 import { ActionTileDeckDescription } from '../material/ActionTileDeckDescription'
+import { MilitaryVictoryDeckDescription } from '../material/MilitaryVictoryDeckDescription'
 import { actionTile } from '../material/ActionTileDescription'
 import { ActionZoneDescription } from '../material/ActionZoneDescription'
 import { offeredZones, zoneRectangleAt, zoneRectangles } from '../material/actionZones'
@@ -624,7 +625,16 @@ export const Locators: Partial<Record<LocationType, Locator<number, MaterialType
   [LocationType.FoodSupply]: new FoodSupplyLocator({ coordinates: { x: 0, y: foodSupplyY }, radius: foodSupplyRadius }),
 
   /** Only 5 of the 18 tokens are rendered: a deeper stack costs DOM nodes without showing anything more. */
-  [LocationType.MilitaryVictoryDeck]: new DeckLocator({ coordinates: militaryVictoryDeck, limit: 5 }),
+  [LocationType.MilitaryVictoryDeck]: new DeckLocator({
+    coordinates: militaryVictoryDeck,
+    limit: 5,
+    /**
+     * The spot itself is always on the table, and carries the help of the pile: how many tokens are left in it,
+     * and the 8 tokens any of them may turn out to be (see {@link MilitaryVictoryDeckHelp}).
+     */
+    location: { type: LocationType.MilitaryVictoryDeck },
+    locationDescription: new MilitaryVictoryDeckDescription()
+  }),
 
   [LocationType.SpiedItem]: new SpiedItemLocator()
 }

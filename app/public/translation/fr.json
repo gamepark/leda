@@ -203,6 +203,9 @@
     },
     "token": {
       "title": "Jeton Victoire militaire",
+      "pile-title": "Pile des jetons Victoire militaire",
+      "pile-count": "Il reste {count, plural, one {# jeton} other {# jetons}} dans la pile.",
+      "all": "Les {count} jetons du jeu, et le nombre d’exemplaires de chacun :",
       "hidden": "La pile des 18 jetons est mélangée face cachée entre les 2 joueurs : seul le prochain à être pioché sera révélé.",
       "symbols": "{count} <victory/>",
       "spy": "Scrutez.",

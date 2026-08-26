@@ -1,8 +1,9 @@
 import { pointerWithin } from '@dnd-kit/core'
 import { css } from '@emotion/react'
 import { DevToolsHub, GameTable, GameTableNavigation } from '@gamepark/react-game'
-import { tableXMax } from './locators/Locators'
+import { tableXMax, tableYMax, tableYMin } from './locators/Locators'
 import { PlayerPanels } from './panels/PlayerPanels'
+import { RoundPhaseButton } from './RoundPhaseButton'
 
 export function GameDisplay() {
   // The top margin leaves room for the header. Each player has their grid at the top and their panel at the bottom
@@ -10,9 +11,11 @@ export function GameDisplay() {
   const margin = { top: 7, left: 0, right: 0, bottom: 0 }
   return (
     // The width of the table is what the layout needs (see tableXMax), not a round number picked here.
-    <GameTable xMin={-tableXMax} xMax={tableXMax} yMin={-22} yMax={17} margin={margin}
+    <GameTable xMin={-tableXMax} xMax={tableXMax} yMin={tableYMin} yMax={tableYMax} margin={margin}
                collisionAlgorithm={pointerWithin}
                css={process.env.NODE_ENV === 'development' && tableBorder}>
+      {/* On the table and not over it: the line of the aid card opens the middle column (see RoundPhaseButton). */}
+      <RoundPhaseButton />
       <GameTableNavigation css={navigation} />
       <PlayerPanels />
       {process.env.NODE_ENV === 'development' && <DevToolsHub fabBottom="calc(5em)" />}

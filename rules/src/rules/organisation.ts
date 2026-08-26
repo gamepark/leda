@@ -5,6 +5,7 @@ import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { gridTiles } from '../material/PlayerGrid'
 import { Rules } from '../Rules'
+import { pendingRules } from './effects'
 import { Memory } from './Memory'
 import { RuleId } from './RuleId'
 
@@ -91,3 +92,17 @@ export const afterOrganisation = (rule: PlayerTurnRule<number, MaterialType, Loc
   rule.player === rule.remind<number>(Memory.RoundPlayer)
     ? [rule.startPlayerTurn(RuleId.Organisation, rule.nextPlayer)]
     : [rule.startRule(RuleId.EndOfRound)]
+
+/**
+ * Whether the grids are being organised, the rules an effect opens along the way included: read off the rules
+ * waiting rather than off a list of such rules, exactly as the 2 phases before it are (see {@link isActivationPhase}
+ * and {@link isMilitaryConflictPhase}).
+ * The 2 steps the organisation is framed by count as well: the one that hands it to its first player, and the one
+ * that hands the round over once both are done (see {@link RuleId.StartOrganisation} and {@link RuleId.EndOfRound}).
+ */
+export const isOrganisationPhase = (rules: Rules): boolean => {
+  const rule = rules.game.rule?.id
+  return (rule !== undefined && organisationSteps.includes(rule)) || pendingRules(rules).includes(RuleId.EndOfOrganisation)
+}
+
+const organisationSteps = [RuleId.StartOrganisation, RuleId.Organisation, RuleId.EndOfOrganisation, RuleId.EndOfRound]

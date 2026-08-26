@@ -18,6 +18,7 @@ import { militaryVictoryToken } from '../material/MilitaryVictoryTokenDescriptio
 import { PlayerDeckDescription } from '../material/PlayerDeckDescription'
 import { sharkToken } from '../material/SharkTokenDescription'
 import { gridGap, tileSize } from '../material/TileDescription'
+import { roundPhaseLineRatio } from '../roundPhaseImages'
 
 /**
  * The table is laid out in 3 columns: a player on the left, a player on the right, and what they share in between.
@@ -71,6 +72,14 @@ const sideColumnX = playerGridX + gridHalfWidth + columnGap + tileSize / 2
 
 /** The table is exactly as wide as the 2 player columns, plus a small margin outside of them. */
 export const tableXMax = sideColumnX + tileSize / 2 + 0.9
+
+/**
+ * How far up and down the table reaches, read by whatever is laid on it without going through a locator: the
+ * coordinates of the table start at its top left corner, so anything placed by hand has to know where its 0 is
+ * (see {@link RoundPhaseButton}).
+ */
+export const tableYMin = -22
+export const tableYMax = 17
 
 /** Gap between what the side column holds and what is above or below it. */
 const sideColumnGap = 0.3
@@ -211,20 +220,36 @@ class ActionZoneLocator extends Locator {
 const actionZoneHeight = 0.5
 
 /**
- * The middle column is read from top to bottom: the pile of Action tiles, the 2 rows of tiles revealed since the
- * last shuffle, the pile of Military Victory tokens, and the Food reserve. It starts level with the first row of
- * the grids, and each item is laid under the one before it, a gap apart.
+ * The middle column is read from top to bottom: the line of the player aid card for the phase the round is in,
+ * the pile of Action tiles, the 2 rows of tiles revealed since the last shuffle, the pile of Military Victory
+ * tokens, and the Food reserve. It starts level with the first row of the grids, and each item is laid under the
+ * one before it, a gap apart.
  */
 const middleColumnGap = 0.4
 
 /**
+ * The one thing of the middle column that is no material of the game: the line the player aid card prints for the
+ * phase the round is in, which opens the column and is level with the first row of the grids
+ * (see {@link RoundPhaseButton}).
+ *
+ * As wide as the column, and as tall as the tallest of the 3 lines however short the one being drawn: the lines
+ * are not the same height, and everything under it would move at every change of phase if the room it takes were
+ * the room its line needs (see {@link roundPhaseLineRatio}).
+ */
+export const roundPhaseCard = {
+  top: gridTop,
+  width: 2 * middleColumnHalfWidth,
+  height: (2 * middleColumnHalfWidth) / roundPhaseLineRatio
+}
+
+/**
  * Half the height of an Action tile, measured on the tile itself rather than on its image: it is the tile that
- * has to start level with the first row of the grids, not the transparent margin its image carries around it.
+ * has to start level with the line above it, not the transparent margin its image carries around it.
  */
 const halfActionTile = actionTile.height / 2 - actionTile.margin
 
 /** The 2 piles of the middle column, named so that the Spy effect can send an item back where it came from. */
-const actionTileDeck = { x: 0, y: gridTop + halfActionTile }
+const actionTileDeck = { x: 0, y: roundPhaseCard.top + roundPhaseCard.height + middleColumnGap + halfActionTile }
 const revealedActionTileY = actionTileDeck.y + 2 * halfActionTile + middleColumnGap
 const revealedActionTileRow = 2 * halfActionTile + middleColumnGap
 const militaryVictoryDeck = {
@@ -243,10 +268,13 @@ export const militaryVictoryFlight = { left: sideColumnX, top: militaryVictoryDe
  * The Food reserve closes the column, under the pile of Military Victory tokens. It is a heap scattered around
  * its center rather than a piece with edges, so where it sits is set by eye instead of being laid out from the
  * pile above it: the tokens that reach foodSupplyRadius out of the heap are few, and it reads as smaller than it
- * measures. It still ends above the bottom of the grids.
+ * measures, so it is left further from the pile than the gap of the column would leave it.
+ * That distance is what is set by eye, and not where the heap ends up: the column is one item longer than it used
+ * to be, and the reserve follows whatever stands above it (see {@link roundPhaseCard}).
  */
 const foodSupplyRadius = 0.8
-const foodSupplyY = 6.07
+const foodSupplyGap = 3.54
+const foodSupplyY = militaryVictoryDeck.y + militaryVictoryToken.height / 2 + foodSupplyGap
 
 /**
  * Where the panel of a player sits, near the bottom corner of their side of the screen. The panels are html laid

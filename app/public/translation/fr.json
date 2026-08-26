@@ -170,6 +170,16 @@
       "title": "Pion Nourriture",
       "use": "La Nourriture sert à payer les cartes de clan que vous jouez."
     },
+    "round": {
+      "title": "Le déroulement d'une manche",
+      "activation": "1) Activation :",
+      "activation-text": "Le joueur actif révèle la première tuile Action et choisit une des zones de 4 cases qu'elle indique. Chacun active ensuite cette zone dans sa propre grille, le joueur actif en premier. Les activations spéciales de clan se résolvent après toutes les autres.",
+      "conflict": "2) Conflit militaire :",
+      "conflict-text": "Le joueur qui a réuni le plus de symboles <military/> pendant l'activation pioche le premier jeton Victoire militaire et résout son effet. En cas d'égalité, personne ne le pioche.",
+      "organisation": "3) Organisation :",
+      "organisation-text": "Chacun son tour, le joueur actif puis son adversaire choisissent une action : jouer une carte de leur main sur une case de leur grille, ou échanger la position de 2 de leurs cases et gagner 1 <food/>.",
+      "next": "La manche suivante s'ouvre avec l'autre joueur comme joueur actif."
+    },
     "action": {
       "title": "Tuile Action",
       "hidden": "La pile des 5 tuiles est mélangée face cachée : rien ne dit laquelle sera révélée ensuite.",

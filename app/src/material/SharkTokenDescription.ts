@@ -1,6 +1,6 @@
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
-import { TokenDescription } from '@gamepark/react-game'
+import { SoundKit, TokenDescription } from '@gamepark/react-game'
 import SharkTokenImage from '../images/tokens/shark.png'
 import { SharkTokenHelp } from './SharkTokenHelp'
 
@@ -21,6 +21,9 @@ export class SharkTokenDescription extends TokenDescription<number, MaterialType
   ratio = sharkTokenRatio
   transparency = true
   image = SharkTokenImage
+
+  /** The Shark tokens are wooden. */
+  soundKit = SoundKit.Wood
 
   /** Clicking a token opens what it does to the card under it, and what the 9th one wins (see {@link SharkTokenHelp}). */
   help = SharkTokenHelp

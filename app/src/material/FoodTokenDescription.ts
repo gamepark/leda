@@ -1,6 +1,6 @@
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
-import { TokenDescription } from '@gamepark/react-game'
+import { SoundKit, TokenDescription } from '@gamepark/react-game'
 import FoodTokenImage from '../images/tokens/food.png'
 import { FoodTokenHelp } from './FoodTokenHelp'
 
@@ -18,6 +18,9 @@ export class FoodTokenDescription extends TokenDescription<number, MaterialType,
   ratio = foodTokenRatio
   transparency = true
   image = FoodTokenImage
+
+  /** The Food tokens are wooden. */
+  soundKit = SoundKit.Wood
 
   /** Clicking a Food, in front of a player or in the reserve, opens what it is for (see {@link FoodTokenHelp}). */
   help = FoodTokenHelp

@@ -14,6 +14,7 @@ import { MaterialGame } from '@gamepark/rules-api'
 import { useEffect, useState } from 'react'
 import { GameDisplay } from './GameDisplay'
 import { Headers } from './headers/Headers'
+import { MilitarySymbolSound } from './sounds/MilitarySymbolSound'
 
 export function App() {
   const game = useGame<MaterialGame>()
@@ -30,6 +31,7 @@ export function App() {
       <MaterialHeader rulesStepsHeaders={Headers} loading={loading} />
       <MaterialImageLoader onImagesLoad={() => setImagesLoading(false)} />
       <MaterialGameSounds />
+      <MilitarySymbolSound />
       <Menu />
       <FailuresDialog />
       <FullscreenDialog />

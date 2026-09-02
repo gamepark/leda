@@ -2,7 +2,7 @@ import { CustomMove, isCustomMoveType, MaterialMove, XYCoordinates } from '@game
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { sameCell, tileAt } from '../material/PlayerGrid'
-import { activateTile } from './activation'
+import { activateTile, ActivationChoice, stillActivable } from './activation'
 import { CustomMoveType } from './CustomMoveType'
 import { EffectRule } from './EffectRule'
 import { bareCells } from './tileChoices'
@@ -21,7 +21,7 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  * as it gives what it gives, as everywhere. The Shark card that upgrades it afterwards adds that half on top
  * (see {@link ActivateAndUpgradeTileRule}).
  */
-export class ActivateTileRule extends EffectRule {
+export class ActivateTileRule extends EffectRule implements ActivationChoice {
   /** A grid whose every square is covered leaves nothing to activate, and the effect is lost. */
   onRuleStart(): Move[] {
     return this.cells.length > 0 ? [] : this.resume()
@@ -34,8 +34,17 @@ export class ActivateTileRule extends EffectRule {
   /**
    * The bare squares of the grid: a Desert may be picked, which gives nothing on its own but is what the upgrade
    * of a Shark card is after, and a square holding a card may not, its tile being under that card.
+   *
+   * Minus the tiles already activated this phase, which no card may have give twice
+   * (see {@link stillActivable}). A grid left with nothing to pick loses the effect, exactly as a grid whose
+   * every square is covered does.
    */
   get cells(): XYCoordinates[] {
+    return stillActivable(this, this.player, this.candidateCells)
+  }
+
+  /** The same squares before the once-per-phase rule narrows them, which is what the table locks (see {@link ActivationChoice}). */
+  get candidateCells(): XYCoordinates[] {
     return bareCells(this, this.player)
   }
 

@@ -24,7 +24,7 @@ export const TakeOrganisationFoodDialog = ({ open, close, takeFood }: TakeOrgani
           <Trans defaults={t('organisation.food.explain')} components={{ food: <FoodIcon /> }} />
         </p>
         <div css={buttons}>
-          <ThemeButton onClick={close}>{t('organisation.food.cancel')}</ThemeButton>
+          <ThemeButton onClick={close}>{t('Cancel', { ns: 'common' })}</ThemeButton>
           <PlayMoveButton move={takeFood} onPlay={close}>
             {t('organisation.food.take')} <FoodIcon />
           </PlayMoveButton>

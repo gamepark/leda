@@ -8,7 +8,7 @@ import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { MilitaryVictoryTokenId } from '../material/MilitaryVictoryTokenId'
 import { TileId } from '../material/TileId'
-import { isCellLeftToActivate } from './activation'
+import { activableCells, isCellLeftToActivate, lockedCells } from './activation'
 import { CustomMoveType } from './CustomMoveType'
 import { cardDiscount, pendingRules } from './effects'
 import { Memory } from './Memory'
@@ -545,5 +545,129 @@ describe('The price of a Scorpion Portal', () => {
     // 8 Food for a Portal alone in hand, and the organisation of the player is over.
     expect(food(rules)).toBe(1)
     expect(rules.game.rule).toEqual({ id: RuleId.Organisation, player: 2 })
+  })
+})
+
+describe('Nothing is activated twice during one activation phase', () => {
+  /** A square of the zone the tests activate before the card, so that what it holds has already given. */
+  const first = { x: 1, y: 0 }
+  /** Another square of the zone, left holding a Desert, which a swap can carry the first one onto. */
+  const fresh = { x: 2, y: 0 }
+  /** The last square of the zone, so that the phase has somewhere to go once the card is done. */
+  const last = { x: 3, y: 0 }
+
+  it('bars a tile a Portal swap carries onto a square of the zone nobody has been through', () => {
+    const rules = new LedaRules(
+      game({
+        cards: [{ card: ClanCardId.ScorpionPortalSwap, cell: played }],
+        squares: [
+          { cell: first, square: 'permanent' },
+          { cell: last, square: 'temporary' }
+        ]
+      })
+    )
+    activate(rules, first)
+    expect(food(rules)).toBe(1)
+    activate(rules, played)
+    expect(rules.game.rule?.id).toBe(RuleId.SwapSquares)
+    const tile = rules.material(MaterialType.Tile).location((location) => location.player === 1 && location.x === first.x && location.y === first.y)
+    playAll(rules, tile.moveItem((item) => ({ ...item.location, ...fresh })))
+    // The square is fresh, the tile standing on it is not: what is left of the zone is the temporary tile alone.
+    expect(activableCells(rules, 1)).toEqual([last])
+    activate(rules, last)
+    expect(food(rules)).toBe(2)
+  })
+
+  it('bars the Desert a temporary tile has just become from being read again', () => {
+    const temporary = { cell: first, square: 'temporary' as const }
+    const rules = new LedaRules(
+      game({
+        cards: [{ card: ClanCardId.ScorpionActivateDesert, cell: played }],
+        // Every other square is permanent, so the Desert this tile becomes is the only one that could be read.
+        squares: [...noBareDesert.filter(({ cell }) => cell.x !== first.x || cell.y !== first.y), temporary]
+      })
+    )
+    activate(rules, first)
+    expect(food(rules)).toBe(1)
+    activate(rules, played)
+    // The one Desert on the table is the tile that has just given: the card finds nothing to read and is lost.
+    expect(rules.game.rule?.id).not.toBe(RuleId.ActivateDesert)
+    expect(food(rules)).toBe(1)
+  })
+
+  it('still upgrades a tile it has been through, and loses the activation that follows', () => {
+    const rules = new LedaRules(
+      game({ cards: [{ card: ClanCardId.ScorpionUpgradeAndActivate, cell: played }], squares: [{ cell: first, square: 'permanent' }] })
+    )
+    activate(rules, first)
+    expect(food(rules)).toBe(1)
+    activate(rules, played)
+    expect(rules.game.rule?.id).toBe(RuleId.UpgradeAndActivateTile)
+    // The tile is still offered: what this card asks for is an upgrade, and upgrading is not activating.
+    const moves = rules.getLegalMoves(1).filter(isMoveItemType(MaterialType.Tile))
+    expect(moves).toHaveLength(1)
+    playAll(rules, moves[0])
+    expect(rules.material(MaterialType.Tile).getItem(index(first)).location.rotation).toBe(true)
+    // Its upgraded face would have given 2 Food: the second half of the card is lost, and the first one stands.
+    expect(food(rules)).toBe(1)
+  })
+})
+
+/**
+ * A lock stands where the rule waiting would be offering a square and is not, and nowhere else: it answers the
+ * question a player is asking at that moment, and not the whole story of their grid (see {@link lockedCells}).
+ */
+describe('The lock a square carries', () => {
+  const first = { x: 1, y: 0 }
+  const fresh = { x: 2, y: 0 }
+  const last = { x: 3, y: 0 }
+
+  const swapGame = () =>
+    new LedaRules(
+      game({
+        cards: [{ card: ClanCardId.ScorpionPortalSwap, cell: played }],
+        squares: [
+          { cell: first, square: 'permanent' },
+          { cell: last, square: 'temporary' }
+        ]
+      })
+    )
+
+  it('is nowhere while a player simply goes through their zone', () => {
+    const rules = swapGame()
+    activate(rules, first)
+    // The square is done for the round, so the zone is not offering it and has nothing to explain about it.
+    expect(lockedCells(rules, 1)).toEqual([])
+  })
+
+  it('stands on the square a swap carried something already activated onto', () => {
+    const rules = swapGame()
+    activate(rules, first)
+    activate(rules, played)
+    const tile = rules.material(MaterialType.Tile).location((location) => location.player === 1 && location.x === first.x && location.y === first.y)
+    playAll(rules, tile.moveItem((item) => ({ ...item.location, ...fresh })))
+    // The zone would be offering that square: it is the tile standing on it, and it alone, that bars it.
+    expect(lockedCells(rules, 1)).toEqual([fresh])
+  })
+
+  it('is nowhere in the grid of the player who is not being asked', () => {
+    const rules = swapGame()
+    activate(rules, first)
+    activate(rules, played)
+    const tile = rules.material(MaterialType.Tile).location((location) => location.player === 1 && location.x === first.x && location.y === first.y)
+    playAll(rules, tile.moveItem((item) => ({ ...item.location, ...fresh })))
+    expect(lockedCells(rules, 2)).toEqual([])
+  })
+
+  it('stands beside the button of the tile a Scorpion card upgrades but can no longer activate', () => {
+    const rules = new LedaRules(
+      game({ cards: [{ card: ClanCardId.ScorpionUpgradeAndActivate, cell: played }], squares: [{ cell: first, square: 'permanent' }] })
+    )
+    activate(rules, first)
+    activate(rules, played)
+    expect(rules.game.rule?.id).toBe(RuleId.UpgradeAndActivateTile)
+    // The upgrade is still offered on that very square, and the lock says what will not follow it.
+    expect(rules.getLegalMoves(1).filter(isMoveItemType(MaterialType.Tile))).toHaveLength(1)
+    expect(lockedCells(rules, 1)).toEqual([first])
   })
 })

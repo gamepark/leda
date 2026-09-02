@@ -171,3 +171,21 @@ describe('The Pack effects that ask the player something', () => {
     expect(pendingRules(rules)).toEqual([])
   })
 })
+
+describe('Nothing is activated twice during one activation phase', () => {
+  it('leaves a Shark card no tile the zone has already been through', () => {
+    // A permanent tile of the zone, which its owner activates before the card that asks for a tile.
+    const permanent = { x: 0, y: 0 }
+    const rules = new LedaRules(
+      game({ cards: [{ card: ClanCardId.SharkUpgrade, cell: middle }], tokens: [middle, ...around], permanent: [permanent] })
+    )
+    activate(rules, permanent)
+    expect(food(rules)).toBe(1)
+    activate(rules, middle)
+    expect(rules.game.rule?.id).toBe(RuleId.ActivateAndUpgradeTile)
+    // 15 bare squares, minus the one already activated: the card cannot have that tile give a second time.
+    const cells = rules.getLegalMoves(1).filter(isCustomMoveType<CustomMoveType, XYCoordinates>(CustomMoveType.ActivateSquare))
+    expect(cells).toHaveLength(14)
+    expect(cells.some((move) => sameCell(move.data!, permanent))).toBe(false)
+  })
+})

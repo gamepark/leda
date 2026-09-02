@@ -45,26 +45,25 @@
       "title": "Qui a consulté cette pile à cette manche ?",
       "on-top": "{player} a scruté cette pile, et a remis l'élément au-dessus.",
       "under": "{player} a scruté cette pile, et a remis l'élément au-dessous.",
-      "seen": "Vous aviez vu :",
-      "close": "Fermer"
+      "seen": "Vous aviez vu :"
     }
+  },
+  "activation": {
+    "lock": "Celle-ci a déjà été activée : elle ne le sera plus avant la prochaine manche."
   },
   "swap": {
     "history": {
-      "text": "{player} a échangé ces 2 éléments.",
-      "close": "Fermer"
+      "text": "{player} a échangé ces 2 éléments."
     }
   },
   "organisation": {
     "food": {
       "explain": "Échangez la position de 2 cartes, et ensuite gagner 1 <food/>. Vous n'êtes pas obligé d'échanger pour prendre 1 <food/>.",
-      "cancel": "Annuler",
       "take": "Juste prendre 1"
     }
   },
   "awakening": {
-    "explain": "L'effet Éveil se résout après avoir résolu toutes les autres activations.",
-    "close": "Fermer"
+    "explain": "L'effet Éveil se résout après avoir résolu toutes les autres activations."
   },
   "choose-effect": {
     "choose": "Choisissez un effet",
@@ -156,6 +155,7 @@
       "clan-victory": "Le clan {clan} gagne s'il a {count} <victory/>.",
       "special-activation": "Le cristal <special/> imprimé sur une tuile ou une carte déclenche l'Activation Spéciale de votre clan, qui n'est pas la même d'un clan à l'autre.",
       "action": "Au début de la manche, le joueur actif révèle la première tuile de la pile et choisit une des zones qu'elle indique. Les 2 joueurs activent ensuite les 4 cases de cette zone dans leur propre grille, le joueur actif en premier.",
+      "once-per-activation": "<strong>Une même tuile ou une même carte ne peut pas être activée 2 fois pendant la phase d'Activation</strong>, même si elle change de case entre-temps.",
       "cycle": "Après la {count}e tuile révélée, il n'en reste qu'une dans la pile : les 5 sont remélangées face cachée, et le joueur qui contrôle le moins de symboles <victory/> devient le nouveau joueur actif.",
       "certain-squares": "La case en haut à gauche (tuile Action {first}) et la case en bas à droite (tuile Action {last}) sont certaines d'être activées lorsque leur tuile Action est révélée, que vous soyez le joueur actif ou non.",
       "shark-victory": "Avoir vos {count} pions Requin en jeu remporte la partie.",

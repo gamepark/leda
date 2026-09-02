@@ -1,7 +1,8 @@
-import { isMoveItemType, ItemMove, MaterialMove } from '@gamepark/rules-api'
+import { isMoveItemType, ItemMove, MaterialMove, XYCoordinates } from '@gamepark/rules-api'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
-import { activateTile } from './activation'
+import { cellOf } from '../material/PlayerGrid'
+import { activateTile, ActivationChoice } from './activation'
 import { EffectRule } from './EffectRule'
 import { upgradableTiles } from './tileChoices'
 
@@ -14,11 +15,14 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  *
  * The tile is picked once, for both halves: it is the tile just upgraded that is activated, never another one.
  * Only a bare permanent tile still on its front can be upgraded at all (see {@link upgradableTiles}), so a player
- * whose permanent tiles are all upgraded or covered loses the whole effect, not just its second half. What is left
- * to pick is a tile nothing covers, which is a tile there is nothing to stop from being activated once it is
- * turned over: "if possible" is about the upgrade, and the activation follows it every time.
+ * whose permanent tiles are all upgraded or covered loses the whole effect, not just its second half.
+ *
+ * The one thing "if possible" leaves out is a tile that has already given this phase: upgrading it is still worth
+ * doing, and is still offered, but nothing gives twice in one activation and the second half is lost
+ * (see {@link activateTile}). The one rule of the game that offers a square the table marks with a lock, since
+ * what it is offering is the upgrade and not the activation (see {@link lockedCells}).
  */
-export class UpgradeAndActivateTileRule extends EffectRule {
+export class UpgradeAndActivateTileRule extends EffectRule implements ActivationChoice {
   /** Nothing left to upgrade leaves nothing to do, and the effect is lost. */
   onRuleStart(): Move[] {
     return this.tiles.length > 0 ? [] : this.resume()
@@ -30,6 +34,16 @@ export class UpgradeAndActivateTileRule extends EffectRule {
 
   get tiles() {
     return upgradableTiles(this, this.player)
+  }
+
+  /**
+   * The squares those tiles stand on, which are the squares this rule would activate (see {@link ActivationChoice}).
+   * The one rule whose {@link candidateCells} are not narrowed down anywhere: what it offers is the upgrade, and
+   * an upgrade is not an activation. So a tile already activated keeps its move and takes a lock beside it, which
+   * is the table saying that the half behind the upgrade is the half being lost (see {@link lockedCells}).
+   */
+  get candidateCells(): XYCoordinates[] {
+    return this.tiles.getItems().map((tile) => cellOf(tile.location))
   }
 
   /** The tile is activated once it is upgraded, so that it gives what its upgraded face gives. */

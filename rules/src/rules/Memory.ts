@@ -97,5 +97,19 @@ export enum Memory {
    * opponent is watching their own grid being handed back to them, which is exactly when 2 squares changing
    * places goes unnoticed. A Portal is played in the middle of an activation everyone is already watching.
    */
-  OrganisationSwaps
+  OrganisationSwaps,
+
+  /**
+   * Everything already activated this round, as the items themselves rather than the squares they were standing
+   * on (see {@link EffectItem}): the FAQ of the game forbids activating the same tile or the same clan card twice
+   * during one activation phase, whichever effect asks for it.
+   *
+   * The items and not their squares, which is the whole point of writing this down beside {@link ActivatedCells}:
+   * a Scorpion Portal swaps 2 squares in the middle of the phase, and a tile carried onto a square nobody has
+   * activated yet is still a tile that has given what it gives (see {@link SwapSquaresRule}).
+   *
+   * One list for the table rather than one per player, an index naming an item of the game and not of a grid.
+   * Emptied when the next round starts, like the counters and the swaps above.
+   */
+  ActivatedItems
 }

@@ -25,6 +25,7 @@ import TemporaryFoodBack from '../images/tiles/verso/temporary-food.jpg'
 import TemporaryMilitaryBack from '../images/tiles/verso/temporary-military.jpg'
 import TemporarySpecialActivationBack from '../images/tiles/verso/temporary-special-activation.jpg'
 import TemporaryUpgradeBack from '../images/tiles/verso/temporary-upgrade.jpg'
+import { ActivationLockButton } from './ActivationLockButton'
 import { LedaCardDescription } from './LedaCardDescription'
 import { SwapHistoryButton } from './SwapHistoryButton'
 import { TileHelp } from './TileHelp'
@@ -94,13 +95,16 @@ export class TileDescription extends LedaCardDescription<TileId> {
    * in is handed over, since almost every button belongs to its owner alone.
    *
    * The mark of a swap hangs beside it, and belongs to nobody: it says what happened to the square this round
-   * rather than offering anything (see {@link SwapHistoryButton}).
+   * rather than offering anything (see {@link SwapHistoryButton}). The lock of a square the rule waiting would
+   * have offered hangs in the same corner and belongs to the player being asked, but the 2 never meet: one is of
+   * the activation and the other of the organisation (see {@link ActivationLockButton}).
    */
   getItemMenu(item: MaterialItem<number, LocationType, TileId>, context: ItemContext<number, MaterialType, LocationType>) {
     if (item.location.type !== LocationType.PlayerGrid || item.location.player === undefined) return
     return (
       <>
         <TileMenuButton index={context.index} owner={item.location.player} />
+        <ActivationLockButton tile={context.index} />
         <SwapHistoryButton tile={context.index} />
       </>
     )

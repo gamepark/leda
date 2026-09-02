@@ -2,7 +2,7 @@ import { CustomMove, isCustomMoveType, MaterialMove, XYCoordinates } from '@game
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { cellOf, sameCell } from '../material/PlayerGrid'
-import { activateCard } from './activation'
+import { activateCard, ActivationChoice, stillActivable } from './activation'
 import { CustomMoveType } from './CustomMoveType'
 import { EffectRule } from './EffectRule'
 import { activableCards } from './playedCards'
@@ -19,7 +19,7 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  * rather than from anything the Queen carries, so any card of any clan giving the same effect would work the same
  * (see {@link activableCards}).
  */
-export class ActivateCardRule extends EffectRule {
+export class ActivateCardRule extends EffectRule implements ActivationChoice {
   /** A player whose only card in play is the Queen herself has nothing to activate with her. */
   onRuleStart(): Move[] {
     return this.cells.length > 0 ? [] : this.resume()
@@ -29,8 +29,17 @@ export class ActivateCardRule extends EffectRule {
     return this.cells.map((cell) => this.customMove(CustomMoveType.ActivateSquare, cell))
   }
 
-  /** The squares of the cards that may be activated, which is where their tile stands. */
+  /**
+   * The squares of the cards that may be activated, which is where their tile stands, minus the cards that have
+   * already given what they give this phase (see {@link stillActivable}): the Queen is played to activate a card
+   * a second time in the round, and never the same card twice.
+   */
   get cells(): XYCoordinates[] {
+    return stillActivable(this, this.player, this.candidateCells)
+  }
+
+  /** The same squares before the once-per-phase rule narrows them, which is what the table locks (see {@link ActivationChoice}). */
+  get candidateCells(): XYCoordinates[] {
     const tiles = this.material(MaterialType.Tile)
     return activableCards(this, this.player)
       .getItems()

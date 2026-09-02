@@ -34,7 +34,7 @@ export const SpyHistoryDialog = ({ open, close, spies }: SpyHistoryDialogProps) 
           ))}
         </ul>
         <div css={buttons}>
-          <ThemeButton onClick={close}>{t('spy.history.close')}</ThemeButton>
+          <ThemeButton onClick={close}>{t('Close', { ns: 'common' })}</ThemeButton>
         </div>
       </div>
     </Dialog>

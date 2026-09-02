@@ -21,7 +21,7 @@ export const AwakeningRuleDialog = ({ open, close }: AwakeningRuleDialogProps) =
           <AwakeningIcon /> {t('awakening.explain')}
         </p>
         <div css={buttons}>
-          <ThemeButton onClick={close}>{t('awakening.close')}</ThemeButton>
+          <ThemeButton onClick={close}>{t('Close', { ns: 'common' })}</ThemeButton>
         </div>
       </div>
     </Dialog>

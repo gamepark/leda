@@ -1,6 +1,7 @@
 import { Clan } from '@gamepark/leda/Clan'
 import { LedaRules } from '@gamepark/leda/LedaRules'
 import { ClanCardId, ClanCardItemId, clanOf } from '@gamepark/leda/material/ClanCardId'
+import { Effect, EffectSet, isEffectChoice } from '@gamepark/leda/material/Effect'
 import { clanCardFoodCost, clanCardProperties } from '@gamepark/leda/material/clanCards/cardProperties'
 import { isRing } from '@gamepark/leda/material/clanCards/catCards'
 import { PandaLevel } from '@gamepark/leda/material/clanCards/PandaLevel'
@@ -12,7 +13,7 @@ import { MaterialHelpProps, useRules } from '@gamepark/react-game'
 import { useTranslation } from 'react-i18next'
 import PandaBronzeImage from '../images/icons/PandaBronze.png'
 import PandaSilverImage from '../images/icons/PandaSilver.png'
-import { HelpText, HelpTitle, Line, Note, Paragraph } from './helpLayout'
+import { activationRuleCode, HelpText, HelpTitle, Line, Note, Paragraph } from './helpLayout'
 import { ringConditions } from './ringConditions'
 
 /**
@@ -216,8 +217,42 @@ const CardEffects = ({ card }: { card: ClanCardId }) => {
   )
 }
 
-/** The reminders the card leans on, which are the keywords of its clan and are written on its clan sheet. */
-const cardNotes = (card: ClanCardId): string[] => {
+/**
+ * The reminders under the card: the keywords of its clan, and the once-per-activation rule for the cards it bears
+ * on, which is the one rule of the game the box answers in its FAQ rather than in its rulebook.
+ */
+const cardNotes =(card: ClanCardId): string[] => [...clanNotes(card), ...(activatesOutOfTurn(card) ? [activationRuleCode] : [])]
+
+/**
+ * The effects that reach into a grid to have something activated out of turn, plus the swap that moves what a
+ * grid holds around: the cards printing one of them are the ones the once-per-activation rule can surprise a
+ * player on, whether by leaving out the square they were aiming at or by carrying something already activated
+ * onto a square nobody has been through (see {@link Memory.ActivatedItems}).
+ *
+ * Read off the effects rather than listed by name, so that a card printing one of them cannot be added without
+ * its help saying so, exactly as the rest of this help is read off the rules.
+ */
+const activationEffects: Effect[] = [
+  Effect.ActivateCard,
+  Effect.ActivateTile,
+  Effect.ActivateAndUpgradeTile,
+  Effect.UpgradeAndActivateTile,
+  Effect.ActivateDesert,
+  Effect.SwapSquares
+]
+
+/** Which effects a set prints, the branches of an "OR" included, since either of them may be the one picked. */
+const effectsOf = (effects?: EffectSet): Effect[] =>
+  effects === undefined ? [] : isEffectChoice(effects) ? effects.or.flatMap(effectsOf) : (Object.keys(effects) as Effect[])
+
+/** Whether either face of the card prints one of them: a Cat card prints 2, and a Shark card prints its Pack. */
+const activatesOutOfTurn = (card: ClanCardId): boolean => {
+  const { effects, secondEffects } = clanCardProperties[card]
+  return [...effectsOf(effects), ...effectsOf(secondEffects)].some((effect) => activationEffects.includes(effect))
+}
+
+/** The reminders of the clan of the card, which are its keywords and are written on its clan sheet. */
+const clanNotes = (card: ClanCardId): string[] => {
   switch (clanOf(card)) {
     /** Every Panda that has a level: the Bronze ones an Awakening takes away as much as the ones it brings in. */
     case Clan.Panda:

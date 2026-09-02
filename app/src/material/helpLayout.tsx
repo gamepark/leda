@@ -42,6 +42,13 @@ export const HelpText = ({ code, values, level }: { code: string; values?: Recor
   <Trans i18nKey={code} values={values} components={level === undefined ? icons : { ...icons, level: <Icon src={level} /> }} />
 )
 
+/**
+ * The one line the once-per-activation rule is written as, wherever a player meets it: under the help of every
+ * card it bears on (see {@link ClanCardHelp}), and in what a locked square answers when it is pressed
+ * (see {@link ActivationLockDialog}). Named here rather than spelled twice, so that rewording it is one edit.
+ */
+export const activationRuleCode = 'help.note.once-per-activation'
+
 /** A reminder of a rule the material leans on, which is a keyword of the rulebook and is written there. */
 export const Note = ({ code, values }: { code: string; values?: Record<string, unknown> }) => (
   <p css={[text, note]}>

@@ -60,6 +60,7 @@ import SharkSpyOrTriggerToken from '../images/cards/shark/shark-spy-or-trigger-t
 import SharkUpgrade from '../images/cards/shark/shark-upgrade.jpg'
 import { ClanCardHelp } from './ClanCardHelp'
 import { LedaCardDescription } from './LedaCardDescription'
+import { ActivationLockButton } from './ActivationLockButton'
 import { PlayedCardMenuButton } from './PlayedCardMenuButton'
 import { PutUnderDeckButton } from './PutUnderDeckButton'
 import { isSpiedByOther } from './spiedItem'
@@ -181,8 +182,9 @@ export class ClanCardDescription extends LedaCardDescription<ClanCardItemId> {
    * into is another matter: both decks carry that mark, since a player is owed the news that their opponent read
    * the top of their own pile and maybe buried it (see {@link SpyHistoryButton}).
    *
-   * A card played on a grid covers the tile of its square, buttons included, so it carries the mark of a swap in
-   * place of the tile it hides, and asks for it through that very tile (see {@link SwapHistoryButton}).
+   * A card played on a grid covers the tile of its square, buttons included, so it carries the mark of a swap and
+   * the lock of a square already activated in place of the tile it hides, and asks for both through that very tile
+   * (see {@link SwapHistoryButton} and {@link ActivationLockButton}).
    */
   getItemMenu(item: MaterialItem<number, LocationType, ClanCardItemId>, context: ItemContext<number, MaterialType, LocationType>) {
     if (item.location.type === LocationType.SpiedItem) return <SpiedItemButtons type={MaterialType.ClanCard} />
@@ -190,6 +192,7 @@ export class ClanCardDescription extends LedaCardDescription<ClanCardItemId> {
       return (
         <>
           <PlayedCardMenuButton index={context.index} />
+          {item.location.parent !== undefined && <ActivationLockButton tile={item.location.parent} />}
           {item.location.parent !== undefined && <SwapHistoryButton tile={item.location.parent} />}
         </>
       )

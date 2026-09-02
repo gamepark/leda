@@ -227,3 +227,37 @@ describe('The King and the Queen', () => {
     expect(rules.game.rule?.id).toBe(RuleId.ActivateZone)
   })
 })
+
+/**
+ * The FAQ of the game answers what the rulebook leaves out: nothing is activated twice during one activation
+ * phase, whichever effect asks for it (see {@link Memory.ActivatedItems}).
+ */
+describe('Nothing is activated twice during one activation phase', () => {
+  it('leaves the Queen no card she has already been through', () => {
+    const rules = new LedaRules(game([ClanCardId.PandaQueen, ClanCardId.PandaMilitary]))
+    // The other card gives what it gives as its own square of the zone is activated.
+    activate(rules, 1)
+    expect(military(rules)).toBe(2)
+    activate(rules, 0)
+    // The Queen has nothing left to activate, and is lost rather than giving that card a second turn.
+    expect(rules.game.rule?.id).not.toBe(RuleId.ActivateCard)
+    expect(military(rules)).toBe(2)
+  })
+
+  it('leaves the zone no square whose card the Queen has already activated', () => {
+    const rules = new LedaRules(game([ClanCardId.PandaQueen, ClanCardId.PandaMilitary]))
+    activate(rules, 0)
+    expect(rules.game.rule?.id).toBe(RuleId.ActivateCard)
+    playAll(rules, rules.customMove(CustomMoveType.ActivateSquare, { x: 1, y: 0 }))
+    expect(military(rules)).toBe(2)
+    // Back to the zone, where the square of that card is no longer one of the squares left to activate.
+    expect(rules.game.rule?.id).toBe(RuleId.ActivateZone)
+    const cells = rules
+      .getLegalMoves(1)
+      .filter(isCustomMoveType<CustomMoveType, XYCoordinates>(CustomMoveType.ActivateSquare))
+      .map((move) => move.data)
+    expect(cells).not.toContainEqual({ x: 1, y: 0 })
+    // The 2 bare Food tiles of the row, and nothing else.
+    expect(cells).toEqual([{ x: 2, y: 0 }, { x: 3, y: 0 }])
+  })
+})

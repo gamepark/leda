@@ -24,7 +24,7 @@ export const SwapHistoryDialog = ({ open, close, swap }: SwapHistoryDialogProps)
       <div css={content}>
         <p css={text}>{t('swap.history.text', { player })}</p>
         <div css={buttons}>
-          <ThemeButton onClick={close}>{t('swap.history.close')}</ThemeButton>
+          <ThemeButton onClick={close}>{t('Close', { ns: 'common' })}</ThemeButton>
         </div>
       </div>
     </Dialog>

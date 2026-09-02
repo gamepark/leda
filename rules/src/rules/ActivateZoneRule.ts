@@ -2,7 +2,7 @@ import { CustomMove, isCustomMoveType, MaterialMove, PlayerTurnRule, XYCoordinat
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { tileAt } from '../material/PlayerGrid'
-import { activableCells, activateCard, activateTile, afterActivation } from './activation'
+import { activableCells, activateCard, activateTile, afterActivation, ActivationChoice, zoneCandidateCells } from './activation'
 import { CustomMoveType } from './CustomMoveType'
 import { queueLast, startNextRule } from './effects'
 import { Memory } from './Memory'
@@ -18,7 +18,7 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  * if possible and in the order of their choice. The active player of the round goes first, then their opponent
  * starts the same rule over on their own grid.
  */
-export class ActivateZoneRule extends PlayerTurnRule<number, MaterialType, LocationType> {
+export class ActivateZoneRule extends PlayerTurnRule<number, MaterialType, LocationType> implements ActivationChoice {
   /**
    * A zone can hold nothing to activate at all, 4 Deserts for instance, in which case the player is skipped on
    * the spot: a rule that offers no move would leave the game waiting for a player with nothing to play.
@@ -35,6 +35,11 @@ export class ActivateZoneRule extends PlayerTurnRule<number, MaterialType, Locat
 
   get activableCells(): XYCoordinates[] {
     return activableCells(this, this.player)
+  }
+
+  /** The same squares before the once-per-phase rule narrows them, which is what the table locks (see {@link ActivationChoice}). */
+  get candidateCells(): XYCoordinates[] {
+    return zoneCandidateCells(this, this.player)
   }
 
   onCustomMove(move: CustomMove): Move[] {

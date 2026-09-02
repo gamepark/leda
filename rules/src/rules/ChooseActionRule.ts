@@ -25,6 +25,8 @@ export class ChooseActionRule extends PlayerTurnRule<number, MaterialType, Locat
     this.memorize(Memory.Spies, undefined)
     // The same goes for the squares that changed places while the players were organising their grids.
     this.memorize(Memory.OrganisationSwaps, undefined)
+    // And for what was activated: nothing gives twice in one phase, and every round opens a phase of its own.
+    this.memorize(Memory.ActivatedItems, undefined)
     for (const player of this.game.players) {
       this.memorize(Memory.MilitarySymbols, 0, player)
       this.memorize(Memory.ActivatedCells, [], player)

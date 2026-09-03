@@ -1,1 +1,523 @@
-{}
+{
+  "tutorial": {
+    "welcome": "Welcome to the <strong>LEDA</strong> tutorial!",
+    "clans": "LEDA is an <strong>asymmetric</strong> duel: each player embodies an animal clan, with their own cards and their own way to win. Here, you play the <strong>Pandas</strong>, and your opponent the <strong>Sharks</strong>.",
+    "victory-condition": "This is your Victory Condition card. It reminds you of your 2 ways to win the game: the <strong>clan victory</strong>, having your {gold} <gold/> Pandas in play, and the <strong>military victory</strong>, gathering {victory} <victory/>. We will come back to that.",
+    "grid": "This is your action grid, 16 tiles in a 4x4 layout. Each round, you will activate <strong>4 spaces</strong> of it.",
+    "action-tile": "This is the <strong>Action</strong> tile of the round. It indicates the zones of 4 spaces the active player has to choose from.",
+    "choose-zone": "You are the <strong>active player</strong>. This tile lets you activate <strong>row 1</strong>, <strong>column 1</strong> or the <strong>top-left square</strong>. Your opponent will then activate the same zone in their own grid.",
+    "choose-row": "Choose to activate the <strong>first row</strong>.",
+    "activate-order": "The zone is chosen: the active player now activates their 4 spaces, <strong>in any order they choose</strong>.",
+    "temporary-food": "This tile gives 1 <food/>, and it is a <strong>temporary</strong> tile. Activate it.",
+    "desert": "A temporary tile is <strong>flipped</strong> <flip/> as soon as it is activated: it becomes a <strong>Desert</strong>, a side that no longer produces anything.",
+    "food-stock": "Your Food is stored here, and its total is shown in your player panel. Your Clan starts the game with 1 <food/>.",
+    "food-use": "Food is used to play the cards in your hand. Each of these 2 cards will cost you <strong>5 <food/></strong>.",
+    "temporary-upgrade": "This tile lets you <strong>Upgrade</strong> <upgrade/> one of your permanent tiles. Activate it.",
+    "upgrade-target": "Upgrade this tile: it will be flipped to its <strong>upgraded side</strong>, which is more powerful.",
+    "upgraded": "It now gives 2 <food/>. Activate it.",
+    "military-tile": "This tile gives 1 <strong>Military</strong> symbol <military/>. Activate it.",
+    "opponent-activates": "Your opponent activates the same 4 spaces in turn, in their own grid.",
+    "conflict-start": "The <strong>Activation phase</strong> is over. Time for the 2nd phase: the <strong>Military Conflict</strong>.",
+    "conflict-rule": "The player who gathered the most <military/> symbols during the activation wins the conflict. In case of a tie, nobody gains anything.",
+    "conflict-won": "You obtained 1 <military/> and your opponent none: you therefore draw the top <strong>Military Victory token</strong> and resolve its effect.",
+    "token": "A token always gives at least 1 <victory/>, and often a bonus on top of it. This one also makes you gain 1 <food/>.",
+    "military-victory": "As soon as you control <strong>{count} <victory/></strong>, you immediately win the game!",
+    "organisation-start": "The Military Conflict is settled. Time for the 3rd and last phase of the round: the <strong>Organization</strong>.",
+    "organisation-rule": "One after the other, the players choose an action: <strong>play a card</strong> from their hand onto a space of their grid, or <strong>swap the position of 2 spaces</strong> and gain 1 <food/>. Taking that Food without swapping anything is allowed.",
+    "your-organisation": "You have 5 <food/>: you can therefore play a card, for example on one of your Deserts. You can also swap 2 spaces and gain 1 <food/>. Your choice!",
+    "opponent-organisation": "Your opponent organizes their grid in turn.",
+    "new-round": "The 1st round is over. A new round begins, with a new Action tile.",
+    "opponent-chooses": "The players are active in turn: this time, your opponent is the one who chooses the zone to activate.",
+    "row-chosen": "Your opponent chose to activate <strong>row 4</strong>: you must therefore activate these 4 spaces.",
+    "draw": "This tile makes you <strong>draw 1 card</strong>, then flips to its Desert side.",
+    "special-activation": "This tile bears a crystal <special/>: it triggers the <strong>Special Activation</strong> of your clan, which is not the same from one clan to another.",
+    "shark-activation": "For your opponent, who plays the Sharks, a crystal <special/> gives 2 <military/>.",
+    "panda-activation": "For you, a crystal <special/> gives 1 <food/> <strong>or</strong> 1 <strong>Awakening</strong> <awakening/> effect.",
+    "clan-victory": "Your clan victory requires your {gold} <gold/> Pandas in play. You already have the King in hand, and the Queen is waiting for you in your deck: you will also need <silver/> Pandas, and at least <strong>{awakenings} Awakening effects</strong> <awakening/>.",
+    "end": "As soon as you meet your clan victory condition, or reach the military victory, the game stops and you win!",
+    "good-luck": "It is your turn to play now. Good luck!"
+  },
+  "spy": {
+    "look": "Spy",
+    "on-top": "On top of the pile",
+    "under": "Under the pile",
+    "history": {
+      "title": "Who looked at this pile this round?",
+      "on-top": "{player} spied on this pile, and returned the element to the top.",
+      "under": "{player} spied on this pile, and returned the element to the bottom.",
+      "seen": "You had seen:"
+    }
+  },
+  "activation": {
+    "lock": "This one has already been activated: it will not be activated again before the next round."
+  },
+  "swap": {
+    "history": {
+      "text": "{player} swapped these 2 elements."
+    }
+  },
+  "organisation": {
+    "food": {
+      "explain": "Swap the position of 2 cards, then gain 1 <food/>. You are not required to swap in order to take 1 <food/>.",
+      "take": "Just take 1"
+    }
+  },
+  "awakening": {
+    "explain": "The Awakening effect is resolved after all the other activations have been resolved."
+  },
+  "choose-effect": {
+    "choose": "Choose an effect",
+    "or": "or"
+  },
+  "search-ring": {
+    "choose": "Choose a Ring from your deck",
+    "condition": "Playing condition:",
+    "effect": "Effect of each Ring:",
+    "rotate": "You may rotate one of your Cat cards.",
+    "pick": "Pick",
+    "win-conflict": "Win a Military Conflict by {count} or more.",
+    "empty-deck": "Empty your deck.",
+    "three-cat-cards": "Activate a zone containing at least {count} Cat cards.",
+    "five-upgraded-tiles": "Have {count} upgraded tiles."
+  },
+  "clan": {
+    "1": "Pandas",
+    "2": "Sharks",
+    "3": "Cats",
+    "4": "Scorpions",
+    "choose": "Choose your clan",
+    "pick": "Pick",
+    "view": "See the clan details",
+    "random": "Random!"
+  },
+  "zone": {
+    "1": "row 1",
+    "2": "row 2",
+    "3": "row 3",
+    "4": "row 4",
+    "5": "column 1",
+    "6": "column 2",
+    "7": "column 3",
+    "8": "column 4",
+    "9": "the top-left square",
+    "10": "the top-right square",
+    "11": "the bottom-left square",
+    "12": "the bottom-right square",
+    "13": "the 4 corners",
+    "14": "the 4 center spaces"
+  },
+  "help": {
+    "cost": "Cost:",
+    "effect": "Effect:",
+    "effect-1": "Effect 1:",
+    "effect-2": "Effect 2:",
+    "pack": "PACK effect:",
+    "portal": "Portal – Effect:",
+    "front": "Front:",
+    "back": "Back:",
+    "desert": "Back (Desert):",
+    "symbols": "Symbols:",
+    "zones": "Zones:",
+    "placement": "Placement:",
+    "use": "Use:",
+    "start": "Start:",
+    "special-activation": "Special Activation:",
+    "clan-victory": "Clan victory:",
+    "military-victory": "Military victory:",
+    "none": "None.",
+    "hidden": "This card is face down: only the clan it belongs to is visible.",
+    "deck": {
+      "title": "Deck",
+      "clan-title": "{clan} deck",
+      "count": "There {count, plural, one {is # card} other {are # cards}} left in the deck.",
+      "all": "All the cards of the clan:"
+    },
+    "food-cost": "{count} <food/>",
+    "cards-cost": "{count, plural, one {# card} other {# cards}} from your hand, to be put back under your deck.",
+    "current": "(currently {count} <food/>)",
+    "awakening": "Trigger an Awakening effect while having at least {count} <level/> in play, and take 1 of them back into your hand.",
+    "title": {
+      "1": "Panda card",
+      "2": "Shark card",
+      "3": "Cat card",
+      "4": "Scorpion card"
+    },
+    "note": {
+      "awakening": "<awakening/> Awakening effect: if you have at least {count} <bronze/> in play, put one of them back into your hand and replace it with a <silver/>; or if you have at least {count} <silver/> in play, put one of them back into your hand and replace it with a <gold/>, in the same space. The Awakening effect is resolved after all the other activations have been resolved.",
+      "rotation": "Rotate: after its activation, the card is turned 180°. Its other effect is then the one that can be activated.",
+      "ring": "As soon as its condition is met, a Ring is played for free, without costing an action, once all the other activations are resolved. Playing 3 Rings wins the game.",
+      "pack": "The PACK effect replaces the normal effect as long as the card is orthogonally adjacent to 2 Shark tokens.",
+      "portal": "Placing the 4 Portals in the 4 corners of your action grid wins the game.",
+      "desert": "A Desert is a temporary tile flipped to its back side.",
+      "permanent": "A permanent tile can always be activated. An Upgrade <upgrade/> effect flips it to its back side, where it will be more powerful in future activations.",
+      "temporary": "A temporary tile becomes a Desert as soon as it is activated. A Flip <flip/> effect turns it back to its front side, where it can be activated again.",
+      "conflict": "At the end of each round, the player who gathered the most military symbols <military/> draws the top token of the pile and resolves its effect. In case of a tie, nobody draws it.",
+      "clan-victory": "The {clan} clan wins if it has {count} <victory/>.",
+      "special-activation": "The crystal <special/> printed on a tile or a card triggers the Special Activation of your clan, which is not the same from one clan to another.",
+      "action": "At the start of the round, the active player reveals the top tile of the pile and chooses one of the zones it indicates. Both players then activate the 4 spaces of that zone in their own grid, the active player first.",
+      "once-per-activation": "<strong>The same tile or the same card cannot be activated twice during the Activation phase</strong>, even if it changes space in the meantime.",
+      "cycle": "After the {count}th tile revealed, only one is left in the pile: all 5 are reshuffled face down, and the player who controls the fewest <victory/> symbols becomes the new active player.",
+      "certain-squares": "The top-left space (Action tile {first}) and the bottom-right space (Action tile {last}) are guaranteed to be activated when their Action tile is revealed, whether you are the active player or not.",
+      "shark-victory": "Having your {count} Shark tokens in play wins the game.",
+      "food-gain": "You gain some with your tiles and your cards, and during the organization: swapping the position of 2 of your spaces gains 1 <food/>, and you may take it without swapping.",
+      "food-supply": "The Food supply is unlimited."
+    },
+    "shark": {
+      "title": "Shark token",
+      "placement": "Playing a Shark card places one of your tokens on the space of that card. A space that already has one keeps it."
+    },
+    "food": {
+      "title": "Food token",
+      "use": "Food is used to pay for the clan cards you play."
+    },
+    "round": {
+      "title": "How a round unfolds",
+      "activation": "1) Activation:",
+      "activation-text": "The active player reveals the top Action tile and chooses one of the zones of 4 spaces it indicates. Each player then activates that zone in their own grid, the active player first. Clan special activations are resolved after all the others.",
+      "conflict": "2) Military Conflict:",
+      "conflict-text": "The player who gathered the most <military/> symbols during the activation draws the top Military Victory token and resolves its effect. In case of a tie, nobody draws it.",
+      "organisation": "3) Organization:",
+      "organisation-text": "One after the other, the active player then their opponent choose an action: play a card from their hand onto a space of their grid, or swap the position of 2 of their spaces and gain 1 <food/>.",
+      "next": "The next round opens with the other player as the active player."
+    },
+    "action": {
+      "title": "Action tile",
+      "hidden": "The pile of 5 tiles is shuffled face down: there is no telling which one will be revealed next.",
+      "top-left": "Row 1, column 1, or the square of 4 spaces at the top left.",
+      "top-right": "Row 2, column 2, or the square of 4 spaces at the top right.",
+      "bottom-left": "Row 3, column 3, or the square of 4 spaces at the bottom left.",
+      "bottom-right": "Row 4, column 4, or the square of 4 spaces at the bottom right.",
+      "corners-or-center": "The 4 spaces in the corners, or the 4 spaces in the center.",
+      "pile-title": "Action tile pile",
+      "pile-count": "There {count, plural, one {is # tile} other {are # tiles}} left in the pile:",
+      "frequency": "Here is the maximum number of times a space of your grid can be activated during a cycle of {count} Action tiles:"
+    },
+    "victory": {
+      "title": "Victory Condition card",
+      "start": "Start the game with {cards, plural, one {# card} other {# cards}} and {food} <food/>.",
+      "activation": {
+        "1": "Gain 1 <food/> OR 1 Awakening <awakening/>.",
+        "2": "Gain 2 <military/>.",
+        "3": "Draw 1 card.",
+        "4": "Spy."
+      },
+      "clan": {
+        "1": "Have your {count} <gold/> Pandas in play.",
+        "2": "Have your {count} Shark tokens <shark/> in play.",
+        "3": "Play {count} Rings <ring/>.",
+        "4": "Place your {count} Portals <portal/> in the 4 corners of your action grid."
+      },
+      "choose": "Choose this Clan",
+      "show-cards": "See all the cards of the clan",
+      "hide-cards": "Hide the cards of the clan"
+    },
+    "token": {
+      "title": "Military Victory token",
+      "pile-title": "Military Victory token pile",
+      "pile-count": "There {count, plural, one {is # token} other {are # tokens}} left in the pile.",
+      "all": "The {count} tokens in the game, and the number of copies of each:",
+      "hidden": "The pile of 18 tokens is shuffled face down between the 2 players: only the next one to be drawn will be revealed.",
+      "symbols": "{count} <victory/>",
+      "spy": "Spy.",
+      "flip-desert": "Flip one of your Deserts to its front side, if possible: its effect can then be activated again.",
+      "upgrade": "Upgrade one of your tiles.",
+      "food": "Gain 1 <food/>.",
+      "steal-food": "Steal 1 <food/> from your opponent. If they have none, ignore this effect.",
+      "draw": "Draw 1 card."
+    },
+    "tile": {
+      "permanent": "Permanent tile",
+      "temporary": "Temporary tile",
+      "desert-face": "This tile no longer has an effect that can be activated. The effect of its front side is still reminded in the bottom right corner: that is the one triggered by the Scorpion cards that activate a Desert.",
+      "permanent-draw": "Draw 1 card.",
+      "permanent-draw-2": "Draw 2 cards.",
+      "permanent-special-activation": "Trigger your Special Activation.",
+      "permanent-special-activation-2": "Trigger your Special Activation and gain 1 <food/>.",
+      "permanent-food": "Gain 1 <food/>.",
+      "permanent-food-2": "Gain 2 <food/>.",
+      "permanent-military": "Gain 1 <military/>.",
+      "permanent-military-2": "Gain 2 <military/>.",
+      "temporary-food": "Gain 1 <food/>, then flip this tile to its Desert side.",
+      "temporary-draw": "Draw 1 card, then flip this tile to its Desert side.",
+      "temporary-upgrade": "Upgrade one of your permanent tiles, then flip this tile to its Desert side.",
+      "temporary-special-activation": "Trigger your Special Activation, then flip this tile to its Desert side.",
+      "temporary-military": "Gain 1 <military/>, then flip this tile to its Desert side."
+    },
+    "card": {
+      "panda-draw-and-special-activation": "Draw 1 card and trigger your Special Activation.",
+      "panda-upgrade": "Upgrade one of your tiles.",
+      "panda-food-or-military": "Gain 1 <food/> OR gain 1 <military/>.",
+      "panda-food-and-discount": "Gain 1 <food/>. You may play a Panda card from your hand, reducing its cost by 1 <food/>.",
+      "panda-draw-or-military": "Draw 1 card OR gain 1 <military/>.",
+      "panda-food-and-spy": "Gain 1 <food/>. Spy.",
+      "panda-military": "Gain 2 <military/>.",
+      "panda-military-and-upgrade": "Gain 1 <military/>. Upgrade one of your tiles.",
+      "panda-spy-and-discount": "Spy. You may play a Panda card from your hand, reducing its cost by 2 <food/>.",
+      "panda-king": "Gain 2 <military/> and draw 1 Military Victory token (resolve its effect).",
+      "panda-queen": "Activate one of your Panda cards in play.",
+      "shark-upgrade": "Upgrade one of your tiles.",
+      "shark-upgrade-2": "Activate one of your tiles, then upgrade it if possible.",
+      "shark-spy-or-trigger-token": "Spy.",
+      "shark-spy-or-trigger-token-2": "Gain 1 <military/> and trigger the effect of one of your Military Victory tokens.",
+      "shark-pack-redraw-token-2": "Put one of your Military Victory tokens back under the pile and draw a new one (resolve its effect).",
+      "shark-military": "Gain 1 <military/>.",
+      "shark-military-2": "Gain 2 <military/>.",
+      "shark-military-and-draw": "Gain 1 <military/>.",
+      "shark-military-and-draw-2": "Gain 1 <military/> and draw 1 card.",
+      "shark-military-per-token": "Gain 2 <military/>.",
+      "shark-military-per-token-2": "Gain 1 <military/> for each Shark token orthogonally adjacent to this card.",
+      "shark-pack-draw-token-2": "Draw 1 Military Victory token (resolve its effect).",
+      "shark-food-or-discount": "Gain 1 <food/>.",
+      "shark-food-or-discount-2": "You may play a card from your hand, reducing its cost by 2 <food/>.",
+      "shark-food-per-token": "Gain 1 <food/> for each pair of Military Victory tokens you own.",
+      "shark-food-per-token-2": "Gain 1 <food/> for each Military Victory token you own.",
+      "shark-pack-place-token-2": "Place a Shark token on one of your tiles that does not have one.",
+      "shark-pack-spy-2": "Spy.",
+      "cat-copy-opponent-card": "Copy the effect of a space your opponent can activate this turn. Rotate.",
+      "cat-copy-opponent-card-2": "Draw 2 cards. Rotate.",
+      "cat-search-ring": "Search your deck for a Ring, reveal it and add it to your hand, then shuffle your deck. Rotate.",
+      "cat-search-ring-2": "Rotate.",
+      "cat-upgrade-card-or-activate-tile": "Upgrade 1 tile. Rotate.",
+      "cat-upgrade-card-or-activate-tile-2": "Activate one of your tiles, upgraded or not. Rotate.",
+      "cat-military-or-food-per-card-in-hand": "Gain 1 <military/> per card in your hand. Rotate.",
+      "cat-military-or-food-per-card-in-hand-2": "Gain 1 <food/> per card in your hand. Rotate.",
+      "cat-spy-and-draw": "Spy, then draw 1 card. Rotate.",
+      "cat-spy-and-draw-2": "Rotate.",
+      "cat-spend-ring-for-token": "You may spend 1 Ring from your hand, revealing it to your opponent and putting it back under your deck, to draw 1 Military Victory token (resolve its effect). Rotate.",
+      "cat-spend-ring-for-token-2": "Rotate.",
+      "cat-food-and-military": "Gain 1 <food/> and 1 <military/>. Rotate.",
+      "cat-food-and-military-2": "Rotate.",
+      "cat-draw-and-food": "Draw 1 card and gain 1 <food/>. Rotate.",
+      "cat-draw-and-food-2": "Rotate.",
+      "cat-military-or-upgrade": "Gain 2 <military/>. Rotate.",
+      "cat-military-or-upgrade-2": "Upgrade 1 tile. Rotate.",
+      "cat-ring": "You may rotate one of your Cat cards.",
+      "scorpion-food-per-desert-pair": "Gain 1 <food/> for each pair of your Deserts.",
+      "scorpion-military-per-desert-pair": "Gain 1 <military/> for each pair of your Deserts.",
+      "scorpion-draw-and-food": "Draw 1 card and gain 1 <food/>.",
+      "scorpion-discount-per-desert-pair": "You may play a card from your hand, reducing its cost by 1 <food/> for each pair of your Deserts.",
+      "scorpion-activate-desert": "Activate the effect reminded on one of your Deserts.",
+      "scorpion-upgrade-and-activate": "Upgrade one of your tiles, then activate it if possible.",
+      "scorpion-food-and-portal-bonus": "Gain 1 <food/>, then, if you control 1 / 2 / 3 Portals: Spy / + gain 1 <military/> / + activate the effect reminded on one of your Deserts.",
+      "scorpion-portal-double-spy": "Spy twice, on 2 different piles.",
+      "scorpion-portal-double-spy-cost": "9 <food/> minus your number of cards in hand",
+      "scorpion-portal-flip-opponent-tile": "Your opponent flips one of their tiles to its Desert or non-upgraded side, if possible.",
+      "scorpion-portal-flip-opponent-tile-cost": "9 <food/> minus your number of upgraded tiles",
+      "scorpion-portal-swap": "Swap the position of 2 of your cards or tiles in your action grid.",
+      "scorpion-portal-swap-cost": "9 <food/> minus your number of Portals in play",
+      "scorpion-portal-block-military-victory": "No player can win a Military Victory token this round.",
+      "scorpion-portal-block-military-victory-cost": "9 <food/> minus your number of Military Victory tokens"
+    }
+  },
+  "header": {
+    "choose-clan": {
+      "you": "<reopen>Choose your clan</reopen>",
+      "player": "{player} is choosing their clan"
+    },
+    "mulligan": {
+      "you": "Do you keep these cards? <keep>Keep</keep> <redraw>Reshuffle</redraw>",
+      "player": "{player} is looking at their starting hand",
+      "players": "The players are looking at their starting hand"
+    },
+    "choose-action": {
+      "you": "Choose the zone to activate",
+      "player": "{player} is choosing the zone to activate"
+    },
+    "activate-zone": {
+      "you": "Activate the spaces of the zone, in any order you choose",
+      "player": "{player} is activating the spaces of the zone"
+    },
+    "choose-effect": {
+      "you": "Choose an effect",
+      "player": "{player} is choosing an effect"
+    },
+    "awakening": {
+      "you": "<awakening/>: Awaken a Panda",
+      "player": "<awakening/>: {player} awakens a Panda"
+    },
+    "play-card": {
+      "you": "Play a card from your hand at -{discount} <food/> or <decline>pass</decline>",
+      "player": "{player} may play a card from their hand at -{discount} <food/>"
+    },
+    "pay-card-cost": {
+      "you": "Put {count, plural, one {# card} other {# cards}} from your hand under your deck",
+      "player": "{player} puts {count, plural, one {# card} other {# cards}} from their hand under their deck"
+    },
+    "activate-card": {
+      "you": "Activate one of your cards in play",
+      "player": "{player} is activating one of their cards in play"
+    },
+    "activate-and-upgrade-tile": {
+      "you": "Activate one of your tiles, it will be upgraded if possible",
+      "player": "{player} is activating one of their tiles"
+    },
+    "military-victory": {
+      "you": "You win the military conflict",
+      "player": "{player} wins the military conflict"
+    },
+    "redraw-military-victory": {
+      "you": "Put one of your tokens back under the pile to draw a new one",
+      "player": "{player} puts one of their tokens back under the pile"
+    },
+    "trigger-military-victory": {
+      "you": "Trigger the effect of one of your Military Victory tokens",
+      "player": "{player} triggers the effect of one of their tokens"
+    },
+    "place-shark-token": {
+      "you": "Place a Shark token on one of your tiles that does not have one",
+      "player": "{player} places a Shark token on one of their tiles"
+    },
+    "organisation": {
+      "you": "Play a card or swap 2 cards and gain 1 <food/>",
+      "player": "{player} plays a card or swaps 2 cards and gains 1 <food/>"
+    },
+    "upgrade-tile": {
+      "you": "Upgrade one of your permanent tiles",
+      "player": "{player} upgrades one of their permanent tiles"
+    },
+    "flip-desert": {
+      "you": "Flip one of your Deserts to its front side",
+      "player": "{player} flips one of their Deserts"
+    },
+    "spy": {
+      "you": "Spy the top element of a pile",
+      "player": "{player} spies on a pile"
+    },
+    "spy-return": {
+      "you": "Return this element to the top or the bottom of its pile",
+      "player": "{player} returns the spied element to the top or the bottom of its pile"
+    },
+    "activate-desert": {
+      "you": "Activate the effect reminded on one of your Deserts",
+      "player": "{player} activates the effect reminded on one of their Deserts"
+    },
+    "upgrade-and-activate-tile": {
+      "you": "Upgrade one of your tiles, it will then be activated",
+      "player": "{player} upgrades one of their tiles, then activates it"
+    },
+    "downgrade-tile": {
+      "you": "Flip one of your tiles to its Desert or non-upgraded side",
+      "player": "{player} flips one of their tiles to its Desert or non-upgraded side"
+    },
+    "swap-squares": {
+      "you": "Swap the position of 2 of your cards or tiles",
+      "player": "{player} swaps the position of 2 of their cards or tiles"
+    },
+    "activate-tile": {
+      "you": "Activate one of your tiles, upgraded or not",
+      "player": "{player} is activating one of their tiles"
+    },
+    "copy-opponent-card": {
+      "you": "Copy the effect of one of your opponent's spaces in the zone",
+      "player": "{player} copies the effect of one of your spaces in the zone"
+    },
+    "search-ring": {
+      "you": "<reopen>Take a Ring from your deck into your hand</reopen>",
+      "player": "{player} is searching their deck for a Ring"
+    },
+    "spend-ring-for-token": {
+      "you": "Put a Ring back under your deck to draw a Military Victory token or <decline>pass</decline>",
+      "player": "{player} may trade a Ring for a Military Victory token"
+    },
+    "rotate-cat-card": {
+      "you": "Rotate one of your Cat cards or <decline>pass</decline>",
+      "player": "{player} may rotate one of their Cat cards"
+    },
+    "place-ring": {
+      "you": "Place a Ring on a space of your board or <decline>pass</decline>",
+      "player": "{player} may place a Ring on their board"
+    }
+  },
+  "game-over": {
+    "military": {
+      "you": "You won with {count} <victory/>",
+      "player": "{player} won with {count} <victory/>"
+    },
+    "clan": {
+      "1": {
+        "you": "You won with your {count} <gold/> Pandas in play",
+        "player": "{player} won with their {count} <gold/> Pandas in play"
+      },
+      "2": {
+        "you": "You won with your {count} Shark tokens <shark/> in play",
+        "player": "{player} won with their {count} Shark tokens <shark/> in play"
+      },
+      "3": {
+        "you": "You won with {count} Rings <ring/> in play",
+        "player": "{player} won with {count} Rings <ring/> in play"
+      },
+      "4": {
+        "you": "You won with your {count} Portals <portal/> in the 4 corners",
+        "player": "{player} won with their {count} Portals <portal/> in the 4 corners"
+      }
+    },
+    "race": {
+      "clan": "Clan victory",
+      "military": "Military victory"
+    }
+  },
+  "log": {
+    "choose-clan": "{player} chooses the {clan} clan",
+    "mulligan": "{player} reshuffles their starting hand and draws as many cards",
+    "keep-hand": "{player} keeps their starting hand",
+    "reveal-action": "{player} reveals the Action tile <material/>",
+    "choose-action": "{player} chooses {zone}",
+    "activate": "{player} activates <material/>",
+    "activate-card": "{player} activates their card <material/>",
+    "activate-tile": "{player} activates their tile <material/>",
+    "activate-and-upgrade-tile": "{player} activates their tile <material/>, then upgrades it",
+    "activate-desert": "{player} activates the effect reminded on their Desert <material/>",
+    "copy": "{player} copies <material/> from their opponent",
+    "choose-effect": "{player} chooses <effects/>",
+    "conflict": {
+      "won": "{player} wins the military conflict, {symbols} <military/> against {opponent}",
+      "tie": "Military conflict: tie, nobody draws a token",
+      "blocked": "{player} wins the military conflict, but no token can be won this round",
+      "empty": "{player} wins the military conflict, but the token pile is empty"
+    },
+    "food-gain": "{player} gains {count} <food/>",
+    "organisation-food": "{player} gains {count} <food/> by organizing their grid",
+    "food-spend": "{player} spends {count} <food/>",
+    "food-steal": "{player} steals {count} <food/> from their opponent",
+    "draw": "{player} draws 1 card",
+    "draw-seen": "{player} draws <material/>",
+    "play-card": "{player} plays <material/>",
+    "awaken": "{player} awakens <material/>",
+    "awakening-lost": "Awakening impossible, {player} gains {count} <food/>",
+    "place-ring": "{player} places the Ring <material/>",
+    "pay-card": "{player} puts 1 card from their hand under their deck",
+    "spend-ring": "{player} puts 1 Ring back under their deck",
+    "spend-ring-seen": "{player} puts the Ring <material/> back under their deck",
+    "search-ring": "{player} takes the Ring <material/> from their deck",
+    "rotate": "{player} rotates their card <material/>",
+    "upgrade": "{player} upgrades one of their tiles: <material/>",
+    "flip": "{player} flips one of their Deserts to its front side: <material/>",
+    "downgrade-front": "{player} flips one of their tiles to its non-upgraded side: <material/>",
+    "downgrade-desert": "{player} flips one of their tiles to its Desert side: <material/>",
+    "swap": "{player} swaps the position of 2 of their spaces",
+    "win-token": "{player} draws the token <material/>",
+    "redraw-token": "{player} puts the token <material/> back under the pile",
+    "trigger-token": "{player} triggers the effect of the token <material/>",
+    "shark-token": "{player} places a Shark token <shark/> ({count}/{goal})",
+    "pass": {
+      "play-card": "{player} declines to play a card",
+      "spend-ring": "{player} declines to trade a Ring",
+      "rotate": "{player} declines to rotate a card",
+      "place-ring": "{player} declines to place a Ring"
+    },
+    "spy": {
+      "deck": "{player} spies the top card of their deck",
+      "deck-seen": "{player} spies the top card of their deck: <material/>",
+      "action-tile": "{player} spies the top tile of the Action pile",
+      "action-tile-seen": "{player} spies the top tile of the Action pile: <material/>",
+      "military-victory": "{player} spies the top Military Victory token",
+      "military-victory-seen": "{player} spies the top Military Victory token: <material/>"
+    },
+    "spy-return": {
+      "on-top": "{player} returns the spied element to the top of its pile",
+      "on-top-seen": "{player} returns <material/> to the top of its pile",
+      "under": "{player} returns the spied element to the bottom of its pile",
+      "under-seen": "{player} returns <material/> to the bottom of its pile"
+    }
+  }
+}

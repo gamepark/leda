@@ -1,1 +1,523 @@
-{}
+{
+  "tutorial": {
+    "welcome": "Willkommen beim Tutorial von <strong>LEDA</strong>!",
+    "clans": "LEDA ist ein <strong>asymmetrisches</strong> Duell: Jeder Spieler verkörpert einen Tier-Clan mit eigenen Karten und einem eigenen Weg zum Sieg. Hier spielst du die <strong>Pandas</strong> und dein Gegner die <strong>Haie</strong>.",
+    "victory-condition": "Das ist deine Siegbedingungskarte. Sie erinnert dich an deine 2 Wege zum Sieg: den <strong>Clan-Sieg</strong>, deine {gold} Pandas <gold/> im Spiel zu haben, und den <strong>Militärsieg</strong>, {victory} <victory/> zu sammeln. Wir kommen darauf zurück.",
+    "grid": "Das ist dein Aktionsraster, 16 Plättchen in 4x4. In jeder Runde aktivierst du davon <strong>4 Felder</strong>.",
+    "action-tile": "Das ist das <strong>Aktions</strong>plättchen der Runde. Es gibt die Zonen aus 4 Feldern an, unter denen der aktive Spieler wählen muss.",
+    "choose-zone": "Du bist der <strong>aktive Spieler</strong>. Dieses Plättchen lässt dich <strong>Reihe 1</strong>, <strong>Spalte 1</strong> oder das <strong>Quadrat oben links</strong> aktivieren. Dein Gegner aktiviert anschließend dieselbe Zone in seinem eigenen Raster.",
+    "choose-row": "Wähle die <strong>erste Reihe</strong> zur Aktivierung.",
+    "activate-order": "Die Zone ist gewählt: Der aktive Spieler aktiviert nun seine 4 Felder, <strong>in beliebiger Reihenfolge</strong>.",
+    "temporary-food": "Dieses Plättchen bringt 1 <food/> und ist ein <strong>temporäres</strong> Plättchen. Aktiviere es.",
+    "desert": "Ein temporäres Plättchen wird <strong>umgedreht</strong> <flip/>, sobald es aktiviert wird: Es wird zu einer <strong>Wüste</strong>, einer Seite, die nichts mehr einbringt.",
+    "food-stock": "Deine Nahrung wird hier abgelegt, und ihre Summe steht in deiner Spielerleiste. Dein Clan beginnt das Spiel mit 1 <food/>.",
+    "food-use": "Nahrung dient dazu, die Karten deiner Hand zu spielen. Jede dieser 2 Karten kostet dich <strong>5 <food/></strong>.",
+    "temporary-upgrade": "Mit diesem Plättchen kannst du eines deiner dauerhaften Plättchen <strong>verbessern</strong> <upgrade/>. Aktiviere es.",
+    "upgrade-target": "Verbessere dieses Plättchen: Es wird auf seine <strong>verbesserte Seite</strong> gedreht, die stärker ist.",
+    "upgraded": "Es bringt jetzt 2 <food/>. Aktiviere es.",
+    "military-tile": "Dieses Plättchen bringt 1 <strong>Militär</strong>symbol <military/>. Aktiviere es.",
+    "opponent-activates": "Dein Gegner aktiviert nun seinerseits dieselben 4 Felder in seinem eigenen Raster.",
+    "conflict-start": "Die <strong>Aktivierungsphase</strong> ist vorbei. Es folgt die 2. Phase: der <strong>Militärkonflikt</strong>.",
+    "conflict-rule": "Der Spieler, der während der Aktivierung die meisten <military/>-Symbole gesammelt hat, gewinnt den Konflikt. Bei Gleichstand gewinnt niemand etwas.",
+    "conflict-won": "Du hast 1 <military/> erhalten und dein Gegner keines: Du ziehst also den obersten <strong>Militärsieg-Marker</strong> und führst seinen Effekt aus.",
+    "token": "Ein Marker bringt immer mindestens 1 <victory/> und oft noch einen Bonus dazu. Dieser bringt dir außerdem 1 <food/>.",
+    "military-victory": "Sobald du <strong>{count} <victory/></strong> kontrollierst, gewinnst du das Spiel sofort!",
+    "organisation-start": "Der Militärkonflikt ist geklärt. Es folgt die 3. und letzte Phase der Runde: die <strong>Organisation</strong>.",
+    "organisation-rule": "Nacheinander wählen die Spieler eine Aktion: <strong>eine Karte aus ihrer Hand auf ein Feld ihres Rasters spielen</strong> oder <strong>die Position von 2 Feldern tauschen</strong> und 1 <food/> erhalten. Diese Nahrung ohne Tausch zu nehmen, ist erlaubt.",
+    "your-organisation": "Du hast 5 <food/>: Du kannst also eine Karte spielen, zum Beispiel auf eine deiner Wüsten. Du kannst auch 2 Felder tauschen und 1 <food/> erhalten. Du hast die Wahl!",
+    "opponent-organisation": "Dein Gegner organisiert seinerseits sein Raster.",
+    "new-round": "Die 1. Runde ist vorbei. Eine neue Runde beginnt, mit einem neuen Aktionsplättchen.",
+    "opponent-chooses": "Die Spieler sind abwechselnd aktiv: Diesmal wählt dein Gegner die Zone, die aktiviert wird.",
+    "row-chosen": "Dein Gegner hat <strong>Reihe 4</strong> zur Aktivierung gewählt: Du musst also diese 4 Felder aktivieren.",
+    "draw": "Mit diesem Plättchen <strong>ziehst du 1 Karte</strong>, dann wird es auf seine Wüstenseite gedreht.",
+    "special-activation": "Dieses Plättchen trägt einen Kristall <special/>: Er löst die <strong>Spezialaktivierung</strong> deines Clans aus, die von Clan zu Clan verschieden ist.",
+    "shark-activation": "Für deinen Gegner, der die Haie spielt, bringt ein Kristall <special/> 2 <military/>.",
+    "panda-activation": "Für dich bringt ein Kristall <special/> 1 <food/> <strong>oder</strong> 1 <strong>Erwachen</strong>-Effekt <awakening/>.",
+    "clan-victory": "Dein Clan-Sieg verlangt deine {gold} Pandas <gold/> im Spiel. Den König hast du bereits auf der Hand, und die Königin wartet in deinem Nachziehstapel: Du brauchst außerdem Pandas <silver/> und mindestens <strong>{awakenings} Erwachen-Effekte</strong> <awakening/>.",
+    "end": "Sobald du deine Clan-Siegbedingung erfüllst oder den Militärsieg erreichst, endet das Spiel und du gewinnst!",
+    "good-luck": "Jetzt bist du am Zug. Viel Glück!"
+  },
+  "spy": {
+    "look": "Spähen",
+    "on-top": "Auf den Stapel",
+    "under": "Unter den Stapel",
+    "history": {
+      "title": "Wer hat diesen Stapel in dieser Runde angesehen?",
+      "on-top": "{player} hat diesen Stapel ausgespäht und das Element oben zurückgelegt.",
+      "under": "{player} hat diesen Stapel ausgespäht und das Element unten zurückgelegt.",
+      "seen": "Du hattest gesehen:"
+    }
+  },
+  "activation": {
+    "lock": "Dieses wurde bereits aktiviert: Es wird vor der nächsten Runde nicht erneut aktiviert."
+  },
+  "swap": {
+    "history": {
+      "text": "{player} hat diese 2 Elemente getauscht."
+    }
+  },
+  "organisation": {
+    "food": {
+      "explain": "Tausche die Position von 2 Karten und erhalte anschließend 1 <food/>. Du musst nicht tauschen, um 1 <food/> zu nehmen.",
+      "take": "Nur 1 nehmen"
+    }
+  },
+  "awakening": {
+    "explain": "Der Erwachen-Effekt wird ausgeführt, nachdem alle anderen Aktivierungen ausgeführt wurden."
+  },
+  "choose-effect": {
+    "choose": "Wähle einen Effekt",
+    "or": "oder"
+  },
+  "search-ring": {
+    "choose": "Wähle einen Ring aus deinem Nachziehstapel",
+    "condition": "Bedingung zum Auslegen:",
+    "effect": "Effekt jedes Rings:",
+    "rotate": "Du darfst eine deiner Katzen-Karten drehen.",
+    "pick": "Wählen",
+    "win-conflict": "Gewinne einen Militärkonflikt mit {count} oder mehr Vorsprung.",
+    "empty-deck": "Leere deinen Nachziehstapel.",
+    "three-cat-cards": "Aktiviere eine Zone mit mindestens {count} Katzen-Karten.",
+    "five-upgraded-tiles": "Habe {count} verbesserte Plättchen."
+  },
+  "clan": {
+    "1": "Pandas",
+    "2": "Haie",
+    "3": "Katzen",
+    "4": "Skorpione",
+    "choose": "Wähle deinen Clan",
+    "pick": "Wählen",
+    "view": "Clan-Details ansehen",
+    "random": "Zufällig!"
+  },
+  "zone": {
+    "1": "die Reihe 1",
+    "2": "die Reihe 2",
+    "3": "die Reihe 3",
+    "4": "die Reihe 4",
+    "5": "die Spalte 1",
+    "6": "die Spalte 2",
+    "7": "die Spalte 3",
+    "8": "die Spalte 4",
+    "9": "das Quadrat oben links",
+    "10": "das Quadrat oben rechts",
+    "11": "das Quadrat unten links",
+    "12": "das Quadrat unten rechts",
+    "13": "die 4 Ecken",
+    "14": "die 4 mittleren Felder"
+  },
+  "help": {
+    "cost": "Kosten:",
+    "effect": "Effekt:",
+    "effect-1": "Effekt 1:",
+    "effect-2": "Effekt 2:",
+    "pack": "RUDEL-Effekt:",
+    "portal": "Portal – Effekt:",
+    "front": "Vorderseite:",
+    "back": "Rückseite:",
+    "desert": "Rückseite (Wüste):",
+    "symbols": "Symbole:",
+    "zones": "Zonen:",
+    "placement": "Auslegen:",
+    "use": "Verwendung:",
+    "start": "Start:",
+    "special-activation": "Spezialaktivierung:",
+    "clan-victory": "Clan-Sieg:",
+    "military-victory": "Militärsieg:",
+    "none": "Keiner.",
+    "hidden": "Diese Karte liegt verdeckt: Nur der Clan, zu dem sie gehört, ist sichtbar.",
+    "deck": {
+      "title": "Nachziehstapel",
+      "clan-title": "Nachziehstapel der {clan}",
+      "count": "Es {count, plural, one {ist noch # Karte} other {sind noch # Karten}} im Nachziehstapel.",
+      "all": "Alle Karten des Clans:"
+    },
+    "food-cost": "{count} <food/>",
+    "cards-cost": "{count, plural, one {# Karte} other {# Karten}} aus deiner Hand, unter deinen Nachziehstapel zu legen.",
+    "current": "(aktuell {count} <food/>)",
+    "awakening": "Löse einen Erwachen-Effekt aus, während du mindestens {count} <level/> im Spiel hast, und nimm 1 davon zurück auf die Hand.",
+    "title": {
+      "1": "Panda-Karte",
+      "2": "Hai-Karte",
+      "3": "Katzen-Karte",
+      "4": "Skorpion-Karte"
+    },
+    "note": {
+      "awakening": "<awakening/> Erwachen-Effekt: Wenn du mindestens {count} <bronze/> im Spiel hast, nimm eines davon zurück auf die Hand und ersetze es durch ein <silver/>; oder wenn du mindestens {count} <silver/> im Spiel hast, nimm eines davon zurück auf die Hand und ersetze es durch ein <gold/>, auf demselben Feld. Der Erwachen-Effekt wird ausgeführt, nachdem alle anderen Aktivierungen ausgeführt wurden.",
+      "rotation": "Drehung: Nach ihrer Aktivierung wird die Karte um 180° gedreht. Dann ist ihr anderer Effekt aktivierbar.",
+      "ring": "Sobald seine Bedingung erfüllt ist, wird ein Ring kostenlos gespielt, ohne eine Aktion zu kosten, nachdem alle anderen Aktivierungen ausgeführt wurden. Wer 3 Ringe spielt, gewinnt das Spiel.",
+      "pack": "Der RUDEL-Effekt ersetzt den normalen Effekt, solange die Karte orthogonal an 2 Hai-Marker angrenzt.",
+      "portal": "Wer die 4 Portale in die 4 Ecken seines Aktionsrasters legt, gewinnt das Spiel.",
+      "desert": "Eine Wüste ist ein temporäres Plättchen, das auf seine Rückseite gedreht wurde.",
+      "permanent": "Ein dauerhaftes Plättchen ist immer aktivierbar. Ein Verbessern-Effekt <upgrade/> dreht es auf seine Rückseite, auf der es bei den nächsten Aktivierungen stärker ist.",
+      "temporary": "Ein temporäres Plättchen wird zu einer Wüste, sobald es aktiviert wird. Ein Umdrehen-Effekt <flip/> legt es zurück auf seine Vorderseite, auf der es wieder aktivierbar ist.",
+      "conflict": "Am Ende jeder Runde zieht der Spieler, der die meisten Militärsymbole <military/> gesammelt hat, den obersten Marker des Stapels und führt seinen Effekt aus. Bei Gleichstand zieht ihn niemand.",
+      "clan-victory": "Der Clan {clan} gewinnt, wenn er {count} <victory/> hat.",
+      "special-activation": "Der Kristall <special/> auf einem Plättchen oder einer Karte löst die Spezialaktivierung deines Clans aus, die von Clan zu Clan verschieden ist.",
+      "action": "Zu Beginn der Runde deckt der aktive Spieler das oberste Plättchen des Stapels auf und wählt eine der Zonen, die es angibt. Beide Spieler aktivieren anschließend die 4 Felder dieser Zone in ihrem eigenen Raster, der aktive Spieler zuerst.",
+      "once-per-activation": "<strong>Dasselbe Plättchen und dieselbe Karte können während der Aktivierungsphase nicht 2-mal aktiviert werden</strong>, selbst wenn sie zwischenzeitlich das Feld wechseln.",
+      "cycle": "Nach dem {count}. aufgedeckten Plättchen bleibt nur noch eines im Stapel: Alle 5 werden verdeckt neu gemischt, und der Spieler, der die wenigsten <victory/>-Symbole kontrolliert, wird zum neuen aktiven Spieler.",
+      "certain-squares": "Das Feld oben links (Aktionsplättchen {first}) und das Feld unten rechts (Aktionsplättchen {last}) werden garantiert aktiviert, wenn ihr Aktionsplättchen aufgedeckt wird, egal ob du der aktive Spieler bist oder nicht.",
+      "shark-victory": "Wer seine {count} Hai-Marker im Spiel hat, gewinnt das Spiel.",
+      "food-gain": "Du erhältst sie mit deinen Plättchen und deinen Karten sowie während der Organisation: Die Position von 2 deiner Felder zu tauschen bringt 1 <food/>, und du darfst sie auch ohne Tausch nehmen.",
+      "food-supply": "Der Nahrungsvorrat ist unbegrenzt."
+    },
+    "shark": {
+      "title": "Hai-Marker",
+      "placement": "Wenn du eine Hai-Karte spielst, legst du einen deiner Marker auf das Feld dieser Karte. Ein Feld, auf dem bereits einer liegt, behält ihn."
+    },
+    "food": {
+      "title": "Nahrungsmarker",
+      "use": "Nahrung dient dazu, die Clan-Karten zu bezahlen, die du spielst."
+    },
+    "round": {
+      "title": "Der Ablauf einer Runde",
+      "activation": "1) Aktivierung:",
+      "activation-text": "Der aktive Spieler deckt das oberste Aktionsplättchen auf und wählt eine der Zonen aus 4 Feldern, die es angibt. Danach aktiviert jeder diese Zone in seinem eigenen Raster, der aktive Spieler zuerst. Die Spezialaktivierungen der Clans werden nach allen anderen ausgeführt.",
+      "conflict": "2) Militärkonflikt:",
+      "conflict-text": "Der Spieler, der während der Aktivierung die meisten <military/>-Symbole gesammelt hat, zieht den obersten Militärsieg-Marker und führt seinen Effekt aus. Bei Gleichstand zieht ihn niemand.",
+      "organisation": "3) Organisation:",
+      "organisation-text": "Nacheinander wählen der aktive Spieler und dann sein Gegner eine Aktion: eine Karte aus ihrer Hand auf ein Feld ihres Rasters spielen oder die Position von 2 ihrer Felder tauschen und 1 <food/> erhalten.",
+      "next": "Die nächste Runde beginnt mit dem anderen Spieler als aktivem Spieler."
+    },
+    "action": {
+      "title": "Aktionsplättchen",
+      "hidden": "Der Stapel aus 5 Plättchen wird verdeckt gemischt: Es ist nicht abzusehen, welches als Nächstes aufgedeckt wird.",
+      "top-left": "Reihe 1, Spalte 1 oder das Quadrat aus 4 Feldern oben links.",
+      "top-right": "Reihe 2, Spalte 2 oder das Quadrat aus 4 Feldern oben rechts.",
+      "bottom-left": "Reihe 3, Spalte 3 oder das Quadrat aus 4 Feldern unten links.",
+      "bottom-right": "Reihe 4, Spalte 4 oder das Quadrat aus 4 Feldern unten rechts.",
+      "corners-or-center": "Die 4 Felder in den Ecken oder die 4 Felder in der Mitte.",
+      "pile-title": "Stapel der Aktionsplättchen",
+      "pile-count": "Es {count, plural, one {ist noch # Plättchen} other {sind noch # Plättchen}} im Stapel:",
+      "frequency": "So oft kann ein Feld deines Rasters während eines Zyklus von {count} Aktionsplättchen höchstens aktiviert werden:"
+    },
+    "victory": {
+      "title": "Siegbedingungskarte",
+      "start": "Beginne das Spiel mit {cards, plural, one {# Karte} other {# Karten}} und {food} <food/>.",
+      "activation": {
+        "1": "Erhalte 1 <food/> ODER 1 Erwachen <awakening/>.",
+        "2": "Erhalte 2 <military/>.",
+        "3": "Ziehe 1 Karte.",
+        "4": "Spähe."
+      },
+      "clan": {
+        "1": "Habe deine {count} Pandas <gold/> im Spiel.",
+        "2": "Habe deine {count} Hai-Marker <shark/> im Spiel.",
+        "3": "Spiele {count} Ringe <ring/>.",
+        "4": "Lege deine {count} Portale <portal/> in die 4 Ecken deines Aktionsrasters."
+      },
+      "choose": "Diesen Clan wählen",
+      "show-cards": "Alle Karten des Clans ansehen",
+      "hide-cards": "Karten des Clans ausblenden"
+    },
+    "token": {
+      "title": "Militärsieg-Marker",
+      "pile-title": "Stapel der Militärsieg-Marker",
+      "pile-count": "Es {count, plural, one {ist noch # Marker} other {sind noch # Marker}} im Stapel.",
+      "all": "Die {count} Marker des Spiels und die Anzahl der Exemplare von jedem:",
+      "hidden": "Der Stapel aus 18 Markern wird verdeckt zwischen den 2 Spielern gemischt: Nur der nächste zu ziehende wird aufgedeckt.",
+      "symbols": "{count} <victory/>",
+      "spy": "Spähe.",
+      "flip-desert": "Drehe eine deiner Wüsten auf ihre Vorderseite, wenn möglich: Ihr Effekt kann dann erneut aktiviert werden.",
+      "upgrade": "Verbessere eines deiner Plättchen.",
+      "food": "Erhalte 1 <food/>.",
+      "steal-food": "Stiehl 1 <food/> von deinem Gegner. Hat er keine, ignoriere diesen Effekt.",
+      "draw": "Ziehe 1 Karte."
+    },
+    "tile": {
+      "permanent": "Dauerhaftes Plättchen",
+      "temporary": "Temporäres Plättchen",
+      "desert-face": "Dieses Plättchen hat keinen aktivierbaren Effekt mehr. Der Effekt seiner Vorderseite bleibt unten rechts angegeben: Genau diesen lösen die Skorpion-Karten aus, die eine Wüste aktivieren.",
+      "permanent-draw": "Ziehe 1 Karte.",
+      "permanent-draw-2": "Ziehe 2 Karten.",
+      "permanent-special-activation": "Löse deine Spezialaktivierung aus.",
+      "permanent-special-activation-2": "Löse deine Spezialaktivierung aus und erhalte 1 <food/>.",
+      "permanent-food": "Erhalte 1 <food/>.",
+      "permanent-food-2": "Erhalte 2 <food/>.",
+      "permanent-military": "Erhalte 1 <military/>.",
+      "permanent-military-2": "Erhalte 2 <military/>.",
+      "temporary-food": "Erhalte 1 <food/> und drehe dieses Plättchen dann auf seine Wüstenseite.",
+      "temporary-draw": "Ziehe 1 Karte und drehe dieses Plättchen dann auf seine Wüstenseite.",
+      "temporary-upgrade": "Verbessere eines deiner dauerhaften Plättchen und drehe dieses Plättchen dann auf seine Wüstenseite.",
+      "temporary-special-activation": "Löse deine Spezialaktivierung aus und drehe dieses Plättchen dann auf seine Wüstenseite.",
+      "temporary-military": "Erhalte 1 <military/> und drehe dieses Plättchen dann auf seine Wüstenseite."
+    },
+    "card": {
+      "panda-draw-and-special-activation": "Ziehe 1 Karte und löse deine Spezialaktivierung aus.",
+      "panda-upgrade": "Verbessere eines deiner Plättchen.",
+      "panda-food-or-military": "Erhalte 1 <food/> ODER erhalte 1 <military/>.",
+      "panda-food-and-discount": "Erhalte 1 <food/>. Du darfst eine Panda-Karte aus deiner Hand spielen und ihre Kosten um 1 <food/> senken.",
+      "panda-draw-or-military": "Ziehe 1 Karte ODER erhalte 1 <military/>.",
+      "panda-food-and-spy": "Erhalte 1 <food/>. Spähe.",
+      "panda-military": "Erhalte 2 <military/>.",
+      "panda-military-and-upgrade": "Erhalte 1 <military/>. Verbessere eines deiner Plättchen.",
+      "panda-spy-and-discount": "Spähe. Du darfst eine Panda-Karte aus deiner Hand spielen und ihre Kosten um 2 <food/> senken.",
+      "panda-king": "Erhalte 2 <military/> und ziehe 1 Militärsieg-Marker (führe seinen Effekt aus).",
+      "panda-queen": "Aktiviere eine deiner Panda-Karten im Spiel.",
+      "shark-upgrade": "Verbessere eines deiner Plättchen.",
+      "shark-upgrade-2": "Aktiviere eines deiner Plättchen und verbessere es dann, wenn möglich.",
+      "shark-spy-or-trigger-token": "Spähe.",
+      "shark-spy-or-trigger-token-2": "Erhalte 1 <military/> und löse den Effekt eines deiner Militärsieg-Marker aus.",
+      "shark-pack-redraw-token-2": "Lege einen deiner Militärsieg-Marker unter den Stapel und ziehe einen neuen (führe seinen Effekt aus).",
+      "shark-military": "Erhalte 1 <military/>.",
+      "shark-military-2": "Erhalte 2 <military/>.",
+      "shark-military-and-draw": "Erhalte 1 <military/>.",
+      "shark-military-and-draw-2": "Erhalte 1 <military/> und ziehe 1 Karte.",
+      "shark-military-per-token": "Erhalte 2 <military/>.",
+      "shark-military-per-token-2": "Erhalte 1 <military/> für jeden Hai-Marker, der orthogonal an diese Karte angrenzt.",
+      "shark-pack-draw-token-2": "Ziehe 1 Militärsieg-Marker (führe seinen Effekt aus).",
+      "shark-food-or-discount": "Erhalte 1 <food/>.",
+      "shark-food-or-discount-2": "Du darfst eine Karte aus deiner Hand spielen und ihre Kosten um 2 <food/> senken.",
+      "shark-food-per-token": "Erhalte 1 <food/> für jedes Paar Militärsieg-Marker, das du besitzt.",
+      "shark-food-per-token-2": "Erhalte 1 <food/> für jeden Militärsieg-Marker, den du besitzt.",
+      "shark-pack-place-token-2": "Lege einen Hai-Marker auf eines deiner Plättchen, auf dem noch keiner liegt.",
+      "shark-pack-spy-2": "Spähe.",
+      "cat-copy-opponent-card": "Kopiere den Effekt eines Feldes, das dein Gegner in diesem Zug aktivieren kann. Drehung.",
+      "cat-copy-opponent-card-2": "Ziehe 2 Karten. Drehung.",
+      "cat-search-ring": "Suche einen Ring in deinem Nachziehstapel, decke ihn auf und nimm ihn auf die Hand, mische dann deinen Nachziehstapel. Drehung.",
+      "cat-search-ring-2": "Drehung.",
+      "cat-upgrade-card-or-activate-tile": "Verbessere 1 Plättchen. Drehung.",
+      "cat-upgrade-card-or-activate-tile-2": "Aktiviere eines deiner Plättchen, verbessert oder nicht. Drehung.",
+      "cat-military-or-food-per-card-in-hand": "Erhalte 1 <military/> pro Karte auf deiner Hand. Drehung.",
+      "cat-military-or-food-per-card-in-hand-2": "Erhalte 1 <food/> pro Karte auf deiner Hand. Drehung.",
+      "cat-spy-and-draw": "Spähe und ziehe dann 1 Karte. Drehung.",
+      "cat-spy-and-draw-2": "Drehung.",
+      "cat-spend-ring-for-token": "Du darfst 1 Ring aus deiner Hand abgeben, indem du ihn deinem Gegner zeigst und unter deinen Nachziehstapel legst, um 1 Militärsieg-Marker zu ziehen (führe seinen Effekt aus). Drehung.",
+      "cat-spend-ring-for-token-2": "Drehung.",
+      "cat-food-and-military": "Erhalte 1 <food/> und 1 <military/>. Drehung.",
+      "cat-food-and-military-2": "Drehung.",
+      "cat-draw-and-food": "Ziehe 1 Karte und erhalte 1 <food/>. Drehung.",
+      "cat-draw-and-food-2": "Drehung.",
+      "cat-military-or-upgrade": "Erhalte 2 <military/>. Drehung.",
+      "cat-military-or-upgrade-2": "Verbessere 1 Plättchen. Drehung.",
+      "cat-ring": "Du darfst eine deiner Katzen-Karten drehen.",
+      "scorpion-food-per-desert-pair": "Erhalte 1 <food/> für jedes deiner Wüstenpaare.",
+      "scorpion-military-per-desert-pair": "Erhalte 1 <military/> für jedes deiner Wüstenpaare.",
+      "scorpion-draw-and-food": "Ziehe 1 Karte und erhalte 1 <food/>.",
+      "scorpion-discount-per-desert-pair": "Du darfst eine Karte aus deiner Hand spielen und ihre Kosten um 1 <food/> für jedes deiner Wüstenpaare senken.",
+      "scorpion-activate-desert": "Aktiviere den Effekt, der auf einer deiner Wüsten angegeben ist.",
+      "scorpion-upgrade-and-activate": "Verbessere eines deiner Plättchen und aktiviere es dann, wenn möglich.",
+      "scorpion-food-and-portal-bonus": "Erhalte 1 <food/> und dann, wenn du 1 / 2 / 3 Portale kontrollierst: Spähe / + erhalte 1 <military/> / + aktiviere den Effekt, der auf einer deiner Wüsten angegeben ist.",
+      "scorpion-portal-double-spy": "Spähe 2-mal, auf 2 verschiedenen Stapeln.",
+      "scorpion-portal-double-spy-cost": "9 <food/> minus die Anzahl deiner Handkarten",
+      "scorpion-portal-flip-opponent-tile": "Dein Gegner dreht eines seiner Plättchen auf seine Wüstenseite oder seine nicht verbesserte Seite, wenn möglich.",
+      "scorpion-portal-flip-opponent-tile-cost": "9 <food/> minus die Anzahl deiner verbesserten Plättchen",
+      "scorpion-portal-swap": "Tausche die Position von 2 deiner Karten oder Plättchen in deinem Aktionsraster.",
+      "scorpion-portal-swap-cost": "9 <food/> minus die Anzahl deiner Portale im Spiel",
+      "scorpion-portal-block-military-victory": "Kein Spieler kann in dieser Runde einen Militärsieg-Marker gewinnen.",
+      "scorpion-portal-block-military-victory-cost": "9 <food/> minus die Anzahl deiner Militärsieg-Marker"
+    }
+  },
+  "header": {
+    "choose-clan": {
+      "you": "<reopen>Wähle deinen Clan</reopen>",
+      "player": "{player} wählt seinen Clan"
+    },
+    "mulligan": {
+      "you": "Behältst du diese Karten? <keep>Behalten</keep> <redraw>Neu mischen</redraw>",
+      "player": "{player} sieht sich seine Starthand an",
+      "players": "Die Spieler sehen sich ihre Starthand an"
+    },
+    "choose-action": {
+      "you": "Wähle die Zone, die aktiviert wird",
+      "player": "{player} wählt die Zone, die aktiviert wird"
+    },
+    "activate-zone": {
+      "you": "Aktiviere die Felder der Zone, in beliebiger Reihenfolge",
+      "player": "{player} aktiviert die Felder der Zone"
+    },
+    "choose-effect": {
+      "you": "Wähle einen Effekt",
+      "player": "{player} wählt einen Effekt"
+    },
+    "awakening": {
+      "you": "<awakening/>: Erwecke einen Panda",
+      "player": "<awakening/>: {player} erweckt einen Panda"
+    },
+    "play-card": {
+      "you": "Spiele eine Karte aus deiner Hand zu -{discount} <food/> oder <decline>passe</decline>",
+      "player": "{player} darf eine Karte aus seiner Hand zu -{discount} <food/> spielen"
+    },
+    "pay-card-cost": {
+      "you": "Lege {count, plural, one {# Karte} other {# Karten}} aus deiner Hand unter deinen Nachziehstapel",
+      "player": "{player} legt {count, plural, one {# Karte} other {# Karten}} aus seiner Hand unter seinen Nachziehstapel"
+    },
+    "activate-card": {
+      "you": "Aktiviere eine deiner Karten im Spiel",
+      "player": "{player} aktiviert eine seiner Karten im Spiel"
+    },
+    "activate-and-upgrade-tile": {
+      "you": "Aktiviere eines deiner Plättchen, es wird verbessert, wenn möglich",
+      "player": "{player} aktiviert eines seiner Plättchen"
+    },
+    "military-victory": {
+      "you": "Du gewinnst den Militärkonflikt",
+      "player": "{player} gewinnt den Militärkonflikt"
+    },
+    "redraw-military-victory": {
+      "you": "Lege einen deiner Marker unter den Stapel, um einen neuen zu ziehen",
+      "player": "{player} legt einen seiner Marker unter den Stapel"
+    },
+    "trigger-military-victory": {
+      "you": "Löse den Effekt eines deiner Militärsieg-Marker aus",
+      "player": "{player} löst den Effekt eines seiner Marker aus"
+    },
+    "place-shark-token": {
+      "you": "Lege einen Hai-Marker auf eines deiner Plättchen, auf dem noch keiner liegt",
+      "player": "{player} legt einen Hai-Marker auf eines seiner Plättchen"
+    },
+    "organisation": {
+      "you": "Spiele eine Karte oder tausche 2 Karten und erhalte 1 <food/>",
+      "player": "{player} spielt eine Karte oder tauscht 2 Karten und erhält 1 <food/>"
+    },
+    "upgrade-tile": {
+      "you": "Verbessere eines deiner dauerhaften Plättchen",
+      "player": "{player} verbessert eines seiner dauerhaften Plättchen"
+    },
+    "flip-desert": {
+      "you": "Drehe eine deiner Wüsten auf ihre Vorderseite",
+      "player": "{player} dreht eine seiner Wüsten um"
+    },
+    "spy": {
+      "you": "Spähe das oberste Element eines Stapels aus",
+      "player": "{player} späht einen Stapel aus"
+    },
+    "spy-return": {
+      "you": "Lege dieses Element oben oder unten auf seinen Stapel zurück",
+      "player": "{player} legt das ausgespähte Element oben oder unten auf seinen Stapel zurück"
+    },
+    "activate-desert": {
+      "you": "Aktiviere den Effekt, der auf einer deiner Wüsten angegeben ist",
+      "player": "{player} aktiviert den Effekt, der auf einer seiner Wüsten angegeben ist"
+    },
+    "upgrade-and-activate-tile": {
+      "you": "Verbessere eines deiner Plättchen, es wird anschließend aktiviert",
+      "player": "{player} verbessert eines seiner Plättchen und aktiviert es dann"
+    },
+    "downgrade-tile": {
+      "you": "Drehe eines deiner Plättchen auf seine Wüstenseite oder seine nicht verbesserte Seite",
+      "player": "{player} dreht eines seiner Plättchen auf seine Wüstenseite oder seine nicht verbesserte Seite"
+    },
+    "swap-squares": {
+      "you": "Tausche die Position von 2 deiner Karten oder Plättchen",
+      "player": "{player} tauscht die Position von 2 seiner Karten oder Plättchen"
+    },
+    "activate-tile": {
+      "you": "Aktiviere eines deiner Plättchen, verbessert oder nicht",
+      "player": "{player} aktiviert eines seiner Plättchen"
+    },
+    "copy-opponent-card": {
+      "you": "Kopiere den Effekt eines Feldes deines Gegners in der Zone",
+      "player": "{player} kopiert den Effekt eines deiner Felder in der Zone"
+    },
+    "search-ring": {
+      "you": "<reopen>Nimm einen Ring aus deinem Nachziehstapel auf die Hand</reopen>",
+      "player": "{player} sucht einen Ring in seinem Nachziehstapel"
+    },
+    "spend-ring-for-token": {
+      "you": "Lege einen Ring unter deinen Nachziehstapel, um einen Militärsieg-Marker zu ziehen, oder <decline>passe</decline>",
+      "player": "{player} darf einen Ring gegen einen Militärsieg-Marker tauschen"
+    },
+    "rotate-cat-card": {
+      "you": "Drehe eine deiner Katzen-Karten oder <decline>passe</decline>",
+      "player": "{player} darf eine seiner Katzen-Karten drehen"
+    },
+    "place-ring": {
+      "you": "Lege einen Ring auf ein Feld deines Tableaus oder <decline>passe</decline>",
+      "player": "{player} darf einen Ring auf sein Tableau legen"
+    }
+  },
+  "game-over": {
+    "military": {
+      "you": "Du hast mit {count} <victory/> gewonnen",
+      "player": "{player} hat mit {count} <victory/> gewonnen"
+    },
+    "clan": {
+      "1": {
+        "you": "Du hast mit deinen {count} Pandas <gold/> im Spiel gewonnen",
+        "player": "{player} hat mit seinen {count} Pandas <gold/> im Spiel gewonnen"
+      },
+      "2": {
+        "you": "Du hast mit deinen {count} Hai-Markern <shark/> im Spiel gewonnen",
+        "player": "{player} hat mit seinen {count} Hai-Markern <shark/> im Spiel gewonnen"
+      },
+      "3": {
+        "you": "Du hast mit {count} Ringen <ring/> im Spiel gewonnen",
+        "player": "{player} hat mit {count} Ringen <ring/> im Spiel gewonnen"
+      },
+      "4": {
+        "you": "Du hast mit deinen {count} Portalen <portal/> in den 4 Ecken gewonnen",
+        "player": "{player} hat mit seinen {count} Portalen <portal/> in den 4 Ecken gewonnen"
+      }
+    },
+    "race": {
+      "clan": "Clan-Sieg",
+      "military": "Militärsieg"
+    }
+  },
+  "log": {
+    "choose-clan": "{player} wählt den Clan der {clan}",
+    "mulligan": "{player} mischt seine Starthand neu und zieht ebenso viele Karten",
+    "keep-hand": "{player} behält seine Starthand",
+    "reveal-action": "{player} deckt das Aktionsplättchen <material/> auf",
+    "choose-action": "{player} wählt {zone}",
+    "activate": "{player} aktiviert <material/>",
+    "activate-card": "{player} aktiviert seine Karte <material/>",
+    "activate-tile": "{player} aktiviert sein Plättchen <material/>",
+    "activate-and-upgrade-tile": "{player} aktiviert sein Plättchen <material/> und verbessert es dann",
+    "activate-desert": "{player} aktiviert den Effekt, der auf seiner Wüste <material/> angegeben ist",
+    "copy": "{player} kopiert <material/> seines Gegners",
+    "choose-effect": "{player} wählt <effects/>",
+    "conflict": {
+      "won": "{player} gewinnt den Militärkonflikt, {symbols} <military/> gegen {opponent}",
+      "tie": "Militärkonflikt: Gleichstand, niemand zieht einen Marker",
+      "blocked": "{player} gewinnt den Militärkonflikt, aber in dieser Runde kann kein Marker gewonnen werden",
+      "empty": "{player} gewinnt den Militärkonflikt, aber der Markerstapel ist leer"
+    },
+    "food-gain": "{player} erhält {count} <food/>",
+    "organisation-food": "{player} erhält {count} <food/> beim Organisieren seines Rasters",
+    "food-spend": "{player} gibt {count} <food/> aus",
+    "food-steal": "{player} stiehlt {count} <food/> von seinem Gegner",
+    "draw": "{player} zieht 1 Karte",
+    "draw-seen": "{player} zieht <material/>",
+    "play-card": "{player} spielt <material/>",
+    "awaken": "{player} erweckt <material/>",
+    "awakening-lost": "Erwachen nicht möglich, {player} erhält {count} <food/>",
+    "place-ring": "{player} legt den Ring <material/> aus",
+    "pay-card": "{player} legt 1 Karte aus seiner Hand unter seinen Nachziehstapel",
+    "spend-ring": "{player} legt 1 Ring unter seinen Nachziehstapel zurück",
+    "spend-ring-seen": "{player} legt den Ring <material/> unter seinen Nachziehstapel zurück",
+    "search-ring": "{player} nimmt den Ring <material/> aus seinem Nachziehstapel",
+    "rotate": "{player} dreht seine Karte <material/>",
+    "upgrade": "{player} verbessert eines seiner Plättchen: <material/>",
+    "flip": "{player} dreht eine seiner Wüsten auf ihre Vorderseite: <material/>",
+    "downgrade-front": "{player} dreht eines seiner Plättchen auf seine nicht verbesserte Seite: <material/>",
+    "downgrade-desert": "{player} dreht eines seiner Plättchen auf seine Wüstenseite: <material/>",
+    "swap": "{player} tauscht die Position von 2 seiner Felder",
+    "win-token": "{player} zieht den Marker <material/>",
+    "redraw-token": "{player} legt den Marker <material/> unter den Stapel zurück",
+    "trigger-token": "{player} löst den Effekt des Markers <material/> aus",
+    "shark-token": "{player} legt einen Hai-Marker <shark/> ({count}/{goal})",
+    "pass": {
+      "play-card": "{player} verzichtet darauf, eine Karte zu spielen",
+      "spend-ring": "{player} verzichtet darauf, einen Ring zu tauschen",
+      "rotate": "{player} verzichtet darauf, eine Karte zu drehen",
+      "place-ring": "{player} verzichtet darauf, einen Ring auszulegen"
+    },
+    "spy": {
+      "deck": "{player} späht die oberste Karte seines Nachziehstapels aus",
+      "deck-seen": "{player} späht die oberste Karte seines Nachziehstapels aus: <material/>",
+      "action-tile": "{player} späht das oberste Plättchen des Aktionsstapels aus",
+      "action-tile-seen": "{player} späht das oberste Plättchen des Aktionsstapels aus: <material/>",
+      "military-victory": "{player} späht den obersten Militärsieg-Marker aus",
+      "military-victory-seen": "{player} späht den obersten Militärsieg-Marker aus: <material/>"
+    },
+    "spy-return": {
+      "on-top": "{player} legt das ausgespähte Element oben auf seinen Stapel zurück",
+      "on-top-seen": "{player} legt <material/> oben auf seinen Stapel zurück",
+      "under": "{player} legt das ausgespähte Element unter seinen Stapel zurück",
+      "under-seen": "{player} legt <material/> unter seinen Stapel zurück"
+    }
+  }
+}

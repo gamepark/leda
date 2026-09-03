@@ -1,1 +1,523 @@
-{}
+{
+  "tutorial": {
+    "welcome": "¡Bienvenido al tutorial de <strong>LEDA</strong>!",
+    "clans": "LEDA es un duelo <strong>asimétrico</strong>: cada jugador encarna a un Clan animal, con sus propias cartas y su propia forma de ganar. Aquí juegas con los <strong>Pandas</strong>, y tu oponente con los <strong>Tiburones</strong>.",
+    "victory-condition": "Esta es tu carta de Condición de Victoria. Te recuerda tus 2 formas de ganar la partida: la <strong>victoria de clan</strong>, tener tus {gold} Pandas <gold/> en juego, y la <strong>victoria militar</strong>, reunir {victory} <victory/>. Volveremos sobre ello.",
+    "grid": "Esta es tu cuadrícula de acción, 16 losetas en 4x4. En cada ronda activarás <strong>4 casillas</strong>.",
+    "action-tile": "Esta es la loseta de <strong>Acción</strong> de la ronda. Es la que indica las zonas de 4 casillas entre las que el jugador activo debe elegir.",
+    "choose-zone": "Eres el <strong>jugador activo</strong>. Esta loseta te permite activar la <strong>fila 1</strong>, la <strong>columna 1</strong> o el <strong>cuadrado superior izquierdo</strong>. Tu oponente activará después la misma zona en su propia cuadrícula.",
+    "choose-row": "Elige activar la <strong>primera fila</strong>.",
+    "activate-order": "La zona está elegida: el jugador activo activa ahora sus 4 casillas, <strong>en el orden que prefiera</strong>.",
+    "temporary-food": "Esta loseta da 1 <food/>, y es una loseta <strong>temporal</strong>. Actívala.",
+    "desert": "Una loseta temporal se <strong>voltea</strong> <flip/> en cuanto se activa: se convierte en un <strong>Desierto</strong>, una cara que ya no produce nada.",
+    "food-stock": "Tu Comida se guarda aquí, y su total aparece en tu panel de jugador. Tu Clan empieza la partida con 1 <food/>.",
+    "food-use": "La Comida sirve para jugar las cartas de tu mano. Cada una de estas 2 cartas te costará <strong>5 <food/></strong>.",
+    "temporary-upgrade": "Esta loseta te permite <strong>Mejorar</strong> <upgrade/> una de tus losetas permanentes. Actívala.",
+    "upgrade-target": "Mejora esta loseta: se volteará a su <strong>cara mejorada</strong>, más poderosa.",
+    "upgraded": "Ahora da 2 <food/>. Actívala.",
+    "military-tile": "Esta loseta da 1 símbolo <strong>Militar</strong> <military/>. Actívala.",
+    "opponent-activates": "Tu oponente activa a su vez las mismas 4 casillas, en su propia cuadrícula.",
+    "conflict-start": "La <strong>fase de Activación</strong> ha terminado. Llega la 2ª fase: el <strong>Conflicto Militar</strong>.",
+    "conflict-rule": "El jugador que haya reunido más símbolos <military/> durante la activación gana el conflicto. En caso de empate, nadie gana nada.",
+    "conflict-won": "Has obtenido 1 <military/> y tu oponente ninguno: robas por tanto la primera <strong>ficha de Victoria militar</strong> y resuelves su efecto.",
+    "token": "Una ficha siempre da al menos 1 <victory/>, y a menudo un bono adicional. Esta también te hace ganar 1 <food/>.",
+    "military-victory": "En cuanto controles <strong>{count} <victory/></strong>, ¡ganas la partida inmediatamente!",
+    "organisation-start": "El Conflicto Militar está resuelto. Llega la 3ª y última fase de la ronda: la <strong>Organización</strong>.",
+    "organisation-rule": "Por turnos, los jugadores eligen una acción: <strong>jugar una carta</strong> de su mano en una casilla de su cuadrícula, o <strong>intercambiar la posición de 2 casillas</strong> y ganar 1 <food/>. Se permite tomar esa Comida sin intercambiar nada.",
+    "your-organisation": "Tienes 5 <food/>: puedes por tanto jugar una carta, por ejemplo en uno de tus Desiertos. También puedes intercambiar 2 casillas y ganar 1 <food/>. ¡Tú eliges!",
+    "opponent-organisation": "Tu oponente organiza su cuadrícula a su vez.",
+    "new-round": "La 1ª ronda ha terminado. Empieza una nueva ronda, con una nueva loseta de Acción.",
+    "opponent-chooses": "Los jugadores son activos por turnos: esta vez, es tu oponente quien elige la zona a activar.",
+    "row-chosen": "Tu oponente ha elegido activar la <strong>fila 4</strong>: debes por tanto activar estas 4 casillas.",
+    "draw": "Esta loseta te hace <strong>robar 1 carta</strong>, y luego se voltea a su cara de Desierto.",
+    "special-activation": "Esta loseta lleva un cristal <special/>: desencadena la <strong>Activación Especial</strong> de tu clan, que no es la misma de un clan a otro.",
+    "shark-activation": "Para tu oponente, que juega con los Tiburones, un cristal <special/> da 2 <military/>.",
+    "panda-activation": "Para ti, un cristal <special/> da 1 <food/> <strong>o</strong> 1 efecto <strong>Despertar</strong> <awakening/>.",
+    "clan-victory": "Tu victoria de clan exige tus {gold} Pandas <gold/> en juego. Ya tienes al Rey en la mano, y la Reina te espera en tu mazo: también necesitarás Pandas <silver/>, y al menos <strong>{awakenings} efectos Despertar</strong> <awakening/>.",
+    "end": "En cuanto cumplas tu condición de victoria de clan, o alcances la victoria militar, ¡la partida se detiene y ganas!",
+    "good-luck": "Ahora te toca jugar. ¡Buena suerte!"
+  },
+  "spy": {
+    "look": "Espiar",
+    "on-top": "Encima del montón",
+    "under": "Debajo del montón",
+    "history": {
+      "title": "¿Quién ha consultado este montón en esta ronda?",
+      "on-top": "{player} ha espiado este montón, y ha devuelto el elemento encima.",
+      "under": "{player} ha espiado este montón, y ha devuelto el elemento debajo.",
+      "seen": "Habías visto:"
+    }
+  },
+  "activation": {
+    "lock": "Esta ya ha sido activada: no volverá a activarse antes de la próxima ronda."
+  },
+  "swap": {
+    "history": {
+      "text": "{player} ha intercambiado estos 2 elementos."
+    }
+  },
+  "organisation": {
+    "food": {
+      "explain": "Intercambia la posición de 2 cartas, y luego gana 1 <food/>. No estás obligado a intercambiar para tomar 1 <food/>.",
+      "take": "Solo tomar 1"
+    }
+  },
+  "awakening": {
+    "explain": "El efecto Despertar se resuelve después de haber resuelto todas las demás activaciones."
+  },
+  "choose-effect": {
+    "choose": "Elige un efecto",
+    "or": "o"
+  },
+  "search-ring": {
+    "choose": "Elige un Anillo de tu mazo",
+    "condition": "Condición de colocación:",
+    "effect": "Efecto de cada Anillo:",
+    "rotate": "Puedes rotar una de tus cartas de Gato.",
+    "pick": "Elegir",
+    "win-conflict": "Ganar un Conflicto militar con {count} o más de diferencia.",
+    "empty-deck": "Vaciar tu mazo.",
+    "three-cat-cards": "Activar una zona con al menos {count} cartas de Gato.",
+    "five-upgraded-tiles": "Tener {count} losetas mejoradas."
+  },
+  "clan": {
+    "1": "Pandas",
+    "2": "Tiburones",
+    "3": "Gatos",
+    "4": "Escorpiones",
+    "choose": "Elige tu clan",
+    "pick": "Elegir",
+    "view": "Ver el detalle del clan",
+    "random": "¡Al azar!"
+  },
+  "zone": {
+    "1": "la fila 1",
+    "2": "la fila 2",
+    "3": "la fila 3",
+    "4": "la fila 4",
+    "5": "la columna 1",
+    "6": "la columna 2",
+    "7": "la columna 3",
+    "8": "la columna 4",
+    "9": "el cuadrado superior izquierdo",
+    "10": "el cuadrado superior derecho",
+    "11": "el cuadrado inferior izquierdo",
+    "12": "el cuadrado inferior derecho",
+    "13": "las 4 esquinas",
+    "14": "las 4 casillas centrales"
+  },
+  "help": {
+    "cost": "Coste:",
+    "effect": "Efecto:",
+    "effect-1": "Efecto 1:",
+    "effect-2": "Efecto 2:",
+    "pack": "Efecto MANADA:",
+    "portal": "Portal – Efecto:",
+    "front": "Anverso:",
+    "back": "Reverso:",
+    "desert": "Reverso (Desierto):",
+    "symbols": "Símbolos:",
+    "zones": "Zonas:",
+    "placement": "Colocación:",
+    "use": "Uso:",
+    "start": "Inicio:",
+    "special-activation": "Activación Especial:",
+    "clan-victory": "Victoria de clan:",
+    "military-victory": "Victoria militar:",
+    "none": "Ninguno.",
+    "hidden": "Esta carta está boca abajo: solo es visible el clan al que pertenece.",
+    "deck": {
+      "title": "Mazo",
+      "clan-title": "Mazo de los {clan}",
+      "count": "{count, plural, one {Queda # carta} other {Quedan # cartas}} en el mazo.",
+      "all": "Todas las cartas del clan:"
+    },
+    "food-cost": "{count} <food/>",
+    "cards-cost": "{count, plural, one {# carta} other {# cartas}} de tu mano, a devolver debajo de tu mazo.",
+    "current": "(actualmente {count} <food/>)",
+    "awakening": "Activa un efecto Despertar teniendo al menos {count} <level/> en juego, y devuelve 1 de ellos a tu mano.",
+    "title": {
+      "1": "Carta de Panda",
+      "2": "Carta de Tiburón",
+      "3": "Carta de Gato",
+      "4": "Carta de Escorpión"
+    },
+    "note": {
+      "awakening": "<awakening/> Efecto Despertar: si tienes al menos {count} <bronze/> en juego, devuelve uno de ellos a tu mano y sustitúyelo por un <silver/>; o si tienes al menos {count} <silver/> en juego, devuelve uno de ellos a tu mano y sustitúyelo por un <gold/>, en el mismo lugar. El efecto Despertar se resuelve después de haber resuelto todas las demás activaciones.",
+      "rotation": "Rotación: tras su activación, la carta se gira 180°. Es entonces su otro efecto el que podrá activarse.",
+      "ring": "En cuanto se cumple su condición, un Anillo se juega gratis, sin costar una acción, una vez resueltas todas las demás activaciones. Jugar 3 Anillos hace ganar la partida.",
+      "pack": "El efecto MANADA sustituye al efecto normal mientras la carta esté ortogonalmente adyacente a 2 fichas de Tiburón.",
+      "portal": "Colocar los 4 Portales en las 4 esquinas de tu cuadrícula de acción hace ganar la partida.",
+      "desert": "Un Desierto es una loseta temporal volteada a su cara de reverso.",
+      "permanent": "Una loseta permanente siempre puede activarse. Un efecto Mejorar <upgrade/> la voltea a su reverso, donde será más poderosa en las próximas activaciones.",
+      "temporary": "Una loseta temporal se convierte en un Desierto en cuanto se activa. Un efecto Voltear <flip/> la devuelve a su anverso, donde vuelve a poder activarse.",
+      "conflict": "Al final de cada ronda, el jugador que haya reunido más símbolos militares <military/> roba la primera ficha del montón y resuelve su efecto. En caso de empate, nadie la roba.",
+      "clan-victory": "El clan {clan} gana si tiene {count} <victory/>.",
+      "special-activation": "El cristal <special/> impreso en una loseta o una carta desencadena la Activación Especial de tu clan, que no es la misma de un clan a otro.",
+      "action": "Al principio de la ronda, el jugador activo revela la primera loseta del montón y elige una de las zonas que indica. Los 2 jugadores activan después las 4 casillas de esa zona en su propia cuadrícula, el jugador activo primero.",
+      "once-per-activation": "<strong>Una misma loseta o una misma carta no puede activarse 2 veces durante la fase de Activación</strong>, aunque cambie de casilla entretanto.",
+      "cycle": "Tras la {count}ª loseta revelada, solo queda una en el montón: las 5 se vuelven a mezclar boca abajo, y el jugador que controla menos símbolos <victory/> se convierte en el nuevo jugador activo.",
+      "certain-squares": "La casilla superior izquierda (loseta de Acción {first}) y la casilla inferior derecha (loseta de Acción {last}) tienen garantizada su activación cuando se revela su loseta de Acción, seas o no el jugador activo.",
+      "shark-victory": "Tener tus {count} fichas de Tiburón en juego hace ganar la partida.",
+      "food-gain": "La ganas con tus losetas y tus cartas, y durante la organización: intercambiar la posición de 2 de tus casillas da 1 <food/>, y puedes tomarla sin intercambiar.",
+      "food-supply": "La reserva de Comida es ilimitada."
+    },
+    "shark": {
+      "title": "Ficha de Tiburón",
+      "placement": "Jugar una carta de Tiburón coloca una de tus fichas en la casilla de esa carta. Una casilla que ya tiene una la conserva."
+    },
+    "food": {
+      "title": "Ficha de Comida",
+      "use": "La Comida sirve para pagar las cartas de clan que juegas."
+    },
+    "round": {
+      "title": "El desarrollo de una ronda",
+      "activation": "1) Activación:",
+      "activation-text": "El jugador activo revela la primera loseta de Acción y elige una de las zonas de 4 casillas que indica. Cada uno activa después esa zona en su propia cuadrícula, el jugador activo primero. Las activaciones especiales de clan se resuelven después de todas las demás.",
+      "conflict": "2) Conflicto militar:",
+      "conflict-text": "El jugador que haya reunido más símbolos <military/> durante la activación roba la primera ficha de Victoria militar y resuelve su efecto. En caso de empate, nadie la roba.",
+      "organisation": "3) Organización:",
+      "organisation-text": "Por turnos, el jugador activo y luego su oponente eligen una acción: jugar una carta de su mano en una casilla de su cuadrícula, o intercambiar la posición de 2 de sus casillas y ganar 1 <food/>.",
+      "next": "La ronda siguiente se abre con el otro jugador como jugador activo."
+    },
+    "action": {
+      "title": "Loseta de Acción",
+      "hidden": "El montón de 5 losetas se mezcla boca abajo: nada indica cuál será revelada a continuación.",
+      "top-left": "La fila 1, la columna 1, o el cuadrado de 4 casillas arriba a la izquierda.",
+      "top-right": "La fila 2, la columna 2, o el cuadrado de 4 casillas arriba a la derecha.",
+      "bottom-left": "La fila 3, la columna 3, o el cuadrado de 4 casillas abajo a la izquierda.",
+      "bottom-right": "La fila 4, la columna 4, o el cuadrado de 4 casillas abajo a la derecha.",
+      "corners-or-center": "Las 4 casillas de las esquinas, o las 4 casillas del centro.",
+      "pile-title": "Montón de losetas de Acción",
+      "pile-count": "{count, plural, one {Queda # loseta} other {Quedan # losetas}} en el montón:",
+      "frequency": "Este es el número máximo de veces que una casilla de tu cuadrícula puede activarse durante un ciclo de {count} losetas de Acción:"
+    },
+    "victory": {
+      "title": "Carta de Condición de Victoria",
+      "start": "Empieza la partida con {cards, plural, one {# carta} other {# cartas}} y {food} <food/>.",
+      "activation": {
+        "1": "Gana 1 <food/> O 1 Despertar <awakening/>.",
+        "2": "Gana 2 <military/>.",
+        "3": "Roba 1 carta.",
+        "4": "Espía."
+      },
+      "clan": {
+        "1": "Tener tus {count} Pandas <gold/> en juego.",
+        "2": "Tener tus {count} fichas de Tiburón <shark/> en juego.",
+        "3": "Jugar {count} Anillos <ring/>.",
+        "4": "Colocar tus {count} Portales <portal/> en las 4 esquinas de tu cuadrícula de acción."
+      },
+      "choose": "Elegir este Clan",
+      "show-cards": "Ver todas las cartas del clan",
+      "hide-cards": "Ocultar las cartas del clan"
+    },
+    "token": {
+      "title": "Ficha de Victoria militar",
+      "pile-title": "Montón de fichas de Victoria militar",
+      "pile-count": "{count, plural, one {Queda # ficha} other {Quedan # fichas}} en el montón.",
+      "all": "Las {count} fichas del juego, y el número de ejemplares de cada una:",
+      "hidden": "El montón de 18 fichas se mezcla boca abajo entre los 2 jugadores: solo se revelará la siguiente en ser robada.",
+      "symbols": "{count} <victory/>",
+      "spy": "Espía.",
+      "flip-desert": "Voltea uno de tus Desiertos a su anverso, si es posible: su efecto podrá activarse de nuevo.",
+      "upgrade": "Mejora una de tus losetas.",
+      "food": "Gana 1 <food/>.",
+      "steal-food": "Roba 1 <food/> a tu oponente. Si no tiene, ignora este efecto.",
+      "draw": "Roba 1 carta."
+    },
+    "tile": {
+      "permanent": "Loseta permanente",
+      "temporary": "Loseta temporal",
+      "desert-face": "Esta loseta ya no tiene efecto activable. El efecto de su anverso sigue recordado abajo a la derecha: es el que desencadenan las cartas de Escorpión que activan un Desierto.",
+      "permanent-draw": "Roba 1 carta.",
+      "permanent-draw-2": "Roba 2 cartas.",
+      "permanent-special-activation": "Desencadena tu Activación Especial.",
+      "permanent-special-activation-2": "Desencadena tu Activación Especial y gana 1 <food/>.",
+      "permanent-food": "Gana 1 <food/>.",
+      "permanent-food-2": "Gana 2 <food/>.",
+      "permanent-military": "Gana 1 <military/>.",
+      "permanent-military-2": "Gana 2 <military/>.",
+      "temporary-food": "Gana 1 <food/>, y luego voltea esta loseta a su cara de Desierto.",
+      "temporary-draw": "Roba 1 carta, y luego voltea esta loseta a su cara de Desierto.",
+      "temporary-upgrade": "Mejora una de tus losetas permanentes, y luego voltea esta loseta a su cara de Desierto.",
+      "temporary-special-activation": "Desencadena tu Activación Especial, y luego voltea esta loseta a su cara de Desierto.",
+      "temporary-military": "Gana 1 <military/>, y luego voltea esta loseta a su cara de Desierto."
+    },
+    "card": {
+      "panda-draw-and-special-activation": "Roba 1 carta y desencadena tu Activación Especial.",
+      "panda-upgrade": "Mejora una de tus losetas.",
+      "panda-food-or-military": "Gana 1 <food/> O gana 1 <military/>.",
+      "panda-food-and-discount": "Gana 1 <food/>. Puedes jugar una carta de Panda de tu mano reduciendo su coste en 1 <food/>.",
+      "panda-draw-or-military": "Roba 1 carta O gana 1 <military/>.",
+      "panda-food-and-spy": "Gana 1 <food/>. Espía.",
+      "panda-military": "Gana 2 <military/>.",
+      "panda-military-and-upgrade": "Gana 1 <military/>. Mejora una de tus losetas.",
+      "panda-spy-and-discount": "Espía. Puedes jugar una carta de Panda de tu mano reduciendo su coste en 2 <food/>.",
+      "panda-king": "Gana 2 <military/> y roba 1 ficha de Victoria militar (resuelve su efecto).",
+      "panda-queen": "Activa una de tus cartas de Panda en juego.",
+      "shark-upgrade": "Mejora una de tus losetas.",
+      "shark-upgrade-2": "Activa una de tus losetas, y luego mejórala si es posible.",
+      "shark-spy-or-trigger-token": "Espía.",
+      "shark-spy-or-trigger-token-2": "Gana 1 <military/> y desencadena el efecto de una de tus fichas de Victoria militar.",
+      "shark-pack-redraw-token-2": "Devuelve una de tus fichas de Victoria militar debajo del montón y roba una nueva (resuelve su efecto).",
+      "shark-military": "Gana 1 <military/>.",
+      "shark-military-2": "Gana 2 <military/>.",
+      "shark-military-and-draw": "Gana 1 <military/>.",
+      "shark-military-and-draw-2": "Gana 1 <military/> y roba 1 carta.",
+      "shark-military-per-token": "Gana 2 <military/>.",
+      "shark-military-per-token-2": "Gana 1 <military/> por cada ficha de Tiburón ortogonalmente adyacente a esta carta.",
+      "shark-pack-draw-token-2": "Roba 1 ficha de Victoria militar (resuelve su efecto).",
+      "shark-food-or-discount": "Gana 1 <food/>.",
+      "shark-food-or-discount-2": "Puedes jugar una carta de tu mano reduciendo su coste en 2 <food/>.",
+      "shark-food-per-token": "Gana 1 <food/> por cada pareja de fichas de Victoria militar que poseas.",
+      "shark-food-per-token-2": "Gana 1 <food/> por cada ficha de Victoria militar que poseas.",
+      "shark-pack-place-token-2": "Coloca una ficha de Tiburón en una de tus losetas que no tenga ninguna.",
+      "shark-pack-spy-2": "Espía.",
+      "cat-copy-opponent-card": "Copia el efecto de una casilla que tu oponente pueda activar este turno. Rotación.",
+      "cat-copy-opponent-card-2": "Roba 2 cartas. Rotación.",
+      "cat-search-ring": "Busca un Anillo en tu mazo, revélalo y añádelo a tu mano, y luego baraja tu mazo. Rotación.",
+      "cat-search-ring-2": "Rotación.",
+      "cat-upgrade-card-or-activate-tile": "Mejora 1 loseta. Rotación.",
+      "cat-upgrade-card-or-activate-tile-2": "Activa una de tus losetas, mejorada o no. Rotación.",
+      "cat-military-or-food-per-card-in-hand": "Gana 1 <military/> por carta en tu mano. Rotación.",
+      "cat-military-or-food-per-card-in-hand-2": "Gana 1 <food/> por carta en tu mano. Rotación.",
+      "cat-spy-and-draw": "Espía, y luego roba 1 carta. Rotación.",
+      "cat-spy-and-draw-2": "Rotación.",
+      "cat-spend-ring-for-token": "Puedes gastar 1 Anillo de tu mano, revelándolo a tu oponente y devolviéndolo debajo de tu mazo, para robar 1 ficha de Victoria militar (resuelve su efecto). Rotación.",
+      "cat-spend-ring-for-token-2": "Rotación.",
+      "cat-food-and-military": "Gana 1 <food/> y 1 <military/>. Rotación.",
+      "cat-food-and-military-2": "Rotación.",
+      "cat-draw-and-food": "Roba 1 carta y gana 1 <food/>. Rotación.",
+      "cat-draw-and-food-2": "Rotación.",
+      "cat-military-or-upgrade": "Gana 2 <military/>. Rotación.",
+      "cat-military-or-upgrade-2": "Mejora 1 loseta. Rotación.",
+      "cat-ring": "Puedes rotar una de tus cartas de Gato.",
+      "scorpion-food-per-desert-pair": "Gana 1 <food/> por cada una de tus parejas de Desiertos.",
+      "scorpion-military-per-desert-pair": "Gana 1 <military/> por cada una de tus parejas de Desiertos.",
+      "scorpion-draw-and-food": "Roba 1 carta y gana 1 <food/>.",
+      "scorpion-discount-per-desert-pair": "Puedes jugar una carta de tu mano reduciendo su coste en 1 <food/> por cada una de tus parejas de Desiertos.",
+      "scorpion-activate-desert": "Activa el efecto recordado en uno de tus Desiertos.",
+      "scorpion-upgrade-and-activate": "Mejora una de tus losetas, y luego actívala si es posible.",
+      "scorpion-food-and-portal-bonus": "Gana 1 <food/>, y luego, si controlas 1 / 2 / 3 Portales: Espía / + gana 1 <military/> / + activa el efecto recordado en uno de tus Desiertos.",
+      "scorpion-portal-double-spy": "Espía 2 veces, en 2 montones diferentes.",
+      "scorpion-portal-double-spy-cost": "9 <food/> menos tu número de cartas en mano",
+      "scorpion-portal-flip-opponent-tile": "Tu oponente voltea una de sus losetas a su cara de Desierto o no mejorada, si es posible.",
+      "scorpion-portal-flip-opponent-tile-cost": "9 <food/> menos tu número de losetas mejoradas",
+      "scorpion-portal-swap": "Intercambia la posición de 2 de tus cartas o losetas en tu cuadrícula de acción.",
+      "scorpion-portal-swap-cost": "9 <food/> menos tu número de Portales en juego",
+      "scorpion-portal-block-military-victory": "Ningún jugador puede ganar una ficha de Victoria militar esta ronda.",
+      "scorpion-portal-block-military-victory-cost": "9 <food/> menos tu número de fichas de Victoria militar"
+    }
+  },
+  "header": {
+    "choose-clan": {
+      "you": "<reopen>Elige tu clan</reopen>",
+      "player": "{player} elige su clan"
+    },
+    "mulligan": {
+      "you": "¿Te quedas con estas cartas? <keep>Quedarme</keep> <redraw>Rebarajar</redraw>",
+      "player": "{player} mira su mano inicial",
+      "players": "Los jugadores miran su mano inicial"
+    },
+    "choose-action": {
+      "you": "Elige la zona a activar",
+      "player": "{player} elige la zona a activar"
+    },
+    "activate-zone": {
+      "you": "Activa las casillas de la zona, en el orden que prefieras",
+      "player": "{player} activa las casillas de la zona"
+    },
+    "choose-effect": {
+      "you": "Elige un efecto",
+      "player": "{player} elige un efecto"
+    },
+    "awakening": {
+      "you": "<awakening/>: Despierta a un Panda",
+      "player": "<awakening/>: {player} despierta a un Panda"
+    },
+    "play-card": {
+      "you": "Juega una carta de tu mano a -{discount} <food/> o <decline>pasa</decline>",
+      "player": "{player} puede jugar una carta de su mano a -{discount} <food/>"
+    },
+    "pay-card-cost": {
+      "you": "Pon {count, plural, one {# carta} other {# cartas}} de tu mano debajo de tu mazo",
+      "player": "{player} pone {count, plural, one {# carta} other {# cartas}} de su mano debajo de su mazo"
+    },
+    "activate-card": {
+      "you": "Activa una de tus cartas en juego",
+      "player": "{player} activa una de sus cartas en juego"
+    },
+    "activate-and-upgrade-tile": {
+      "you": "Activa una de tus losetas, será mejorada si es posible",
+      "player": "{player} activa una de sus losetas"
+    },
+    "military-victory": {
+      "you": "Ganas el conflicto militar",
+      "player": "{player} gana el conflicto militar"
+    },
+    "redraw-military-victory": {
+      "you": "Devuelve una de tus fichas debajo del montón para robar una nueva",
+      "player": "{player} devuelve una de sus fichas debajo del montón"
+    },
+    "trigger-military-victory": {
+      "you": "Desencadena el efecto de una de tus fichas de Victoria militar",
+      "player": "{player} desencadena el efecto de una de sus fichas"
+    },
+    "place-shark-token": {
+      "you": "Coloca una ficha de Tiburón en una de tus losetas que no tenga ninguna",
+      "player": "{player} coloca una ficha de Tiburón en una de sus losetas"
+    },
+    "organisation": {
+      "you": "Juega una carta o intercambia 2 cartas y gana 1 <food/>",
+      "player": "{player} juega una carta o intercambia 2 cartas y gana 1 <food/>"
+    },
+    "upgrade-tile": {
+      "you": "Mejora una de tus losetas permanentes",
+      "player": "{player} mejora una de sus losetas permanentes"
+    },
+    "flip-desert": {
+      "you": "Voltea uno de tus Desiertos a su anverso",
+      "player": "{player} voltea uno de sus Desiertos"
+    },
+    "spy": {
+      "you": "Espía el primer elemento de un montón",
+      "player": "{player} espía un montón"
+    },
+    "spy-return": {
+      "you": "Devuelve este elemento encima o debajo de su montón",
+      "player": "{player} devuelve el elemento espiado encima o debajo de su montón"
+    },
+    "activate-desert": {
+      "you": "Activa el efecto recordado en uno de tus Desiertos",
+      "player": "{player} activa el efecto recordado en uno de sus Desiertos"
+    },
+    "upgrade-and-activate-tile": {
+      "you": "Mejora una de tus losetas, será activada después",
+      "player": "{player} mejora una de sus losetas, y luego la activa"
+    },
+    "downgrade-tile": {
+      "you": "Voltea una de tus losetas a su cara de Desierto o no mejorada",
+      "player": "{player} voltea una de sus losetas a su cara de Desierto o no mejorada"
+    },
+    "swap-squares": {
+      "you": "Intercambia la posición de 2 de tus cartas o losetas",
+      "player": "{player} intercambia la posición de 2 de sus cartas o losetas"
+    },
+    "activate-tile": {
+      "you": "Activa una de tus losetas, mejorada o no",
+      "player": "{player} activa una de sus losetas"
+    },
+    "copy-opponent-card": {
+      "you": "Copia el efecto de una casilla de tu oponente en la zona",
+      "player": "{player} copia el efecto de una de tus casillas en la zona"
+    },
+    "search-ring": {
+      "you": "<reopen>Toma un Anillo de tu mazo y ponlo en tu mano</reopen>",
+      "player": "{player} busca un Anillo en su mazo"
+    },
+    "spend-ring-for-token": {
+      "you": "Devuelve un Anillo debajo de tu mazo para robar una ficha de Victoria militar o <decline>pasa</decline>",
+      "player": "{player} puede cambiar un Anillo por una ficha de Victoria militar"
+    },
+    "rotate-cat-card": {
+      "you": "Rota una de tus cartas de Gato o <decline>pasa</decline>",
+      "player": "{player} puede rotar una de sus cartas de Gato"
+    },
+    "place-ring": {
+      "you": "Coloca un Anillo en una casilla de tu tablero o <decline>pasa</decline>",
+      "player": "{player} puede colocar un Anillo en su tablero"
+    }
+  },
+  "game-over": {
+    "military": {
+      "you": "Has ganado con {count} <victory/>",
+      "player": "{player} ha ganado con {count} <victory/>"
+    },
+    "clan": {
+      "1": {
+        "you": "Has ganado con tus {count} Pandas <gold/> en juego",
+        "player": "{player} ha ganado con sus {count} Pandas <gold/> en juego"
+      },
+      "2": {
+        "you": "Has ganado con tus {count} fichas de Tiburón <shark/> en juego",
+        "player": "{player} ha ganado con sus {count} fichas de Tiburón <shark/> en juego"
+      },
+      "3": {
+        "you": "Has ganado con {count} Anillos <ring/> en juego",
+        "player": "{player} ha ganado con {count} Anillos <ring/> en juego"
+      },
+      "4": {
+        "you": "Has ganado con tus {count} Portales <portal/> en las 4 esquinas",
+        "player": "{player} ha ganado con sus {count} Portales <portal/> en las 4 esquinas"
+      }
+    },
+    "race": {
+      "clan": "Victoria de clan",
+      "military": "Victoria militar"
+    }
+  },
+  "log": {
+    "choose-clan": "{player} elige el clan de los {clan}",
+    "mulligan": "{player} rebaraja su mano inicial y roba otras tantas cartas",
+    "keep-hand": "{player} se queda con su mano inicial",
+    "reveal-action": "{player} revela la loseta de Acción <material/>",
+    "choose-action": "{player} elige {zone}",
+    "activate": "{player} activa <material/>",
+    "activate-card": "{player} activa su carta <material/>",
+    "activate-tile": "{player} activa su loseta <material/>",
+    "activate-and-upgrade-tile": "{player} activa su loseta <material/>, y luego la mejora",
+    "activate-desert": "{player} activa el efecto recordado en su Desierto <material/>",
+    "copy": "{player} copia <material/> de su oponente",
+    "choose-effect": "{player} elige <effects/>",
+    "conflict": {
+      "won": "{player} gana el conflicto militar, {symbols} <military/> contra {opponent}",
+      "tie": "Conflicto militar: empate, nadie roba ficha",
+      "blocked": "{player} gana el conflicto militar, pero no se puede ganar ninguna ficha esta ronda",
+      "empty": "{player} gana el conflicto militar, pero el montón de fichas está vacío"
+    },
+    "food-gain": "{player} gana {count} <food/>",
+    "organisation-food": "{player} gana {count} <food/> organizando su cuadrícula",
+    "food-spend": "{player} gasta {count} <food/>",
+    "food-steal": "{player} roba {count} <food/> a su oponente",
+    "draw": "{player} roba 1 carta",
+    "draw-seen": "{player} roba <material/>",
+    "play-card": "{player} juega <material/>",
+    "awaken": "{player} despierta a <material/>",
+    "awakening-lost": "Despertar imposible, {player} gana {count} <food/>",
+    "place-ring": "{player} coloca el Anillo <material/>",
+    "pay-card": "{player} pone 1 carta de su mano debajo de su mazo",
+    "spend-ring": "{player} devuelve 1 Anillo debajo de su mazo",
+    "spend-ring-seen": "{player} devuelve el Anillo <material/> debajo de su mazo",
+    "search-ring": "{player} toma el Anillo <material/> de su mazo",
+    "rotate": "{player} rota su carta <material/>",
+    "upgrade": "{player} mejora una de sus losetas: <material/>",
+    "flip": "{player} voltea uno de sus Desiertos a su anverso: <material/>",
+    "downgrade-front": "{player} voltea una de sus losetas a su cara no mejorada: <material/>",
+    "downgrade-desert": "{player} voltea una de sus losetas a su cara de Desierto: <material/>",
+    "swap": "{player} intercambia la posición de 2 de sus casillas",
+    "win-token": "{player} roba la ficha <material/>",
+    "redraw-token": "{player} devuelve la ficha <material/> debajo del montón",
+    "trigger-token": "{player} desencadena el efecto de la ficha <material/>",
+    "shark-token": "{player} coloca una ficha de Tiburón <shark/> ({count}/{goal})",
+    "pass": {
+      "play-card": "{player} renuncia a jugar una carta",
+      "spend-ring": "{player} renuncia a cambiar un Anillo",
+      "rotate": "{player} renuncia a rotar una carta",
+      "place-ring": "{player} renuncia a colocar un Anillo"
+    },
+    "spy": {
+      "deck": "{player} espía la primera carta de su mazo",
+      "deck-seen": "{player} espía la primera carta de su mazo: <material/>",
+      "action-tile": "{player} espía la primera loseta del montón de Acción",
+      "action-tile-seen": "{player} espía la primera loseta del montón de Acción: <material/>",
+      "military-victory": "{player} espía la primera ficha de Victoria militar",
+      "military-victory-seen": "{player} espía la primera ficha de Victoria militar: <material/>"
+    },
+    "spy-return": {
+      "on-top": "{player} devuelve el elemento espiado encima de su montón",
+      "on-top-seen": "{player} devuelve <material/> encima de su montón",
+      "under": "{player} devuelve el elemento espiado debajo de su montón",
+      "under-seen": "{player} devuelve <material/> debajo de su montón"
+    }
+  }
+}

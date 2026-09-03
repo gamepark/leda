@@ -1,1 +1,523 @@
-{}
+{
+  "tutorial": {
+    "welcome": "Benvenuto nel tutorial di <strong>LEDA</strong>!",
+    "clans": "LEDA è un duello <strong>asimmetrico</strong>: ogni giocatore incarna un Clan animale, con le proprie carte e il proprio modo di vincere. Qui giochi i <strong>Panda</strong>, e il tuo avversario gli <strong>Squali</strong>.",
+    "victory-condition": "Ecco la tua carta Condizione di Vittoria. Ti ricorda i tuoi 2 modi di vincere la partita: la <strong>vittoria di clan</strong>, avere i tuoi {gold} Panda <gold/> in gioco, e la <strong>vittoria militare</strong>, riunire {victory} <victory/>. Ci torneremo.",
+    "grid": "Ecco la tua griglia d'azione, 16 tessere in 4x4. A ogni round ne attiverai <strong>4 caselle</strong>.",
+    "action-tile": "Ecco la tessera <strong>Azione</strong> del round. È lei a indicare le zone di 4 caselle tra cui il giocatore attivo deve scegliere.",
+    "choose-zone": "Sei il <strong>giocatore attivo</strong>. Questa tessera ti permette di attivare la <strong>riga 1</strong>, la <strong>colonna 1</strong> o il <strong>quadrato in alto a sinistra</strong>. Il tuo avversario attiverà poi la stessa zona nella propria griglia.",
+    "choose-row": "Scegli di attivare la <strong>prima riga</strong>.",
+    "activate-order": "La zona è scelta: il giocatore attivo attiva ora le sue 4 caselle, <strong>nell'ordine che preferisce</strong>.",
+    "temporary-food": "Questa tessera dà 1 <food/>, ed è una tessera <strong>temporanea</strong>. Attivala.",
+    "desert": "Una tessera temporanea viene <strong>girata</strong> <flip/> non appena viene attivata: diventa un <strong>Deserto</strong>, un lato che non produce più nulla.",
+    "food-stock": "Il tuo Cibo è riposto qui, e il suo totale è indicato nel tuo pannello giocatore. Il tuo Clan inizia la partita con 1 <food/>.",
+    "food-use": "Il Cibo serve a giocare le carte della tua mano. Ognuna di queste 2 carte ti costerà <strong>5 <food/></strong>.",
+    "temporary-upgrade": "Questa tessera ti permette di <strong>Migliorare</strong> <upgrade/> una delle tue tessere permanenti. Attivala.",
+    "upgrade-target": "Migliora questa tessera: sarà girata sul suo <strong>lato migliorato</strong>, più potente.",
+    "upgraded": "Ora dà 2 <food/>. Attivala.",
+    "military-tile": "Questa tessera dà 1 simbolo <strong>Militare</strong> <military/>. Attivala.",
+    "opponent-activates": "Il tuo avversario attiva a sua volta le stesse 4 caselle, nella propria griglia.",
+    "conflict-start": "La <strong>fase di Attivazione</strong> è terminata. Tocca alla 2ª fase: il <strong>Conflitto Militare</strong>.",
+    "conflict-rule": "Il giocatore che ha riunito più simboli <military/> durante l'attivazione vince il conflitto. In caso di parità, nessuno guadagna nulla.",
+    "conflict-won": "Hai ottenuto 1 <military/> e il tuo avversario nessuno: peschi quindi il primo <strong>gettone Vittoria militare</strong> e ne risolvi l'effetto.",
+    "token": "Un gettone dà sempre almeno 1 <victory/>, e spesso un bonus in più. Questo ti fa anche guadagnare 1 <food/>.",
+    "military-victory": "Non appena controlli <strong>{count} <victory/></strong>, vinci immediatamente la partita!",
+    "organisation-start": "Il Conflitto Militare è risolto. Tocca alla 3ª e ultima fase del round: <strong>l'Organizzazione</strong>.",
+    "organisation-rule": "A turno, i giocatori scelgono un'azione: <strong>giocare una carta</strong> dalla propria mano su una casella della propria griglia, oppure <strong>scambiare la posizione di 2 caselle</strong> e guadagnare 1 <food/>. Prendere quel Cibo senza scambiare nulla è permesso.",
+    "your-organisation": "Hai 5 <food/>: puoi quindi giocare una carta, per esempio su uno dei tuoi Deserti. Puoi anche scambiare 2 caselle e guadagnare 1 <food/>. Sta a te scegliere!",
+    "opponent-organisation": "Il tuo avversario organizza a sua volta la propria griglia.",
+    "new-round": "Il 1° round è terminato. Inizia un nuovo round, con una nuova tessera Azione.",
+    "opponent-chooses": "I giocatori sono attivi a turno: questa volta è il tuo avversario a scegliere la zona da attivare.",
+    "row-chosen": "Il tuo avversario ha scelto di attivare la <strong>riga 4</strong>: devi quindi attivare queste 4 caselle.",
+    "draw": "Questa tessera ti fa <strong>pescare 1 carta</strong>, poi si gira sul suo lato Deserto.",
+    "special-activation": "Questa tessera porta un cristallo <special/>: innesca <strong>l'Attivazione Speciale</strong> del tuo clan, che non è la stessa da un clan all'altro.",
+    "shark-activation": "Per il tuo avversario, che gioca gli Squali, un cristallo <special/> dà 2 <military/>.",
+    "panda-activation": "Per te, un cristallo <special/> dà 1 <food/> <strong>oppure</strong> 1 effetto <strong>Risveglio</strong> <awakening/>.",
+    "clan-victory": "La tua vittoria di clan richiede i tuoi {gold} Panda <gold/> in gioco. Hai già il Re in mano, e la Regina ti aspetta nel tuo mazzo: ti serviranno anche Panda <silver/>, e almeno <strong>{awakenings} effetti Risveglio</strong> <awakening/>.",
+    "end": "Non appena soddisfi la tua condizione di vittoria di clan, o raggiungi la vittoria militare, la partita si ferma e tu vinci!",
+    "good-luck": "Ora tocca a te giocare. Buona fortuna!"
+  },
+  "spy": {
+    "look": "Spiare",
+    "on-top": "Sopra la pila",
+    "under": "Sotto la pila",
+    "history": {
+      "title": "Chi ha consultato questa pila in questo round?",
+      "on-top": "{player} ha spiato questa pila, e ha rimesso l'elemento sopra.",
+      "under": "{player} ha spiato questa pila, e ha rimesso l'elemento sotto.",
+      "seen": "Avevi visto:"
+    }
+  },
+  "activation": {
+    "lock": "Questa è già stata attivata: non lo sarà più prima del prossimo round."
+  },
+  "swap": {
+    "history": {
+      "text": "{player} ha scambiato questi 2 elementi."
+    }
+  },
+  "organisation": {
+    "food": {
+      "explain": "Scambia la posizione di 2 carte, e poi guadagna 1 <food/>. Non sei obbligato a scambiare per prendere 1 <food/>.",
+      "take": "Prendi solo 1"
+    }
+  },
+  "awakening": {
+    "explain": "L'effetto Risveglio si risolve dopo aver risolto tutte le altre attivazioni."
+  },
+  "choose-effect": {
+    "choose": "Scegli un effetto",
+    "or": "oppure"
+  },
+  "search-ring": {
+    "choose": "Scegli un Anello dal tuo mazzo",
+    "condition": "Condizione di gioco:",
+    "effect": "Effetto di ogni Anello:",
+    "rotate": "Puoi ruotare una delle tue carte Gatto.",
+    "pick": "Scegli",
+    "win-conflict": "Vincere un Conflitto militare con {count} o più di scarto.",
+    "empty-deck": "Svuotare il tuo mazzo.",
+    "three-cat-cards": "Attivare una zona con almeno {count} carte Gatto.",
+    "five-upgraded-tiles": "Avere {count} tessere migliorate."
+  },
+  "clan": {
+    "1": "Panda",
+    "2": "Squali",
+    "3": "Gatti",
+    "4": "Scorpioni",
+    "choose": "Scegli il tuo clan",
+    "pick": "Scegli",
+    "view": "Vedi i dettagli del clan",
+    "random": "A caso!"
+  },
+  "zone": {
+    "1": "la riga 1",
+    "2": "la riga 2",
+    "3": "la riga 3",
+    "4": "la riga 4",
+    "5": "la colonna 1",
+    "6": "la colonna 2",
+    "7": "la colonna 3",
+    "8": "la colonna 4",
+    "9": "il quadrato in alto a sinistra",
+    "10": "il quadrato in alto a destra",
+    "11": "il quadrato in basso a sinistra",
+    "12": "il quadrato in basso a destra",
+    "13": "i 4 angoli",
+    "14": "le 4 caselle centrali"
+  },
+  "help": {
+    "cost": "Costo:",
+    "effect": "Effetto:",
+    "effect-1": "Effetto 1:",
+    "effect-2": "Effetto 2:",
+    "pack": "Effetto BRANCO:",
+    "portal": "Portale – Effetto:",
+    "front": "Fronte:",
+    "back": "Retro:",
+    "desert": "Retro (Deserto):",
+    "symbols": "Simboli:",
+    "zones": "Zone:",
+    "placement": "Posa:",
+    "use": "Utilizzo:",
+    "start": "Inizio:",
+    "special-activation": "Attivazione Speciale:",
+    "clan-victory": "Vittoria di clan:",
+    "military-victory": "Vittoria militare:",
+    "none": "Nessuno.",
+    "hidden": "Questa carta è coperta: solo il clan a cui appartiene è visibile.",
+    "deck": {
+      "title": "Mazzo",
+      "clan-title": "Mazzo dei {clan}",
+      "count": "{count, plural, one {Resta # carta} other {Restano # carte}} nel mazzo.",
+      "all": "Tutte le carte del clan:"
+    },
+    "food-cost": "{count} <food/>",
+    "cards-cost": "{count, plural, one {# carta} other {# carte}} dalla tua mano, da rimettere sotto il tuo mazzo.",
+    "current": "(attualmente {count} <food/>)",
+    "awakening": "Attiva un effetto Risveglio avendo almeno {count} <level/> in gioco, e riprendine 1 in mano.",
+    "title": {
+      "1": "Carta Panda",
+      "2": "Carta Squalo",
+      "3": "Carta Gatto",
+      "4": "Carta Scorpione"
+    },
+    "note": {
+      "awakening": "<awakening/> Effetto Risveglio: se hai almeno {count} <bronze/> in gioco, rimettine uno in mano e sostituiscilo con un <silver/>; oppure se hai almeno {count} <silver/> in gioco, rimettine uno in mano e sostituiscilo con un <gold/>, nello stesso punto. L'effetto Risveglio si risolve dopo aver risolto tutte le altre attivazioni.",
+      "rotation": "Rotazione: dopo la sua attivazione, la carta viene girata di 180°. Sarà allora il suo altro effetto a essere attivabile.",
+      "ring": "Non appena la sua condizione è soddisfatta, un Anello si gioca gratuitamente, senza costare un'azione, una volta risolte tutte le altre attivazioni. Giocare 3 Anelli fa vincere la partita.",
+      "pack": "L'effetto BRANCO sostituisce l'effetto normale finché la carta è ortogonalmente adiacente a 2 segnalini Squalo.",
+      "portal": "Posare i 4 Portali nei 4 angoli della tua griglia d'azione fa vincere la partita.",
+      "desert": "Un Deserto è una tessera temporanea girata sul suo retro.",
+      "permanent": "Una tessera permanente è sempre attivabile. Un effetto Migliorare <upgrade/> la gira sul suo retro, dove sarà più potente nelle prossime attivazioni.",
+      "temporary": "Una tessera temporanea diventa un Deserto non appena viene attivata. Un effetto Girare <flip/> la rimette sul suo fronte, dove torna a essere attivabile.",
+      "conflict": "Alla fine di ogni round, il giocatore che ha riunito più simboli militari <military/> pesca il primo gettone della pila e ne risolve l'effetto. In caso di parità, nessuno lo pesca.",
+      "clan-victory": "Il clan {clan} vince se ha {count} <victory/>.",
+      "special-activation": "Il cristallo <special/> stampato su una tessera o una carta innesca l'Attivazione Speciale del tuo clan, che non è la stessa da un clan all'altro.",
+      "action": "All'inizio del round, il giocatore attivo rivela la prima tessera della pila e sceglie una delle zone che indica. I 2 giocatori attivano poi le 4 caselle di quella zona nella propria griglia, il giocatore attivo per primo.",
+      "once-per-activation": "<strong>Una stessa tessera o una stessa carta non può essere attivata 2 volte durante la fase di Attivazione</strong>, anche se nel frattempo cambia casella.",
+      "cycle": "Dopo la {count}ª tessera rivelata, ne resta solo una nella pila: tutte e 5 vengono rimescolate coperte, e il giocatore che controlla meno simboli <victory/> diventa il nuovo giocatore attivo.",
+      "certain-squares": "La casella in alto a sinistra (tessera Azione {first}) e la casella in basso a destra (tessera Azione {last}) sono certe di essere attivate quando la loro tessera Azione viene rivelata, che tu sia il giocatore attivo o no.",
+      "shark-victory": "Avere i tuoi {count} segnalini Squalo in gioco fa vincere la partita.",
+      "food-gain": "Ne guadagni con le tue tessere e le tue carte, e durante l'organizzazione: scambiare la posizione di 2 delle tue caselle dà 1 <food/>, e puoi prenderlo senza scambiare.",
+      "food-supply": "La riserva di Cibo è illimitata."
+    },
+    "shark": {
+      "title": "Segnalino Squalo",
+      "placement": "Giocare una carta Squalo mette uno dei tuoi segnalini sulla casella di quella carta. Una casella che ne ha già uno lo conserva."
+    },
+    "food": {
+      "title": "Segnalino Cibo",
+      "use": "Il Cibo serve a pagare le carte clan che giochi."
+    },
+    "round": {
+      "title": "Lo svolgimento di un round",
+      "activation": "1) Attivazione:",
+      "activation-text": "Il giocatore attivo rivela la prima tessera Azione e sceglie una delle zone di 4 caselle che indica. Ognuno attiva poi quella zona nella propria griglia, il giocatore attivo per primo. Le attivazioni speciali di clan si risolvono dopo tutte le altre.",
+      "conflict": "2) Conflitto militare:",
+      "conflict-text": "Il giocatore che ha riunito più simboli <military/> durante l'attivazione pesca il primo gettone Vittoria militare e ne risolve l'effetto. In caso di parità, nessuno lo pesca.",
+      "organisation": "3) Organizzazione:",
+      "organisation-text": "A turno, il giocatore attivo e poi il suo avversario scelgono un'azione: giocare una carta dalla propria mano su una casella della propria griglia, oppure scambiare la posizione di 2 delle proprie caselle e guadagnare 1 <food/>.",
+      "next": "Il round successivo si apre con l'altro giocatore come giocatore attivo."
+    },
+    "action": {
+      "title": "Tessera Azione",
+      "hidden": "La pila delle 5 tessere è mescolata coperta: nulla dice quale sarà rivelata dopo.",
+      "top-left": "La riga 1, la colonna 1, o il quadrato di 4 caselle in alto a sinistra.",
+      "top-right": "La riga 2, la colonna 2, o il quadrato di 4 caselle in alto a destra.",
+      "bottom-left": "La riga 3, la colonna 3, o il quadrato di 4 caselle in basso a sinistra.",
+      "bottom-right": "La riga 4, la colonna 4, o il quadrato di 4 caselle in basso a destra.",
+      "corners-or-center": "Le 4 caselle negli angoli, o le 4 caselle al centro.",
+      "pile-title": "Pila delle tessere Azione",
+      "pile-count": "{count, plural, one {Resta # tessera} other {Restano # tessere}} nella pila:",
+      "frequency": "Ecco il numero massimo di volte in cui una casella della tua griglia può essere attivata durante un ciclo di {count} tessere Azione:"
+    },
+    "victory": {
+      "title": "Carta Condizione di Vittoria",
+      "start": "Inizia la partita con {cards, plural, one {# carta} other {# carte}} e {food} <food/>.",
+      "activation": {
+        "1": "Guadagna 1 <food/> OPPURE 1 Risveglio <awakening/>.",
+        "2": "Guadagna 2 <military/>.",
+        "3": "Pesca 1 carta.",
+        "4": "Spia."
+      },
+      "clan": {
+        "1": "Avere i tuoi {count} Panda <gold/> in gioco.",
+        "2": "Avere i tuoi {count} segnalini Squalo <shark/> in gioco.",
+        "3": "Giocare {count} Anelli <ring/>.",
+        "4": "Posare i tuoi {count} Portali <portal/> nei 4 angoli della tua griglia d'azione."
+      },
+      "choose": "Scegli questo Clan",
+      "show-cards": "Vedi tutte le carte del clan",
+      "hide-cards": "Nascondi le carte del clan"
+    },
+    "token": {
+      "title": "Gettone Vittoria militare",
+      "pile-title": "Pila dei gettoni Vittoria militare",
+      "pile-count": "{count, plural, one {Resta # gettone} other {Restano # gettoni}} nella pila.",
+      "all": "I {count} gettoni del gioco, e il numero di esemplari di ciascuno:",
+      "hidden": "La pila dei 18 gettoni è mescolata coperta tra i 2 giocatori: solo il prossimo a essere pescato sarà rivelato.",
+      "symbols": "{count} <victory/>",
+      "spy": "Spia.",
+      "flip-desert": "Gira uno dei tuoi Deserti sul suo fronte, se possibile: il suo effetto potrà essere attivato di nuovo.",
+      "upgrade": "Migliora una delle tue tessere.",
+      "food": "Guadagna 1 <food/>.",
+      "steal-food": "Ruba 1 <food/> al tuo avversario. Se non ne ha, ignora questo effetto.",
+      "draw": "Pesca 1 carta."
+    },
+    "tile": {
+      "permanent": "Tessera permanente",
+      "temporary": "Tessera temporanea",
+      "desert-face": "Questa tessera non ha più un effetto attivabile. L'effetto del suo fronte resta ricordato in basso a destra: è quello che innescano le carte Scorpione che attivano un Deserto.",
+      "permanent-draw": "Pesca 1 carta.",
+      "permanent-draw-2": "Pesca 2 carte.",
+      "permanent-special-activation": "Innesca la tua Attivazione Speciale.",
+      "permanent-special-activation-2": "Innesca la tua Attivazione Speciale e guadagna 1 <food/>.",
+      "permanent-food": "Guadagna 1 <food/>.",
+      "permanent-food-2": "Guadagna 2 <food/>.",
+      "permanent-military": "Guadagna 1 <military/>.",
+      "permanent-military-2": "Guadagna 2 <military/>.",
+      "temporary-food": "Guadagna 1 <food/>, poi gira questa tessera sul suo lato Deserto.",
+      "temporary-draw": "Pesca 1 carta, poi gira questa tessera sul suo lato Deserto.",
+      "temporary-upgrade": "Migliora una delle tue tessere permanenti, poi gira questa tessera sul suo lato Deserto.",
+      "temporary-special-activation": "Innesca la tua Attivazione Speciale, poi gira questa tessera sul suo lato Deserto.",
+      "temporary-military": "Guadagna 1 <military/>, poi gira questa tessera sul suo lato Deserto."
+    },
+    "card": {
+      "panda-draw-and-special-activation": "Pesca 1 carta e innesca la tua Attivazione Speciale.",
+      "panda-upgrade": "Migliora una delle tue tessere.",
+      "panda-food-or-military": "Guadagna 1 <food/> OPPURE guadagna 1 <military/>.",
+      "panda-food-and-discount": "Guadagna 1 <food/>. Puoi giocare una carta Panda dalla tua mano riducendone il costo di 1 <food/>.",
+      "panda-draw-or-military": "Pesca 1 carta OPPURE guadagna 1 <military/>.",
+      "panda-food-and-spy": "Guadagna 1 <food/>. Spia.",
+      "panda-military": "Guadagna 2 <military/>.",
+      "panda-military-and-upgrade": "Guadagna 1 <military/>. Migliora una delle tue tessere.",
+      "panda-spy-and-discount": "Spia. Puoi giocare una carta Panda dalla tua mano riducendone il costo di 2 <food/>.",
+      "panda-king": "Guadagna 2 <military/> e pesca 1 gettone Vittoria militare (risolvine l'effetto).",
+      "panda-queen": "Attiva una delle tue carte Panda in gioco.",
+      "shark-upgrade": "Migliora una delle tue tessere.",
+      "shark-upgrade-2": "Attiva una delle tue tessere, poi migliorala se possibile.",
+      "shark-spy-or-trigger-token": "Spia.",
+      "shark-spy-or-trigger-token-2": "Guadagna 1 <military/> e innesca l'effetto di uno dei tuoi gettoni Vittoria militare.",
+      "shark-pack-redraw-token-2": "Rimetti uno dei tuoi gettoni Vittoria militare sotto la pila e pescane uno nuovo (risolvine l'effetto).",
+      "shark-military": "Guadagna 1 <military/>.",
+      "shark-military-2": "Guadagna 2 <military/>.",
+      "shark-military-and-draw": "Guadagna 1 <military/>.",
+      "shark-military-and-draw-2": "Guadagna 1 <military/> e pesca 1 carta.",
+      "shark-military-per-token": "Guadagna 2 <military/>.",
+      "shark-military-per-token-2": "Guadagna 1 <military/> per ogni segnalino Squalo ortogonalmente adiacente a questa carta.",
+      "shark-pack-draw-token-2": "Pesca 1 gettone Vittoria militare (risolvine l'effetto).",
+      "shark-food-or-discount": "Guadagna 1 <food/>.",
+      "shark-food-or-discount-2": "Puoi giocare una carta dalla tua mano riducendone il costo di 2 <food/>.",
+      "shark-food-per-token": "Guadagna 1 <food/> per ogni coppia di gettoni Vittoria militare che possiedi.",
+      "shark-food-per-token-2": "Guadagna 1 <food/> per ogni gettone Vittoria militare che possiedi.",
+      "shark-pack-place-token-2": "Metti un segnalino Squalo su una delle tue tessere che non ne ha.",
+      "shark-pack-spy-2": "Spia.",
+      "cat-copy-opponent-card": "Copia l'effetto di una casella attivabile dal tuo avversario in questo turno. Rotazione.",
+      "cat-copy-opponent-card-2": "Pesca 2 carte. Rotazione.",
+      "cat-search-ring": "Cerca un Anello nel tuo mazzo, rivelalo e aggiungilo alla tua mano, poi mescola il tuo mazzo. Rotazione.",
+      "cat-search-ring-2": "Rotazione.",
+      "cat-upgrade-card-or-activate-tile": "Migliora 1 tessera. Rotazione.",
+      "cat-upgrade-card-or-activate-tile-2": "Attiva una delle tue tessere, migliorata o no. Rotazione.",
+      "cat-military-or-food-per-card-in-hand": "Guadagna 1 <military/> per carta nella tua mano. Rotazione.",
+      "cat-military-or-food-per-card-in-hand-2": "Guadagna 1 <food/> per carta nella tua mano. Rotazione.",
+      "cat-spy-and-draw": "Spia, poi pesca 1 carta. Rotazione.",
+      "cat-spy-and-draw-2": "Rotazione.",
+      "cat-spend-ring-for-token": "Puoi spendere 1 Anello dalla tua mano, rivelandolo al tuo avversario e rimettendolo sotto il tuo mazzo, per pescare 1 gettone Vittoria militare (risolvine l'effetto). Rotazione.",
+      "cat-spend-ring-for-token-2": "Rotazione.",
+      "cat-food-and-military": "Guadagna 1 <food/> e 1 <military/>. Rotazione.",
+      "cat-food-and-military-2": "Rotazione.",
+      "cat-draw-and-food": "Pesca 1 carta e guadagna 1 <food/>. Rotazione.",
+      "cat-draw-and-food-2": "Rotazione.",
+      "cat-military-or-upgrade": "Guadagna 2 <military/>. Rotazione.",
+      "cat-military-or-upgrade-2": "Migliora 1 tessera. Rotazione.",
+      "cat-ring": "Puoi ruotare una delle tue carte Gatto.",
+      "scorpion-food-per-desert-pair": "Guadagna 1 <food/> per ogni tua coppia di Deserti.",
+      "scorpion-military-per-desert-pair": "Guadagna 1 <military/> per ogni tua coppia di Deserti.",
+      "scorpion-draw-and-food": "Pesca 1 carta e guadagna 1 <food/>.",
+      "scorpion-discount-per-desert-pair": "Puoi giocare una carta dalla tua mano riducendone il costo di 1 <food/> per ogni tua coppia di Deserti.",
+      "scorpion-activate-desert": "Attiva l'effetto ricordato su uno dei tuoi Deserti.",
+      "scorpion-upgrade-and-activate": "Migliora una delle tue tessere, poi attivala se possibile.",
+      "scorpion-food-and-portal-bonus": "Guadagna 1 <food/>, poi, se controlli 1 / 2 / 3 Portali: Spia / + guadagna 1 <military/> / + attiva l'effetto ricordato su uno dei tuoi Deserti.",
+      "scorpion-portal-double-spy": "Spia 2 volte, su 2 pile diverse.",
+      "scorpion-portal-double-spy-cost": "9 <food/> meno il tuo numero di carte in mano",
+      "scorpion-portal-flip-opponent-tile": "Il tuo avversario gira una delle sue tessere sul suo lato Deserto o non migliorato, se possibile.",
+      "scorpion-portal-flip-opponent-tile-cost": "9 <food/> meno il tuo numero di tessere migliorate",
+      "scorpion-portal-swap": "Scambia la posizione di 2 delle tue carte o tessere nella tua griglia d'azione.",
+      "scorpion-portal-swap-cost": "9 <food/> meno il tuo numero di Portali in gioco",
+      "scorpion-portal-block-military-victory": "Nessun giocatore può vincere un gettone Vittoria militare in questo round.",
+      "scorpion-portal-block-military-victory-cost": "9 <food/> meno il tuo numero di gettoni Vittoria militare"
+    }
+  },
+  "header": {
+    "choose-clan": {
+      "you": "<reopen>Scegli il tuo clan</reopen>",
+      "player": "{player} sceglie il suo clan"
+    },
+    "mulligan": {
+      "you": "Tieni queste carte? <keep>Tenere</keep> <redraw>Rimescolare</redraw>",
+      "player": "{player} guarda la sua mano iniziale",
+      "players": "I giocatori guardano la loro mano iniziale"
+    },
+    "choose-action": {
+      "you": "Scegli la zona da attivare",
+      "player": "{player} sceglie la zona da attivare"
+    },
+    "activate-zone": {
+      "you": "Attiva le caselle della zona, nell'ordine che preferisci",
+      "player": "{player} attiva le caselle della zona"
+    },
+    "choose-effect": {
+      "you": "Scegli un effetto",
+      "player": "{player} sceglie un effetto"
+    },
+    "awakening": {
+      "you": "<awakening/>: Risveglia un Panda",
+      "player": "<awakening/>: {player} risveglia un Panda"
+    },
+    "play-card": {
+      "you": "Gioca una carta dalla tua mano a -{discount} <food/> oppure <decline>passa</decline>",
+      "player": "{player} può giocare una carta dalla sua mano a -{discount} <food/>"
+    },
+    "pay-card-cost": {
+      "you": "Metti {count, plural, one {# carta} other {# carte}} dalla tua mano sotto il tuo mazzo",
+      "player": "{player} mette {count, plural, one {# carta} other {# carte}} dalla sua mano sotto il suo mazzo"
+    },
+    "activate-card": {
+      "you": "Attiva una delle tue carte in gioco",
+      "player": "{player} attiva una delle sue carte in gioco"
+    },
+    "activate-and-upgrade-tile": {
+      "you": "Attiva una delle tue tessere, sarà migliorata se possibile",
+      "player": "{player} attiva una delle sue tessere"
+    },
+    "military-victory": {
+      "you": "Vinci il conflitto militare",
+      "player": "{player} vince il conflitto militare"
+    },
+    "redraw-military-victory": {
+      "you": "Rimetti uno dei tuoi gettoni sotto la pila per pescarne uno nuovo",
+      "player": "{player} rimette uno dei suoi gettoni sotto la pila"
+    },
+    "trigger-military-victory": {
+      "you": "Innesca l'effetto di uno dei tuoi gettoni Vittoria militare",
+      "player": "{player} innesca l'effetto di uno dei suoi gettoni"
+    },
+    "place-shark-token": {
+      "you": "Metti un segnalino Squalo su una delle tue tessere che non ne ha",
+      "player": "{player} mette un segnalino Squalo su una delle sue tessere"
+    },
+    "organisation": {
+      "you": "Gioca una carta oppure scambia 2 carte e guadagna 1 <food/>",
+      "player": "{player} gioca una carta oppure scambia 2 carte e guadagna 1 <food/>"
+    },
+    "upgrade-tile": {
+      "you": "Migliora una delle tue tessere permanenti",
+      "player": "{player} migliora una delle sue tessere permanenti"
+    },
+    "flip-desert": {
+      "you": "Gira uno dei tuoi Deserti sul suo fronte",
+      "player": "{player} gira uno dei suoi Deserti"
+    },
+    "spy": {
+      "you": "Spia il primo elemento di una pila",
+      "player": "{player} spia una pila"
+    },
+    "spy-return": {
+      "you": "Rimetti questo elemento sopra o sotto la sua pila",
+      "player": "{player} rimette l'elemento spiato sopra o sotto la sua pila"
+    },
+    "activate-desert": {
+      "you": "Attiva l'effetto ricordato su uno dei tuoi Deserti",
+      "player": "{player} attiva l'effetto ricordato su uno dei suoi Deserti"
+    },
+    "upgrade-and-activate-tile": {
+      "you": "Migliora una delle tue tessere, sarà poi attivata",
+      "player": "{player} migliora una delle sue tessere, poi la attiva"
+    },
+    "downgrade-tile": {
+      "you": "Gira una delle tue tessere sul suo lato Deserto o non migliorato",
+      "player": "{player} gira una delle sue tessere sul suo lato Deserto o non migliorato"
+    },
+    "swap-squares": {
+      "you": "Scambia la posizione di 2 delle tue carte o tessere",
+      "player": "{player} scambia la posizione di 2 delle sue carte o tessere"
+    },
+    "activate-tile": {
+      "you": "Attiva una delle tue tessere, migliorata o no",
+      "player": "{player} attiva una delle sue tessere"
+    },
+    "copy-opponent-card": {
+      "you": "Copia l'effetto di una casella del tuo avversario nella zona",
+      "player": "{player} copia l'effetto di una delle tue caselle nella zona"
+    },
+    "search-ring": {
+      "you": "<reopen>Prendi un Anello dal tuo mazzo e mettilo in mano</reopen>",
+      "player": "{player} cerca un Anello nel suo mazzo"
+    },
+    "spend-ring-for-token": {
+      "you": "Rimetti un Anello sotto il tuo mazzo per pescare un gettone Vittoria militare oppure <decline>passa</decline>",
+      "player": "{player} può scambiare un Anello con un gettone Vittoria militare"
+    },
+    "rotate-cat-card": {
+      "you": "Ruota una delle tue carte Gatto oppure <decline>passa</decline>",
+      "player": "{player} può ruotare una delle sue carte Gatto"
+    },
+    "place-ring": {
+      "you": "Posa un Anello su una casella della tua plancia oppure <decline>passa</decline>",
+      "player": "{player} può posare un Anello sulla sua plancia"
+    }
+  },
+  "game-over": {
+    "military": {
+      "you": "Hai vinto con {count} <victory/>",
+      "player": "{player} ha vinto con {count} <victory/>"
+    },
+    "clan": {
+      "1": {
+        "you": "Hai vinto con i tuoi {count} Panda <gold/> in gioco",
+        "player": "{player} ha vinto con i suoi {count} Panda <gold/> in gioco"
+      },
+      "2": {
+        "you": "Hai vinto con i tuoi {count} segnalini Squalo <shark/> in gioco",
+        "player": "{player} ha vinto con i suoi {count} segnalini Squalo <shark/> in gioco"
+      },
+      "3": {
+        "you": "Hai vinto con {count} Anelli <ring/> in gioco",
+        "player": "{player} ha vinto con {count} Anelli <ring/> in gioco"
+      },
+      "4": {
+        "you": "Hai vinto con i tuoi {count} Portali <portal/> nei 4 angoli",
+        "player": "{player} ha vinto con i suoi {count} Portali <portal/> nei 4 angoli"
+      }
+    },
+    "race": {
+      "clan": "Vittoria di clan",
+      "military": "Vittoria militare"
+    }
+  },
+  "log": {
+    "choose-clan": "{player} sceglie il clan dei {clan}",
+    "mulligan": "{player} rimescola la sua mano iniziale e pesca altrettante carte",
+    "keep-hand": "{player} tiene la sua mano iniziale",
+    "reveal-action": "{player} rivela la tessera Azione <material/>",
+    "choose-action": "{player} sceglie {zone}",
+    "activate": "{player} attiva <material/>",
+    "activate-card": "{player} attiva la sua carta <material/>",
+    "activate-tile": "{player} attiva la sua tessera <material/>",
+    "activate-and-upgrade-tile": "{player} attiva la sua tessera <material/>, poi la migliora",
+    "activate-desert": "{player} attiva l'effetto ricordato sul suo Deserto <material/>",
+    "copy": "{player} copia <material/> del suo avversario",
+    "choose-effect": "{player} sceglie <effects/>",
+    "conflict": {
+      "won": "{player} vince il conflitto militare, {symbols} <military/> contro {opponent}",
+      "tie": "Conflitto militare: parità, nessuno pesca un gettone",
+      "blocked": "{player} vince il conflitto militare, ma nessun gettone può essere vinto in questo round",
+      "empty": "{player} vince il conflitto militare, ma la pila dei gettoni è vuota"
+    },
+    "food-gain": "{player} guadagna {count} <food/>",
+    "organisation-food": "{player} guadagna {count} <food/> organizzando la sua griglia",
+    "food-spend": "{player} spende {count} <food/>",
+    "food-steal": "{player} ruba {count} <food/> al suo avversario",
+    "draw": "{player} pesca 1 carta",
+    "draw-seen": "{player} pesca <material/>",
+    "play-card": "{player} gioca <material/>",
+    "awaken": "{player} risveglia <material/>",
+    "awakening-lost": "Risveglio impossibile, {player} guadagna {count} <food/>",
+    "place-ring": "{player} posa l'Anello <material/>",
+    "pay-card": "{player} mette 1 carta della sua mano sotto il suo mazzo",
+    "spend-ring": "{player} rimette 1 Anello sotto il suo mazzo",
+    "spend-ring-seen": "{player} rimette l'Anello <material/> sotto il suo mazzo",
+    "search-ring": "{player} prende l'Anello <material/> dal suo mazzo",
+    "rotate": "{player} ruota la sua carta <material/>",
+    "upgrade": "{player} migliora una delle sue tessere: <material/>",
+    "flip": "{player} gira uno dei suoi Deserti sul suo fronte: <material/>",
+    "downgrade-front": "{player} gira una delle sue tessere sul suo lato non migliorato: <material/>",
+    "downgrade-desert": "{player} gira una delle sue tessere sul suo lato Deserto: <material/>",
+    "swap": "{player} scambia la posizione di 2 delle sue caselle",
+    "win-token": "{player} pesca il gettone <material/>",
+    "redraw-token": "{player} rimette il gettone <material/> sotto la pila",
+    "trigger-token": "{player} innesca l'effetto del gettone <material/>",
+    "shark-token": "{player} mette un segnalino Squalo <shark/> ({count}/{goal})",
+    "pass": {
+      "play-card": "{player} rinuncia a giocare una carta",
+      "spend-ring": "{player} rinuncia a scambiare un Anello",
+      "rotate": "{player} rinuncia a ruotare una carta",
+      "place-ring": "{player} rinuncia a posare un Anello"
+    },
+    "spy": {
+      "deck": "{player} spia la prima carta del suo mazzo",
+      "deck-seen": "{player} spia la prima carta del suo mazzo: <material/>",
+      "action-tile": "{player} spia la prima tessera della pila Azione",
+      "action-tile-seen": "{player} spia la prima tessera della pila Azione: <material/>",
+      "military-victory": "{player} spia il primo gettone Vittoria militare",
+      "military-victory-seen": "{player} spia il primo gettone Vittoria militare: <material/>"
+    },
+    "spy-return": {
+      "on-top": "{player} rimette l'elemento spiato sopra la sua pila",
+      "on-top-seen": "{player} rimette <material/> sopra la sua pila",
+      "under": "{player} rimette l'elemento spiato sotto la sua pila",
+      "under-seen": "{player} rimette <material/> sotto la sua pila"
+    }
+  }
+}

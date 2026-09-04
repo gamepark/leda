@@ -10,11 +10,11 @@ export const gameAnimations = new MaterialGameAnimations<number, MaterialType, L
 type Context = MaterialAnimationContext<number, MaterialType, LocationType>
 
 /**
- * Half the second an animation takes by default, for the small things the game repeats over and over: a tile or a
- * card turning over, and a Food taken from the reserve. They punctuate a turn rather than being what it is about,
- * and at full length they make the resolution of an effect feel like it is being spelled out.
+ * Under a third of the second an animation takes by default, for the small things the game repeats over and over,
+ * often several in a row: a tile or a card turning over, and a Food taken from the reserve. They punctuate a turn
+ * rather than being what it is about, so they have to be over as soon as they have been read.
  */
-const shortAnimation = 500
+const shortAnimation = 300
 
 /**
  * A move that puts an item back under the pile it came from: the second of the 2 moves a Spy effect offers (see

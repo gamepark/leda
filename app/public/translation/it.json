@@ -37,6 +37,10 @@
     "end": "Non appena soddisfi la tua condizione di vittoria di clan, o raggiungi la vittoria militare, la partita si ferma e tu vinci!",
     "good-luck": "Ora tocca a te giocare. Buona fortuna!"
   },
+  "mulligan": {
+    "keep": "Tenere",
+    "redraw": "Rimescolare"
+  },
   "spy": {
     "look": "Spiare",
     "on-top": "Sopra la pila",

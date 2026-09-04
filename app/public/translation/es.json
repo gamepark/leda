@@ -37,6 +37,10 @@
     "end": "En cuanto cumplas tu condición de victoria de clan, o alcances la victoria militar, ¡la partida se detiene y ganas!",
     "good-luck": "Ahora te toca jugar. ¡Buena suerte!"
   },
+  "mulligan": {
+    "keep": "Quedarme",
+    "redraw": "Rebarajar"
+  },
   "spy": {
     "look": "Espiar",
     "on-top": "Encima del montón",

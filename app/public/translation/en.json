@@ -37,6 +37,10 @@
     "end": "As soon as you meet your clan victory condition, or reach the military victory, the game stops and you win!",
     "good-luck": "It is your turn to play now. Good luck!"
   },
+  "mulligan": {
+    "keep": "Keep",
+    "redraw": "Reshuffle"
+  },
   "spy": {
     "look": "Spy",
     "on-top": "On top of the pile",

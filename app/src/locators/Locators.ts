@@ -159,9 +159,12 @@ const foodRowY = 9.8
 /**
  * The hand is spread under the grid, in the band the player panel sits in. handX is set so that the outer card of
  * the fan stops right where the panel starts, so it follows the table getting narrower.
+ *
+ * The center of the fan is exported for what is laid over the hand without being material of the game, and which
+ * therefore places itself off the table coordinates (see {@link MulliganButtons}).
  */
-const handX = 15.8
-const handY = 12.5
+export const handX = 15.8
+export const handY = 12.5
 
 /**
  * Which side of the table a player is on: the player looking at the table is on the left, their opponent on the right.

@@ -37,6 +37,10 @@
     "end": "Dès que vous remplissez votre condition de victoire de clan, ou que vous atteignez la victoire militaire, la partie s'arrête et vous l'emportez !",
     "good-luck": "À vous de jouer à présent. Bonne chance !"
   },
+  "mulligan": {
+    "keep": "Garder",
+    "redraw": "Remélanger"
+  },
   "spy": {
     "look": "Scruter",
     "on-top": "Sur la pile",

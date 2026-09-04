@@ -37,6 +37,10 @@
     "end": "Sobald du deine Clan-Siegbedingung erfüllst oder den Militärsieg erreichst, endet das Spiel und du gewinnst!",
     "good-luck": "Jetzt bist du am Zug. Viel Glück!"
   },
+  "mulligan": {
+    "keep": "Behalten",
+    "redraw": "Neu mischen"
+  },
   "spy": {
     "look": "Spähen",
     "on-top": "Auf den Stapel",

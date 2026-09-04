@@ -2,6 +2,7 @@ import { pointerWithin } from '@dnd-kit/core'
 import { css } from '@emotion/react'
 import { DevToolsHub, GameTable, GameTableNavigation } from '@gamepark/react-game'
 import { tableXMax, tableYMax, tableYMin } from './locators/Locators'
+import { MulliganButtons } from './MulliganButtons'
 import { PlayerPanels } from './panels/PlayerPanels'
 import { RoundPhaseButton } from './RoundPhaseButton'
 
@@ -16,6 +17,8 @@ export function GameDisplay() {
                css={process.env.NODE_ENV === 'development' && tableBorder}>
       {/* On the table and not over it: the line of the aid card opens the middle column (see RoundPhaseButton). */}
       <RoundPhaseButton />
+      {/* The 2 answers of the setup, over the hand they are about (see MulliganButtons). */}
+      <MulliganButtons />
       <GameTableNavigation css={navigation} />
       <PlayerPanels />
       {process.env.NODE_ENV === 'development' && <DevToolsHub fabBottom="calc(5em)" />}

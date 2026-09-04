@@ -12,6 +12,7 @@ import { TileId } from '../material/TileId'
 import { Memory } from './Memory'
 import { RuleId } from './RuleId'
 import { sharkTokens } from './sharkPack'
+import { isGridSettled } from './swap'
 import { hasSpecialVictory } from './victory'
 
 /** A card in play, several on one square piling up in the order they are given, the last one on top. */
@@ -259,6 +260,24 @@ describe('The special victory of the Cats', () => {
     expect(winner(rules)).toBe(1)
   })
 
+  /**
+   * The window that puts a Ring in play opens during phase 1, in the middle of the round: the 3rd Ring ends the
+   * game there and then, and the conflict of phase 2 is never settled (see {@link LedaRules.play}).
+   */
+  it('ends the game before the military conflict of the round is settled', () => {
+    const inPlay = rings.slice(0, 2).map((card, x) => ({ card, cell: { x, y: 0 } }))
+    // The Blue Ring asks for an empty deck, which the player has: these games are set up without one.
+    const rules = new LedaRules(
+      game({ clan: Clan.Cat, cards: inPlay, hand: [ClanCardId.CatRingEmptyDeck], top: MilitaryVictoryTokenId.Victory, rule: RuleId.PlaceRing })
+    )
+    // The opponent opened the round, so both players are done activating, and the conflict is theirs to win.
+    rules.game.memory[Memory.RoundPlayer] = 2
+    rules.game.memory[Memory.MilitarySymbols] = { 1: 0, 2: 1 }
+    play(rules, ClanCardId.CatRingEmptyDeck, { x: 2, y: 0 })
+    expect(winner(rules)).toBe(1)
+    expect(rules.material(MaterialType.MilitaryVictoryToken).location(LocationType.PlayerMilitaryVictory).player(2).length).toBe(0)
+  })
+
   it('leaves the game on with 2 of them', () => {
     const inPlay = rings.slice(0, 2).map((card, x) => ({ card, cell: { x, y: 0 } }))
     const rules = new LedaRules(game({ clan: Clan.Cat, cards: inPlay }))
@@ -315,5 +334,8 @@ describe('The special victory of the Scorpions', () => {
     const [middle] = tiles.location((location) => location.player === 1 && location.x === 1 && location.y === 1).getIndexes()
     playAll(rules, tiles.index(middle).moveItem({ type: LocationType.PlayerGrid, player: 1, ...gridCorners[3] }))
     expect(winner(rules)).toBe(1)
+    // The game ends on a whole grid: the second half of the swap is played even though the first half won
+    // (see {@link LedaRules.play}).
+    expect(isGridSettled(rules, 1)).toBe(true)
   })
 })

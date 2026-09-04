@@ -197,11 +197,22 @@ export class LedaRules
    * put in play by a move whose other half hands the square back to the card it replaced. So the game is closed
    * behind every move for as long as it is not, which happens as soon as a move owes nothing more.
    *
-   * And once it is closed, nothing else is played: the moves that were still owed are dropped here rather than
-   * applied, since the framework keeps handing them over — the end of the game only empties what one move
-   * returned, not what the moves before it had queued behind them. Those moves are exactly what must not happen:
-   * the military conflict of the round would hand the opponent the Victory token they were about to win, and the
-   * turn a card was handing over would reopen the game it was closing.
+   * And once a player has won, nothing carries the round on: the rules moves the winning move owed are dropped
+   * here rather than returned, and so are the ones every move played after it owes, until the game is closed.
+   * They are exactly what must not happen: the military conflict of the round would hand the opponent the Victory
+   * token they were about to win, and the turn a card was handing over would reopen the game it was closing.
+   *
+   * Dropped rather than queued behind the end of the game, which came too late to stop anything: the framework
+   * plays the consequences of a move before the moves waiting behind it (see `applyAutomaticMoves`), so an end of
+   * the game returned last was pushed one step further back by every move it was meant to stop, and only reached
+   * once the whole round it was closing had been played out.
+   *
+   * The item moves are kept, being the rest of the move that won and not the round going on: the second half of a
+   * swap is the move that puts the grid back together, and a game handed over in the middle of one would leave 2
+   * tiles on a square and another one bare (see {@link SwapSquaresRule}).
+   *
+   * Then whatever is left owed is dropped as it comes: the end of the game empties what one move returned, not
+   * what the moves before it had queued behind them, so the framework keeps handing those over.
    *
    * Never on a move a client is only previewing, which the framework plays and takes back on its own, and never
    * on a local move, which changes nothing of the game: the players still open the help dialogs of a game they
@@ -218,7 +229,7 @@ export class LedaRules
     if (this.isOver() && gameWinner(this) !== undefined && move.kind !== MoveKind.LocalMove) return []
     const consequences = super.play(move, context)
     if (context?.transient || this.isOver() || gameWinner(this) === undefined) return consequences
-    return [...consequences, this.endGame()]
+    return [...consequences.filter((consequence) => consequence.kind === MoveKind.ItemMove), this.endGame()]
   }
 
   /**

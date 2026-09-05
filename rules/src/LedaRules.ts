@@ -252,7 +252,35 @@ export class LedaRules
     return isCustomMoveType(CustomMoveType.SearchRing)(move) || super.isUnpredictableMove(move, player)
   }
 
+  /**
+   * The time a player is given when their turn opens, and a turn of LEDA is not the same thing twice: a round asks
+   * them for a zone and the whole of an activation, then for one card played or 2 squares swapped, and everything
+   * else is a question a card asks in the middle of somebody's turn.
+   *
+   * Phase 1 is one turn for the player who opens it, and is given as one: they pick the zone and activate their
+   * whole grid without their opponent ever taking the hand back, so these 45 seconds are credited once and cover
+   * the two (see {@link ChooseActionRule}). Their opponent then activates the zone they were handed, having picked
+   * nothing, and gets 30 for it.
+   *
+   * Phase 3 gives each of them 45 all the same: an organisation is a single action, but it is the action the whole
+   * grid and the whole hand are read for (see {@link OrganisationRule}).
+   *
+   * 10 seconds for the rest, which is a card asking one thing and a player answering it: the tile to upgrade, the
+   * branch of an "OR", the Desert to flip. That is what a player is given when the hand comes to them in the middle
+   * of a turn that is not theirs, a Scorpion Portal asking them to flip one of their own tiles for instance
+   * (see {@link DowngradeTileRule}). It is never what the player whose turn it is gets for the questions their own
+   * activation raises: they never stopped playing, so their turn is still the one they were given time for.
+   */
   giveTime(): number {
-    return 60
+    switch (this.game.rule?.id) {
+      case RuleId.ChooseAction:
+        return 45
+      case RuleId.ActivateZone:
+        return 30
+      case RuleId.Organisation:
+        return 45
+      default:
+        return 10
+    }
   }
 }

@@ -392,16 +392,22 @@ class PlayedCardLocator extends Locator {
  * It covers one of the 2 effect slots printed across the bottom of the Shark card underneath, and which one is not
  * part of its location: the squares around it are what decide, so it is asked of the rules here, and the token
  * slides from one slot to the other as the board changes around it (see {@link sharkSlotOn}).
+ *
+ * A square whose cards have all left keeps its token, and there is no effect area left to sit on: the token then
+ * goes to the middle of the bare tile, where it hides nothing, rather than onto the effect the tile prints in
+ * that very corner.
  */
 class PlacedSharkTokenLocator extends Locator {
   parentItemType = MaterialType.Tile
   parentFace = ParentFace.Up
 
   getItemCoordinates(item: MaterialItem<number, LocationType>, context: ItemContext<number, MaterialType, LocationType>): Partial<Coordinates> {
+    const cards = this.cardsUnder(item.location, context)
+    if (cards === 0) return { x: 0, y: 0, z: 0 }
     return {
       x: this.slot(item.location, context) === SharkSlot.Left ? -sharkSlotX : sharkSlotX,
       y: sharkSlotY,
-      z: this.cardsUnder(item.location, context) * cardThickness
+      z: cards * cardThickness
     }
   }
 

@@ -5,11 +5,11 @@ import { ClanCardId, ClanCardItemId, clanOf } from '../material/ClanCardId'
 import { isRing, Ring } from '../material/clanCards/catCards'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
-import { gridTiles } from '../material/PlayerGrid'
+import { cellOf, gridTiles, sameCell } from '../material/PlayerGrid'
 import { Rules } from '../Rules'
-import { roundZone } from './activation'
+import { isItemActivated, roundZone } from './activation'
 import { isMilitaryConflictPhase, militaryLead } from './militaryConflict'
-import { topCardOn } from './squares'
+import { cardsInPlay } from './squares'
 import { upgradedTiles } from './tileChoices'
 
 /**
@@ -39,16 +39,28 @@ export const ringCatCardsInZone = 3
 export const ringUpgradedTiles = 5
 
 /**
- * The Cat cards a player has in the zone of the round, which is the zone both players have just activated.
- * The cards under another one are left out, being out of play: what a square holds is its top card alone
- * (see {@link topCardOn}).
+ * The Cat cards a player has activated in the zone of the round, which is the zone both players have just
+ * activated.
+ *
+ * The cards that were activated, and not the ones the zone holds by the time the Ring is being put in play: the
+ * window opens on a grid the player is still playing onto, and a Ring is itself a Cat card played on a square,
+ * the squares of the zone included (see {@link ringMoves}). A 3rd Cat card that landed there after the
+ * activation was never activated, and a zone activated with 2 Cat cards in it stays a zone activated with 2.
+ *
+ * Read off what each card gave rather than off what each square shows (see {@link isItemActivated}), which
+ * settles the other half of the same question: a Cat card that gave what it gives is counted for the rest of the
+ * round, whatever is laid over it afterwards. The cards under another one when the zone was activated are left
+ * out on their own, a covered card being activated by nothing (see {@link squareItem}).
  */
 const catCardsInZone = (rules: Rules, player: number): number => {
   const zone = roundZone(rules)
   if (zone === undefined) return 0
-  return actionZoneCells[zone].filter((cell) => {
-    const card = topCardOn(rules, player, cell)
-    return card !== undefined && clanOf(card) === Clan.Cat
+  const tiles = rules.material(MaterialType.Tile)
+  return cardsInPlay(rules, player).filter<ClanCardItemId>((card, index) => {
+    if (card.id?.front === undefined || clanOf(card.id.front) !== Clan.Cat) return false
+    if (!isItemActivated(rules, { type: MaterialType.ClanCard, index })) return false
+    const cell = cellOf(tiles.getItem(card.location.parent!).location)
+    return actionZoneCells[zone].some((zoneCell) => sameCell(zoneCell, cell))
   }).length
 }
 
@@ -88,7 +100,10 @@ const ringPlacements: Record<Ring, { window: RingWindow; condition: (rules: Rule
     condition: (rules, player) => deckSize(rules, player) === 0
   },
 
-  /** Purple. Activate a zone holding at least 3 Cat cards, which are 3 of the 4 squares of the zone of the round. */
+  /**
+   * Purple. Activate a zone holding at least 3 Cat cards, which are 3 of the 4 squares of the zone of the round,
+   * activated as such: a Ring put in play on the 3rd of them does not make the zone one that was activated with 3.
+   */
   [ClanCardId.CatRingThreeCatCards]: {
     window: RingWindow.Activation,
     condition: (rules, player) => catCardsInZone(rules, player) >= ringCatCardsInZone

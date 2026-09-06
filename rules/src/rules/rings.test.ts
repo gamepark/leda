@@ -266,6 +266,25 @@ describe('The Purple Ring', () => {
     endActivation(rules)
     expect(rules.game.rule?.id).not.toBe(RuleId.PlaceRing)
   })
+
+  it('is not offered on a zone another Ring makes the 3rd Cat card of', () => {
+    // 2 Cat cards activated, and the Blue Ring put in play on the 3rd square of the zone: the zone now holds 3
+    // Cat cards, of which the player only ever activated 2.
+    const rules = new LedaRules(game({ cards: cards.slice(0, 2), hand: [ClanCardId.CatRingEmptyDeck, ClanCardId.CatRingThreeCatCards], deck: 0 }))
+    endActivation(rules)
+    expect(offeredRings(rules)).toEqual([ClanCardId.CatRingEmptyDeck])
+    placeRing(rules, ClanCardId.CatRingEmptyDeck, { x: 3, y: 0 })
+    // Nothing left to put in play, so the window closes on the opponent activating the same zone.
+    expect(rules.game.rule?.id).not.toBe(RuleId.PlaceRing)
+  })
+
+  it('still counts a Cat card another Ring is put in play on top of', () => {
+    // 3 Cat cards activated, then buried under the Blue Ring: what they gave, they gave.
+    const rules = new LedaRules(game({ cards, hand: [ClanCardId.CatRingEmptyDeck, ClanCardId.CatRingThreeCatCards], deck: 0 }))
+    endActivation(rules)
+    placeRing(rules, ClanCardId.CatRingEmptyDeck, { x: 1, y: 0 })
+    expect(offeredRings(rules)).toEqual([ClanCardId.CatRingThreeCatCards])
+  })
 })
 
 describe('The Orange Ring', () => {

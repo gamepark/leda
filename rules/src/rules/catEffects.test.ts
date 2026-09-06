@@ -419,6 +419,22 @@ describe('The Cat cards that ask the player something', () => {
     expect(military(rules, 1)).toBe(0)
   })
 
+  it('copies a card that draws and gives a crystal, drawing 2 cards and not the same one twice', () => {
+    const rules = new LedaRules(
+      game({
+        cards: [{ card: ClanCardId.CatCopyOpponentCard, x: 0 }],
+        opponentCards: [{ card: ClanCardId.PandaDrawAndSpecialActivation, x: 1 }]
+      })
+    )
+    const before = hand(rules).length
+    activate(rules, 0)
+    playAll(rules, rules.customMove(CustomMoveType.ActivateSquare, { x: 1, y: 0 }))
+    // The card the copy draws, then the one the crystal of the Cats draws behind it: both are written against a
+    // deck nothing has left yet, so the second has to be the card under the first and not that same first card.
+    expect(hand(rules).length).toBe(before + 2)
+    expect(new Set(hand(rules).getItems().map((card) => card.id.front)).size).toBe(2)
+  })
+
   /** The card the player would draw next, which is the very card a Spy on their own deck looks at. */
   const deckTop = (rules: LedaRules): ClanCardId =>
     rules.material(MaterialType.ClanCard).location(LocationType.PlayerDeck).player(1).deck().limit(1).getItem()!.id.front

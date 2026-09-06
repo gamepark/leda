@@ -1,4 +1,4 @@
-import { MaterialMove, MaterialRulesPart, PlayerTurnRule, XYCoordinates } from '@gamepark/rules-api'
+import { MaterialDeck, MaterialMove, MaterialRulesPart, PlayerTurnRule, XYCoordinates } from '@gamepark/rules-api'
 import { Effect, EffectChoice, effectEntries, EffectQuantity, EffectSet, EffectSource, isEffectChoice } from '../material/Effect'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
@@ -77,7 +77,7 @@ export const cardDiscount = (rules: Rules): number => rules.game.memory[Memory.C
 export const forgetChoice = (rule: AnyRule) => rule.memorize(Memory.EffectChoices, pendingChoices(rule).slice(1))
 
 /** What the rules an effect asks for are gathered into while the effects are read, one card being read as a whole. */
-type Asked = { rules: RuleId[]; choices: EffectChoice[]; pending: PendingEffects[] }
+type Asked = { rules: RuleId[]; choices: EffectChoice[]; pending: PendingEffects[]; deck?: PlayerDeck }
 
 /**
  * Everything an effect set gives: the moves for what it gives on its own, and the rules it needs queued for what
@@ -178,7 +178,7 @@ const resolve = (rule: Rule, effect: Effect, quantity: number, asked: Asked, sou
     case Effect.Food:
       return [rule.material(MaterialType.FoodToken).createItem({ location: { type: LocationType.PlayerFood, player }, quantity })]
     case Effect.Draw:
-      return deck(rule, player).limit(quantity).moveItems({ type: LocationType.PlayerHand, player })
+      return drawnFrom(rule, asked).deal({ type: LocationType.PlayerHand, player }, quantity)
     case Effect.Military:
       // No item stands for a military symbol: they are only counted, until the conflict hands out the tokens.
       rule.memorize<number>(Memory.MilitarySymbols, (symbols) => symbols + quantity, player)
@@ -283,7 +283,19 @@ const specialActivation = (rule: Rule, quantity: number, asked: Asked, source: E
 
 const times = <T>(quantity: number, value: T): T[] => Array.from({ length: quantity }, () => value)
 
-const deck = (rule: Rule, player: number) => rule.material(MaterialType.ClanCard).location(LocationType.PlayerDeck).player(player).deck()
+type PlayerDeck = MaterialDeck<number, MaterialType, LocationType>
+
+const deck = (rule: Rule, player: number): PlayerDeck => rule.material(MaterialType.ClanCard).location(LocationType.PlayerDeck).player(player).deck()
+
+/**
+ * The deck of the player resolving the effects, held for the whole set rather than read again for each draw.
+ *
+ * Nothing has moved yet while a set is being read: its moves are all written against the table as it stands, so a
+ * Material read twice hands the same first card back twice, and "draw 1 card, 1 crystal" read by a Cat would draw
+ * the same card twice over and give 1 card instead of 2 (see {@link CopyOpponentCardRule}). A deck forgets what it
+ * has already dealt, which is exactly what tells the second draw from the first (see {@link MaterialDeck}).
+ */
+const drawnFrom = (rule: Rule, asked: Asked): PlayerDeck => (asked.deck ??= deck(rule, rule.player))
 
 const food = (rule: Rule, player: number) => rule.material(MaterialType.FoodToken).location(LocationType.PlayerFood).player(player)
 

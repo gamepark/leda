@@ -24,6 +24,7 @@
     "military-victory": "Sobald du <strong>{count} <victory/></strong> kontrollierst, gewinnst du das Spiel sofort!",
     "organisation-start": "Der Militärkonflikt ist geklärt. Es folgt die 3. und letzte Phase der Runde: die <strong>Organisation</strong>.",
     "organisation-rule": "Nacheinander wählen die Spieler eine Aktion: <strong>eine Karte aus ihrer Hand auf ein Feld ihres Rasters spielen</strong> oder <strong>die Position von 2 Feldern tauschen</strong> und 1 <food/> erhalten. Diese Nahrung ohne Tausch zu nehmen, ist erlaubt.",
+    "swap-tip": "Die Position von 2 Feldern zu tauschen, kann dir helfen, deine interessanten Karten dorthin zu legen, wo sie in der nächsten Runde am ehesten aktiviert werden.<br/>Klicke auf den <strong>Stapel der Aktionsplättchen</strong>, um mehr zu erfahren!",
     "your-organisation": "Du hast 5 <food/>: Du kannst also eine Karte spielen, zum Beispiel auf eine deiner Wüsten. Du kannst auch 2 Felder tauschen und 1 <food/> erhalten. Du hast die Wahl!",
     "opponent-organisation": "Dein Gegner organisiert seinerseits sein Raster.",
     "new-round": "Die 1. Runde ist vorbei. Eine neue Runde beginnt, mit einem neuen Aktionsplättchen.",

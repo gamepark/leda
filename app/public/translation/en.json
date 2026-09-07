@@ -24,6 +24,7 @@
     "military-victory": "As soon as you control <strong>{count} <victory/></strong>, you immediately win the game!",
     "organisation-start": "The Military Conflict is settled. Time for the 3rd and last phase of the round: the <strong>Organization</strong>.",
     "organisation-rule": "One after the other, the players choose an action: <strong>play a card</strong> from their hand onto a space of their grid, or <strong>swap the position of 2 spaces</strong> and gain 1 <food/>. Taking that Food without swapping anything is allowed.",
+    "swap-tip": "Swapping the position of 2 spaces lets you move your best cards to where they are the most likely to be activated next round.<br/>Click the <strong>Action tile pile</strong> to find out more!",
     "your-organisation": "You have 5 <food/>: you can therefore play a card, for example on one of your Deserts. You can also swap 2 spaces and gain 1 <food/>. Your choice!",
     "opponent-organisation": "Your opponent organizes their grid in turn.",
     "new-round": "The 1st round is over. A new round begins, with a new Action tile.",

@@ -24,6 +24,7 @@
     "military-victory": "Dès que vous contrôlez <strong>{count} <victory/></strong>, vous remportez immédiatement la partie !",
     "organisation-start": "Le Conflit Militaire est réglé. Place à la 3e et dernière phase de la manche : <strong>l'Organisation</strong>.",
     "organisation-rule": "Chacun leur tour, les joueurs choisissent une action : <strong>jouer une carte</strong> de leur main sur une case de leur grille, ou <strong>échanger la position de 2 cases</strong> et gagner 1 <food/>. Prendre cette Nourriture sans rien échanger est permis.",
+    "swap-tip": "Échanger la position de 2 cases peut vous permettre de placer vos cartes intéressantes là où elles ont le plus de chance d'être activées à la prochaine manche.<br/>Cliquez sur la <strong>pile des tuiles Action</strong> pour en savoir plus !",
     "your-organisation": "Vous avez 5 <food/> : vous pouvez donc jouer une carte, par exemple sur un de vos Déserts. Vous pouvez aussi échanger 2 cases et gagner 1 <food/>. À vous de choisir !",
     "opponent-organisation": "Votre adversaire organise sa grille à son tour.",
     "new-round": "La 1re manche est terminée. Une nouvelle manche commence, avec une nouvelle tuile Action.",

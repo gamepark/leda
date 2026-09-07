@@ -24,6 +24,7 @@
     "military-victory": "En cuanto controles <strong>{count} <victory/></strong>, ¡ganas la partida inmediatamente!",
     "organisation-start": "El Conflicto Militar está resuelto. Llega la 3ª y última fase de la ronda: la <strong>Organización</strong>.",
     "organisation-rule": "Por turnos, los jugadores eligen una acción: <strong>jugar una carta</strong> de su mano en una casilla de su cuadrícula, o <strong>intercambiar la posición de 2 casillas</strong> y ganar 1 <food/>. Se permite tomar esa Comida sin intercambiar nada.",
+    "swap-tip": "Intercambiar la posición de 2 casillas te permite colocar tus cartas interesantes donde tengan más posibilidades de activarse en la próxima ronda.<br/>¡Haz clic en el <strong>montón de losetas de Acción</strong> para saber más!",
     "your-organisation": "Tienes 5 <food/>: puedes por tanto jugar una carta, por ejemplo en uno de tus Desiertos. También puedes intercambiar 2 casillas y ganar 1 <food/>. ¡Tú eliges!",
     "opponent-organisation": "Tu oponente organiza su cuadrícula a su vez.",
     "new-round": "La 1ª ronda ha terminado. Empieza una nueva ronda, con una nueva loseta de Acción.",

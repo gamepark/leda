@@ -24,6 +24,7 @@
     "military-victory": "Non appena controlli <strong>{count} <victory/></strong>, vinci immediatamente la partita!",
     "organisation-start": "Il Conflitto Militare è risolto. Tocca alla 3ª e ultima fase del round: <strong>l'Organizzazione</strong>.",
     "organisation-rule": "A turno, i giocatori scelgono un'azione: <strong>giocare una carta</strong> dalla propria mano su una casella della propria griglia, oppure <strong>scambiare la posizione di 2 caselle</strong> e guadagnare 1 <food/>. Prendere quel Cibo senza scambiare nulla è permesso.",
+    "swap-tip": "Scambiare la posizione di 2 caselle ti permette di mettere le carte che ti interessano dove hanno più probabilità di essere attivate nel round successivo.<br/>Clicca sulla <strong>pila delle tessere Azione</strong> per saperne di più!",
     "your-organisation": "Hai 5 <food/>: puoi quindi giocare una carta, per esempio su uno dei tuoi Deserti. Puoi anche scambiare 2 caselle e guadagnare 1 <food/>. Sta a te scegliere!",
     "opponent-organisation": "Il tuo avversario organizza a sua volta la propria griglia.",
     "new-round": "Il 1° round è terminato. Inizia un nuovo round, con una nuova tessera Azione.",

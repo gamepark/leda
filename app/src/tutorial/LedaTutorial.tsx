@@ -137,7 +137,7 @@ const opponentActivations = (count: number): Step[] =>
  * (see {@link LedaTutorialSetup}).
  */
 export class LedaTutorial extends MaterialTutorial<number, MaterialType, LocationType> {
-  version = 1
+  version = 2
 
   options: LedaOptions = { players: 2 }
 
@@ -307,6 +307,14 @@ export class LedaTutorial extends MaterialTutorial<number, MaterialType, Locatio
     /** Phase 3: the organisation, which the reader plays however they like. */
     { popup: { text: text('organisation-start') } },
     { popup: { text: text('organisation-rule') } },
+    /**
+     * The pile of Action tiles, read where a swap is what the reader is weighing: what is left in the pile is what
+     * the zones of the next rounds will be drawn from, and pressing it is what tells them (see {@link ActionTileDeckHelp}).
+     */
+    {
+      popup: { text: text('swap-tip'), ...popupRight },
+      focus: (game) => ({ ...roomRight(actionTile.width), materials: [this.actionTileDeck(game)] })
+    },
     {
       popup: { text: text('your-organisation'), ...popupRight },
       focus: (game) => ({ ...roomRight(gridSize), materials: [this.myHand(game), this.myTiles(game)] }),
@@ -438,6 +446,11 @@ export class LedaTutorial extends MaterialTutorial<number, MaterialType, Locatio
 
   private myMilitaryVictoryTokens(game: Game) {
     return this.material(game, MaterialType.MilitaryVictoryToken).location(LocationType.PlayerMilitaryVictory).player(tutorialPlayer)
+  }
+
+  /** The pile the Action tiles are drawn from, whose help lists the ones that have not been revealed yet. */
+  private actionTileDeck(game: Game) {
+    return this.material(game, MaterialType.ActionTile).location(LocationType.ActionTileDeck)
   }
 
   private revealedActionTiles(game: Game) {

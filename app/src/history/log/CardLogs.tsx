@@ -49,8 +49,9 @@ export const PayCardLog = ({ move }: MaterialLogProps<MoveItem>) => {
 }
 
 /**
- * A Ring traded for a Military Victory token, which sends it under its owner's deck. Like a card paid with, it
- * goes from a hand to a deck, so only its owner ever reads which of the 4 Rings it was.
+ * A Ring traded for a Military Victory token, which sends it under its owner's deck. Written down on the move that
+ * shows it rather than on the one that buries it: a Ring is shown to both players before it is spent, so everybody
+ * reads which of the 4 it was (see {@link revealMoves}).
  */
 export const SpendRingLog = ({ move, context }: MaterialLogProps<MoveItem>) => {
   const player = usePlayerName(move.location.player)

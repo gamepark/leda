@@ -3,7 +3,7 @@ import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { spiedPiles } from '@gamepark/leda/rules/spy'
 import { MaterialAnimationContext, MaterialGameAnimations } from '@gamepark/react-game'
 import { isCreateItemType, isMoveItem, MaterialMove } from '@gamepark/rules-api'
-import { underPileApproach } from '../locators/Locators'
+import { revealedCardLocator, underPileApproach } from '../locators/Locators'
 
 export const gameAnimations = new MaterialGameAnimations<number, MaterialType, LocationType>()
 
@@ -15,6 +15,57 @@ type Context = MaterialAnimationContext<number, MaterialType, LocationType>
  * rather than being what it is about, so they have to be over as soon as they have been read.
  */
 const shortAnimation = 300
+
+/**
+ * The card 2 of the Cat cards show both players before it goes where it is going: the Ring a search takes out of a
+ * deck, on its way to the hand of its owner, and the Ring traded for a Military Victory token, on its way under
+ * their deck (see {@link LocationType.RevealedCard}).
+ *
+ * Half a second to reach the spot above their deck, a second standing still on it, and half a second to leave.
+ */
+const revealTravel = 500
+const revealPause = 1000
+const revealDuration = revealPause + revealTravel
+
+/** How far into the animation of a card leaving the spot it is still standing on it. */
+const revealHold = revealPause / revealDuration
+
+/** Reaching the spot, which is the first of the 2 moves and a journey and nothing else. */
+const goesToRevealSpot = (move: MaterialMove<number, MaterialType, LocationType>) =>
+  isMoveItem(move) && move.location.type === LocationType.RevealedCard
+
+gameAnimations.configure(goesToRevealSpot).duration(revealTravel)
+
+/**
+ * Leaving it, which is the same half second spent after the card has stood still for the pause: the trajectory
+ * holds it on the spot until the last third of the animation, and only then takes it to its destination.
+ *
+ * Held by the locator of the spot rather than by its coordinates, which is what keeps it standing straight: a
+ * waypoint of coordinates only pins where the card is, where every rotation of a move is spread over the whole of
+ * it, so the card would spend the pause tilting into the fan of the hand it is going to. A waypoint of a locator
+ * is the whole pose the spot gives a card, rotation included (see `Locator.placeItem`).
+ *
+ * A Ring going back under a deck spends its half second the way every other card put back under one does, sliding
+ * in from below rather than vanishing behind the pile (see {@link underPileApproach}), the waypoint of that
+ * approach placed the same 0.7 of the way into what is left of the animation.
+ *
+ * Hence this coming before the under-pile trajectory below, which matches that very move: a move is animated with
+ * the first configuration that matches it.
+ */
+const leavesRevealSpot = (move: MaterialMove<number, MaterialType, LocationType>, context: Context) =>
+  isMoveItem(move) && context.rules.material(move.itemType).getItem(move.itemIndex)?.location.type === LocationType.RevealedCard
+
+gameAnimations
+  .configure(leavesRevealSpot)
+  .duration(revealDuration)
+  .trajectory((context, move) => {
+    // Always the move of an item, that being what the configuration above matches: TypeScript is what needs telling.
+    if (!isMoveItem(move)) return {}
+    const player = context.rules.material(move.itemType).getItem(move.itemIndex)?.location.player
+    const held = { at: revealHold, locator: revealedCardLocator, location: { type: LocationType.RevealedCard, player } }
+    if (move.location.type !== LocationType.PlayerDeck) return { elevation: false, waypoints: [held] }
+    return { elevation: false, waypoints: [held, { at: revealHold + (1 - revealHold) * 0.7, coordinates: underPileApproach(move, context) }] }
+  })
 
 /**
  * A move that puts an item back under the pile it came from: the second of the 2 moves a Spy effect offers (see

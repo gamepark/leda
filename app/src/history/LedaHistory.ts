@@ -116,14 +116,23 @@ export class LedaHistory implements LogDescription<Move, number, Game> {
           if (ruleId === RuleId.PlaceRing) return this.entry(PlaceRingLog, rules, move.location.player, 1)
           // Playing a card is the whole of an organisation; an effect letting a player play one is not.
           return this.entry(PlayCardLog, rules, move.location.player, ruleId === RuleId.Organisation ? 0 : 1)
+        case LocationType.RevealedCard:
+          /**
+           * A Ring shown to both players before it goes where it is going. The one traded for a token is written
+           * down here, on the move that reveals it, and not on the one that puts it under the deck: that is the
+           * move everybody reads it on (see {@link SpendRingForTokenRule}).
+           * A Ring searched for has already been written down by the move that named it (see {@link SearchRingLog}).
+           */
+          return ruleId === RuleId.SpendRingForToken ? this.entry(SpendRingLog, rules, move.location.player, 1) : undefined
         case LocationType.PlayerHand:
           // The Panda an Awakening sends back to its owner, which is the other half of a move already written down.
           if (card?.location.type !== LocationType.PlayerDeck) return undefined
-          // A Ring searched for is its own entry, and the cards of a setup or of a mulligan belong to those.
-          if (ruleId === RuleId.SearchRing || ruleId === RuleId.Mulligan || ruleId === RuleId.ChooseClan) return undefined
+          // The cards of a setup or of a mulligan belong to the entries of those.
+          if (ruleId === RuleId.Mulligan || ruleId === RuleId.ChooseClan) return undefined
           return this.entry(DrawLog, rules, move.location.player, 1)
         case LocationType.PlayerDeck:
-          if (ruleId === RuleId.SpendRingForToken) return this.entry(SpendRingLog, rules, move.location.player, 1)
+          // A Ring going under the deck it was shown from, which the reveal above has already written down.
+          if (card?.location.type === LocationType.RevealedCard) return undefined
           if (ruleId === RuleId.PayCardCost) return this.entry(PayCardLog, rules, move.location.player, 1)
           return undefined
       }

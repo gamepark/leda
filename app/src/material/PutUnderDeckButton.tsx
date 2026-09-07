@@ -1,6 +1,6 @@
 import { faTrashCan } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { cardsToPutUnderDeck, underDeckMoves } from '@gamepark/leda/rules/underDeck'
+import { putUnderDeckMove } from '@gamepark/leda/rules/underDeck'
 import { LedaMenuButton } from './LedaMenuButton'
 import { useMenuButtonRules } from './menuButtons'
 
@@ -20,7 +20,8 @@ const handButtonPosition = { x: -2, y: -4.5 }
  * paid and how much of it is left to pay.
  *
  * Which cards carry one, and the move each of them plays, come from the same helper the 2 rules build their own
- * moves with, so that a button can never offer what is not legal (see {@link cardsToPutUnderDeck}).
+ * moves with, so that a button can never offer what is not legal (see {@link putUnderDeckMove}): a Ring traded for
+ * a token is shown before it is spent, and its move is the one that shows it.
  */
 export const PutUnderDeckButton = ({ index }: { index: number }) => {
   const context = useMenuButtonRules()
@@ -28,10 +29,10 @@ export const PutUnderDeckButton = ({ index }: { index: number }) => {
   const { rules, player: me } = context
   if (rules.getActivePlayer() !== me) return null
 
-  const cards = cardsToPutUnderDeck(rules, me)
-  if (cards === undefined || !cards.getIndexes().includes(index)) return null
+  const move = putUnderDeckMove(rules, me, index)
+  if (move === undefined) return null
   return (
-    <LedaMenuButton {...handButtonPosition} move={underDeckMoves(cards.index(index), me)[0]}>
+    <LedaMenuButton {...handButtonPosition} move={move}>
       <FontAwesomeIcon icon={faTrashCan} />
     </LedaMenuButton>
   )

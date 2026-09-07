@@ -4,6 +4,7 @@ import { isRing } from '../material/clanCards/catCards'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { Rules } from '../Rules'
+import { revealMoves } from './reveal'
 import { RuleId } from './RuleId'
 
 type Cards = Material<number, MaterialType, LocationType>
@@ -43,4 +44,19 @@ export const cardsToPutUnderDeck = (rules: Rules, player: number): Cards | undef
     default:
       return undefined
   }
+}
+
+/**
+ * The move one of them plays, which is not the same move in the 2 cases: a card paid with goes straight under the
+ * deck, where a Ring traded for a token stops at the reveal spot of its owner first, having to be shown before it
+ * is spent (see {@link revealMoves}). Both end under the same pile, which is what the button and the deck of the
+ * table offer, and only one of them says so in a single move.
+ *
+ * Undefined for a card the player is not being asked for, so that nothing ever plays what is not legal.
+ */
+export const putUnderDeckMove = (rules: Rules, player: number, index: number): MaterialMove<number, MaterialType, LocationType> | undefined => {
+  const cards = cardsToPutUnderDeck(rules, player)
+  if (cards === undefined || !cards.getIndexes().includes(index)) return undefined
+  const card = cards.index(index)
+  return rules.game.rule?.id === RuleId.SpendRingForToken ? revealMoves(card, player)[0] : underDeckMoves(card, player)[0]
 }

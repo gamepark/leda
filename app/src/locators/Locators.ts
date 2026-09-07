@@ -308,6 +308,34 @@ class SpiedItemLocator extends Locator {
   }
 }
 
+/**
+ * The spot a card revealed to both players is held on, which is the one gap of a player's side column: right above
+ * their deck, the card coming out of it or going under it being what is ever shown there
+ * (see {@link LocationType.RevealedCard}).
+ * Lifted over the table like a spied item is, since the column already holds the Military Victory tokens their
+ * owner has won there: a card is only ever on this spot for the second it takes to be read, where the tokens are
+ * on it for the rest of the game.
+ */
+const revealedCardSpot = (player: number | undefined, context: MaterialContext): Coordinates => ({
+  x: playerSide(player, context) * sideColumnX,
+  y: gridRowY(2),
+  z: 10
+})
+
+/**
+ * That spot as a location of the table, which is where the card the rules put there is drawn.
+ * The instance is exported as well as laid in the table below: the animation of a card leaving the spot asks it
+ * where the card was standing, so as to hold it there rather than start moving it right away
+ * (see {@link gameAnimations}).
+ */
+class RevealedCardLocator extends Locator {
+  getCoordinates(location: Location, context: MaterialContext) {
+    return revealedCardSpot(location.player, context)
+  }
+}
+
+export const revealedCardLocator = new RevealedCardLocator()
+
 /** Where the pile an item was taken from sits, so that looking at one of its items moves nothing. */
 const pileCoordinates = (type: MaterialType, player: number | undefined, context: MaterialContext): Partial<Coordinates> => {
   switch (type) {
@@ -673,5 +701,8 @@ export const Locators: Partial<Record<LocationType, Locator<number, MaterialType
     locationDescription: new MilitaryVictoryDeckDescription()
   }),
 
-  [LocationType.SpiedItem]: new SpiedItemLocator()
+  [LocationType.SpiedItem]: new SpiedItemLocator(),
+
+  /** The card a Cat effect shows both players on its way somewhere else (see {@link revealedCardSpot}). */
+  [LocationType.RevealedCard]: revealedCardLocator
 }

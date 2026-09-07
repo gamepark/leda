@@ -38,6 +38,10 @@ export class PlayerDeckDescription extends DropAreaDescription<number, MaterialT
    * these end on this one spot, which nothing here could tell apart. They are made with the buttons the item
    * carries instead, each naming its own end of the pile (see {@link SpiedItemButtons}), so the spot stays out of
    * it rather than lighting up for a choice it cannot express.
+   *
+   * The Ring traded for a token is dropped here too, though its move names the reveal spot and not the pile: it is
+   * shown before it is spent, and where it ends up is under this deck all the same (see {@link revealMoves}). The
+   * player drags it onto the pile it is going under, which is the only thing they are choosing.
    */
   isMoveToLocation(
     move: MaterialMove<number, MaterialType, LocationType>,
@@ -45,6 +49,7 @@ export class PlayerDeckDescription extends DropAreaDescription<number, MaterialT
     context: MaterialContext<number, MaterialType, LocationType>
   ) {
     if (isMoveItem(move) && context.rules.material(move.itemType).getItem(move.itemIndex)?.location.type === LocationType.SpiedItem) return false
+    if (isMoveItem(move) && move.location.type === LocationType.RevealedCard) return move.location.player === location.player
     return super.isMoveToLocation(move, location, context)
   }
 }

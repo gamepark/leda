@@ -1,4 +1,4 @@
-import { getEnumValues, isCustomMoveType, isMoveItemType, MaterialGame, MaterialMove } from '@gamepark/rules-api'
+import { getEnumValues, isCustomMoveType, isMoveItemType, isShuffle, MaterialGame, MaterialMove } from '@gamepark/rules-api'
 import { describe, expect, it } from 'vitest'
 import { Clan } from '../Clan'
 import { LedaRules } from '../LedaRules'
@@ -11,7 +11,7 @@ import { MilitaryVictoryTokenId } from '../material/MilitaryVictoryTokenId'
 import { cellOf, tileAt } from '../material/PlayerGrid'
 import { TileId } from '../material/TileId'
 import { clanCardEffects } from '../material/clanCards/cardProperties'
-import { catCards } from '../material/clanCards/catCards'
+import { catCards, Ring, rings } from '../material/clanCards/catCards'
 import { CustomMoveType } from './CustomMoveType'
 import { pendingRules } from './effects'
 import { Memory } from './Memory'
@@ -121,6 +121,9 @@ const military = (rules: LedaRules, player = 1) => rules.game.memory[Memory.Mili
 const food = (rules: LedaRules) => rules.material(MaterialType.FoodToken).location(LocationType.PlayerFood).player(1).getQuantity()
 
 const hand = (rules: LedaRules) => rules.material(MaterialType.ClanCard).location(LocationType.PlayerHand).player(1)
+
+/** The card the player is showing both of them, which is where a Ring stops on its way somewhere else. */
+const revealed = (rules: LedaRules) => rules.material(MaterialType.ClanCard).location(LocationType.RevealedCard).player(1)
 
 /** Whether the card played on that square is showing its second face. */
 const isRotated = (rules: LedaRules, x: number) =>
@@ -244,6 +247,53 @@ describe('The Cat cards that ask the player something', () => {
     expect(pendingRules(rules)).toEqual([])
   })
 
+  it('shows the Ring searched for on the reveal spot before it reaches the hand', () => {
+    const rules = new LedaRules(
+      game({
+        cards: [{ card: ClanCardId.CatSearchRing, x: 0 }],
+        hand: [ClanCardId.CatRingThreeCatCards, ClanCardId.CatRingWinConflictByThree, ClanCardId.CatRingFiveUpgradedTiles]
+      })
+    )
+    activate(rules, 0)
+    const [search] = rules.getLegalMoves(1).filter(isCustomMoveType(CustomMoveType.SearchRing))
+    // Naming the Ring owes the move that takes it out of the deck, which is the move that shows it.
+    const [reveal] = rules.play(search)
+    const consequences = rules.play(reveal)
+    // Out of the deck and not in hand yet: the Ring stands where both players read it.
+    expect(
+      revealed(rules)
+        .getItems()
+        .map((card) => card.id.front)
+    ).toEqual([ClanCardId.CatRingEmptyDeck])
+    expect(hand(rules).length).toBe(3)
+
+    for (const consequence of consequences) playAll(rules, consequence)
+    // And nothing stays there: how long it is held in sight is the app's to decide, not the game's.
+    expect(revealed(rules).length).toBe(0)
+    expect(
+      hand(rules)
+        .getItems()
+        .map((card) => card.id.front)
+    ).toContain(ClanCardId.CatRingEmptyDeck)
+  })
+
+  it('leaves a deck of one card alone rather than shuffling it', () => {
+    // 3 Rings and 7 other cards in hand, 1 card in play: the deck is the last Ring and one card, and nothing else.
+    const others = allCatCards.filter((card) => !rings.includes(card as Ring) && card !== ClanCardId.CatSearchRing)
+    const rules = new LedaRules(
+      game({
+        cards: [{ card: ClanCardId.CatSearchRing, x: 0 }],
+        hand: [ClanCardId.CatRingThreeCatCards, ClanCardId.CatRingWinConflictByThree, ClanCardId.CatRingFiveUpgradedTiles, ...others.slice(0, 7)]
+      })
+    )
+    activate(rules, 0)
+    const [search] = rules.getLegalMoves(1).filter(isCustomMoveType(CustomMoveType.SearchRing))
+    const [reveal] = rules.play(search)
+    // The one card left has no order to hide, so the pile is closed back up without being shuffled.
+    expect(rules.play(reveal).some(isShuffle)).toBe(false)
+    expect(rules.material(MaterialType.ClanCard).location(LocationType.PlayerDeck).player(1).length).toBe(1)
+  })
+
   it('offers the same Rings on the client, which cannot read its own deck', () => {
     const state = game({ cards: [{ card: ClanCardId.CatSearchRing, x: 0 }], hand: [ClanCardId.CatRingThreeCatCards] })
     const server = new LedaRules(state)
@@ -293,6 +343,26 @@ describe('The Cat cards that ask the player something', () => {
     playAll(kept, kept.customMove(CustomMoveType.Pass, 1))
     expect(hand(kept).length).toBe(1)
     expect(kept.material(MaterialType.MilitaryVictoryToken).location(LocationType.PlayerMilitaryVictory).length).toBe(0)
+  })
+
+  it('shows the Ring traded for a token to the opponent before it goes under the deck', () => {
+    const rules = new LedaRules(game({ cards: [{ card: ClanCardId.CatSpendRingForToken, x: 0 }], hand: [ClanCardId.CatRingEmptyDeck] }))
+    activate(rules, 0)
+    const [give] = rules.getLegalMoves(1).filter(isMoveItemType(MaterialType.ClanCard))
+    const consequences = rules.play(give)
+    expect(
+      revealed(rules)
+        .getItems()
+        .map((card) => card.id.front)
+    ).toEqual([ClanCardId.CatRingEmptyDeck])
+    // Which is the whole of what the card asks for: the reveal spot is hidden from nobody, unlike the hand it left.
+    const opponentView = rules.getView(2).items[MaterialType.ClanCard]!.filter((card) => card.location.type === LocationType.RevealedCard)
+    expect(opponentView.map((card) => card.id?.front)).toEqual([ClanCardId.CatRingEmptyDeck])
+
+    for (const consequence of consequences) playAll(rules, consequence)
+    expect(revealed(rules).length).toBe(0)
+    // The far end of the deck, which is where every card given back to a pile lands.
+    expect(rules.material(MaterialType.ClanCard).location(LocationType.PlayerDeck).player(1).getItem()!.location.x).toBe(0)
   })
 
   it('copies a card of the opponent in the zone, its owner gaining nothing from it', () => {

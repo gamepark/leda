@@ -71,6 +71,18 @@ export enum LocationType {
   SpiedItem,
 
   /**
+   * The card a Cat effect shows to both players before it goes where it is going: the Ring searched for in a deck,
+   * on its way to the hand of its owner, and the Ring traded for a Military Victory token, on its way under their
+   * deck (see {@link SearchRingRule} and {@link SpendRingForTokenRule}).
+   * Never holds more than one card, and only for the second it is read in: the rules move it out as soon as it
+   * lands here, and the app is what holds it in sight for as long as that takes to be seen (see the animation of
+   * a card leaving this spot).
+   * The opposite of {@link SpiedItem}, which hides from everyone but its owner: this one is public, hidden from
+   * nobody, which is the whole of what those 2 cards ask for.
+   */
+  RevealedCard,
+
+  /**
    * One of the zones of 4 squares the Action tile of the round offers, over the grid of a player: the rectangle
    * the app draws around those squares while the active player picks the zone both of them will activate
    * (see {@link ActionZone}). Its id is the zone, and its player the grid it is drawn over.

@@ -1,6 +1,6 @@
 {
   "name": "@gamepark/leda",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "The rules of LEDA adapted for Game Park",
   "sideEffects": false,
   "type": "module",

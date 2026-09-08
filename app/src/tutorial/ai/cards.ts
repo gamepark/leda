@@ -10,7 +10,7 @@ import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { gridCorners, gridTiles, sameCell } from '@gamepark/leda/material/PlayerGrid'
 import { pandaLevel } from '@gamepark/leda/rules/awakening'
 import { cardCardCost, cardFoodCost, playerFood } from '@gamepark/leda/rules/organisation'
-import { topCardOn } from '@gamepark/leda/rules/squares'
+import { topCardIndexOnTile, topCardOn } from '@gamepark/leda/rules/squares'
 import { XYCoordinates } from '@gamepark/rules-api'
 import { Ai, effectsGain, futureValue } from './AiPlayer'
 import {
@@ -81,19 +81,28 @@ export const spendingPenalty = (ai: Ai, front: ClanCardId, discount = 0): number
 }
 
 /**
+ * The one placement the AI never makes: a card laid on a square that already holds one.
+ *
+ * The rules allow it, and it is sometimes the only square left worth anything, but no gain pays for it: the
+ * buried card stops giving what it gives, stops being counted by the Victory condition card of the clan, and the
+ * grid is a square smaller for the rest of the game. There are 16 of them and a hand is emptied one card per
+ * round, so there is always somewhere else to lay it, and the AI reads a square holding a card as no square at
+ * all (see {@link playCardValue}).
+ */
+export const buriesACard = (ai: Ai, tileIndex: number): boolean => topCardIndexOnTile(ai.rules, tileIndex) !== undefined
+
+/**
  * What playing a card on a square buries, which is the whole reason a grid is not 16 equally good squares.
  *
- * A card covers the tile of its square, and covers whatever card was already standing there: what it buries stops
- * giving anything, stops being counted by the Victory condition card of the clan, and stops being a Desert the
- * Scorpions count in pairs. All 3 are lost for the rest of the game, hence the loss being read over the rounds
- * ahead exactly as the gain is (see {@link cellOutlook}).
+ * A card covers the tile of its square, and what it covers stops giving anything and stops being a Desert the
+ * Scorpions count in pairs, for the rest of the game: hence the loss being read over the rounds ahead exactly as
+ * the gain is (see {@link cellOutlook}). The card another card would bury is not priced here, that placement
+ * being refused rather than paid for (see {@link buriesACard}).
  */
 export const coverPenalty = (ai: Ai, cell: XYCoordinates): number => {
   let penalty = weightedCellValue(ai, cell)
-  const covered = topCardOn(ai.rules, ai.player, cell)
-  if (covered !== undefined) penalty += victoryValue(ai, covered, cell)
   // A Desert under a card is a Desert nobody counts, and half of what the Scorpion cards read is those pairs.
-  else if (ai.clan === Clan.Scorpion && isDesertCell(ai, cell)) penalty += 0.8
+  if (ai.clan === Clan.Scorpion && isDesertCell(ai, cell)) penalty += 0.8
   return penalty
 }
 
@@ -130,6 +139,8 @@ export const victoryValue = (ai: Ai, front: ClanCardId, cell: XYCoordinates): nu
 export const playCardValue = (ai: Ai, cardIndex: number, tileIndex: number, discount = 0): number => {
   const front = ai.rules.material(MaterialType.ClanCard).getItem<ClanCardItemId>(cardIndex)?.id?.front
   if (front === undefined) return -Infinity
+  // Never over another card, whatever the square would otherwise be worth (see {@link buriesACard}).
+  if (buriesACard(ai, tileIndex)) return -Infinity
   const cell = cellOfTile(ai.rules, tileIndex)
   // The tile of the square is handed to the effects as what gives them, the card not being on the grid yet: what
   // a card reading its own surroundings reads is the square, and that is the square it is about to sit on.
@@ -156,9 +167,11 @@ const packBonus = (ai: Ai, front: ClanCardId, cell: XYCoordinates): number => {
   return tokenGain(ai, cell, others) + ai.weights[Effect.PlaceSharkToken]
 }
 
-/** The best square of the grid for a card of the hand, and what it would be worth there. */
+/** The best free square of the grid for a card of the hand, and what it would be worth there. */
 export const bestPlacement = (ai: Ai, cardIndex: number, discount = 0): { tile: number; value: number } | undefined => {
-  const tiles = gridTiles(ai.rules.material(MaterialType.Tile), ai.player).getIndexes()
+  const tiles = gridTiles(ai.rules.material(MaterialType.Tile), ai.player)
+    .getIndexes()
+    .filter((tile) => !buriesACard(ai, tile))
   if (tiles.length === 0) return undefined
   return tiles
     .map((tile) => ({ tile, value: playCardValue(ai, cardIndex, tile, discount) }))

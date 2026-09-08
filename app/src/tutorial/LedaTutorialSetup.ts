@@ -1,13 +1,13 @@
 import { Clan, clanCards, clanStart } from '@gamepark/leda/Clan'
 import { LedaSetup } from '@gamepark/leda/LedaSetup'
 import { ActionTileId } from '@gamepark/leda/material/ActionTileId'
-import { ActionZone } from '@gamepark/leda/material/ActionZone'
+import { ActionZone, actionZoneCells } from '@gamepark/leda/material/ActionZone'
 import { ClanCardId, ClanCardItemId } from '@gamepark/leda/material/ClanCardId'
 import { clanCardProperties } from '@gamepark/leda/material/clanCards/cardProperties'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { militaryVictoryTokens, MilitaryVictoryTokenId } from '@gamepark/leda/material/MilitaryVictoryTokenId'
-import { cellOf, gridCells, sameCell } from '@gamepark/leda/material/PlayerGrid'
+import { cellOf, gridCells, sameCell, tileAt } from '@gamepark/leda/material/PlayerGrid'
 import { baseTiles, TileId } from '@gamepark/leda/material/TileId'
 import { RuleId } from '@gamepark/leda/rules/RuleId'
 import { sharkTokens } from '@gamepark/leda/rules/sharkPack'
@@ -22,6 +22,9 @@ export const tutorialOpponent = 2
 
 /** A square the tutorial lays out itself, everything the script does not name being shuffled as usual. */
 type ScriptedSquare = { cell: XYCoordinates; tile: TileId }
+
+/** A tile the shuffle is not allowed to lay on certain squares, which is all the script has to say about it. */
+type ScriptedExclusion = { tile: TileId; cells: XYCoordinates[] }
 
 /**
  * The 4 squares of row 1 the tutorial walks the reader through, named after what stands on them and given in the
@@ -41,7 +44,8 @@ export const scriptedCells = {
  * then the crystal and the Draw tile of row 4, which is the zone of the second one and all that round is about.
  * One crystal only: the second round is read and not played, and 2 crystals in the row the opponent opens would
  * promise the reader 2 Awakenings at once, which is a great deal more than the popup explaining the first one is
- * saying. The Draw tile takes the place of the temporary crystal, and is explained just before it.
+ * saying. The Draw tile takes the place of the temporary crystal, which the shuffle lays anywhere but there
+ * (see {@link pandaExclusions}).
  */
 const pandaGrid: ScriptedSquare[] = [
   { cell: scriptedCells.temporaryFood, tile: TileId.TemporaryFood },
@@ -72,6 +76,14 @@ export const firstRoundZone = ActionZone.Row1
 export const secondRoundZone = ActionZone.Row4
 
 /**
+ * The one thing the script has to say about the 10 squares it leaves to the shuffle: the temporary crystal stays
+ * out of row 4. That row is the zone of the second round, it already holds the permanent crystal the tutorial
+ * explains, and a shuffle that dropped the temporary one on either of its 2 free squares would promise the reader
+ * 2 Awakenings at once (see {@link pandaGrid}).
+ */
+const pandaExclusions: ScriptedExclusion[] = [{ tile: TileId.TemporarySpecialActivation, cells: actionZoneCells[secondRoundZone] }]
+
+/**
  * The 2 Action tiles those zones are read off, laid on top of the pile in the order they are revealed: tile 1
  * offers row 1, tile 4 offers row 4.
  * The pile is drawn from its highest x, which is the last tile created, so the list is written bottom up.
@@ -92,7 +104,7 @@ const scriptedActionTiles = [ActionTileId.BottomRight, ActionTileId.TopLeft]
  */
 export class LedaTutorialSetup extends LedaSetup {
   setupMaterial() {
-    this.setupScriptedGrid(tutorialPlayer, pandaGrid)
+    this.setupScriptedGrid(tutorialPlayer, pandaGrid, pandaExclusions)
     this.setupScriptedGrid(tutorialOpponent, sharkGrid)
     this.setupScriptedActionTiles()
     this.setupScriptedMilitaryVictoryTokens()
@@ -107,7 +119,7 @@ export class LedaTutorialSetup extends LedaSetup {
    * squares it left alone. Shuffling swaps the tiles between the squares it is given and leaves the squares
    * themselves in place (see {@link LedaSetup.setupGrid}), so the scripted squares are simply left out of it.
    */
-  private setupScriptedGrid(player: number, script: ScriptedSquare[]) {
+  private setupScriptedGrid(player: number, script: ScriptedSquare[], exclusions: ScriptedExclusion[] = []) {
     const shuffled = [...baseTiles]
     for (const { tile } of script) shuffled.splice(shuffled.indexOf(tile), 1)
     const freeCells = gridCells.filter((cell) => !script.some((square) => sameCell(square.cell, cell)))
@@ -115,10 +127,22 @@ export class LedaTutorialSetup extends LedaSetup {
       ...script.map(({ cell, tile }) => ({ id: tile, location: { type: LocationType.PlayerGrid, player, ...cell } })),
       ...shuffled.map((tile, index) => ({ id: tile, location: { type: LocationType.PlayerGrid, player, ...freeCells[index] } }))
     ])
-    this.material(MaterialType.Tile)
-      .player(player)
-      .location((location) => freeCells.some((cell) => sameCell(cell, cellOf(location))))
-      .shuffle()
+    // Dealt again on the deal that lands a tile where the script does not want it, which is the plainest way of
+    // saying "anywhere but there" and leaves the 10 squares as evenly shuffled as they were: 8 of them take the
+    // temporary crystal, so this is one shuffle and a quarter of another.
+    do {
+      this.material(MaterialType.Tile)
+        .player(player)
+        .location((location) => freeCells.some((cell) => sameCell(cell, cellOf(location))))
+        .shuffle()
+    } while (this.isMisplaced(player, exclusions))
+  }
+
+  /** Whether the shuffle laid one of the tiles the script keeps out of a row on one of that row's squares. */
+  private isMisplaced(player: number, exclusions: ScriptedExclusion[]): boolean {
+    return exclusions.some(({ tile, cells }) =>
+      cells.some((cell) => tileAt(this.material(MaterialType.Tile), player, cell).getItem<TileId>()?.id === tile)
+    )
   }
 
   /** The 5 Action tiles, the 2 the tutorial names on top and the 3 others shuffled under them. */

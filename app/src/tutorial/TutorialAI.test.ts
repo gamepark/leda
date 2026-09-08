@@ -5,8 +5,9 @@ import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { CustomMoveType } from '@gamepark/leda/rules/CustomMoveType'
 import { RuleId } from '@gamepark/leda/rules/RuleId'
+import { topCardIndexOnTile } from '@gamepark/leda/rules/squares'
 import { hasMilitaryVictory, hasSpecialVictory, specialVictoryProgress } from '@gamepark/leda/rules/victory'
-import { isCustomMoveType, MaterialMove } from '@gamepark/rules-api'
+import { isCustomMoveType, isMoveItemType, MaterialMove } from '@gamepark/rules-api'
 import { describe, expect, it } from 'vitest'
 import { ai } from './TutorialAI'
 
@@ -39,6 +40,7 @@ const playGame = async (clans: [Clan, Clan], cap = 3000): Promise<Outcome> => {
     expect(chosen.length, `player ${player} returned no move on rule ${RuleId[rules.game.rule!.id]}`).toBeGreaterThan(0)
     for (const move of chosen) {
       expect(legal.some((option) => JSON.stringify(option) === JSON.stringify(move)), `illegal move on rule ${RuleId[rules.game.rule!.id]}`).toBe(true)
+      expectNoCardBuried(rules, move)
       playAll(rules, move)
       moves++
     }
@@ -49,6 +51,18 @@ const playGame = async (clans: [Clan, Clan], cap = 3000): Promise<Outcome> => {
     cards: rules.game.players.map((player) => rules.material(MaterialType.ClanCard).location(LocationType.PlayedCard).player(player).length),
     progress: rules.game.players.reduce((sum, player) => sum + (specialVictoryProgress(rules, player)?.count ?? 0), 0)
   }
+}
+
+/**
+ * The one placement the AI never makes: a card laid on a square that already holds one, which buries the card
+ * underneath for the rest of the game (see {@link buriesACard}).
+ * An Awakening is not one of those: the Panda it replaces goes back to its owner's hand, and nothing is buried.
+ */
+const expectNoCardBuried = (rules: LedaRules, move: Move) => {
+  if (rules.game.rule?.id === RuleId.Awakening) return
+  if (!isMoveItemType(MaterialType.ClanCard)(move) || move.location.type !== LocationType.PlayedCard) return
+  if (move.location.parent === undefined) return
+  expect(topCardIndexOnTile(rules, move.location.parent), `a card was buried on rule ${RuleId[rules.game.rule!.id]}`).toBeUndefined()
 }
 
 const clanMove = (moves: Move[], clan: Clan): Move => {

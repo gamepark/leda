@@ -118,7 +118,7 @@ describe('The tutorial setup', () => {
     const secondZone = gridTiles(rules, tutorialPlayer, actionZoneCells[secondRoundZone])
     expect(secondZone).toContain(TileId.PermanentSpecialActivation)
     expect(secondZone).toContain(TileId.TemporaryDraw)
-    // The second crystal is left to the shuffle: 2 of them in that row would promise 2 Awakenings at once.
+    // The second crystal is laid anywhere but here: 2 of them in that row would promise 2 Awakenings at once.
     expect(secondZone).not.toContain(TileId.TemporarySpecialActivation)
     // The opponent gathers no military symbol at all: their own row 1 gives Food and nothing else.
     expect(gridTiles(rules, tutorialOpponent, actionZoneCells[firstRoundZone])).toEqual([

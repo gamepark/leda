@@ -63,7 +63,7 @@
   },
   "organisation": {
     "food": {
-      "explain": "Échangez la position de 2 cartes, et ensuite gagner 1 <food/>. Vous n'êtes pas obligé d'échanger pour prendre 1 <food/>.",
+      "explain": "Échangez la position de 2 cases, et ensuite gagnez 1 <food/>. Vous n'êtes pas obligé d'échanger pour prendre 1 <food/>.",
       "take": "Juste prendre 1"
     }
   },
@@ -373,8 +373,8 @@
       "player": "{player} place un pion Requin sur une de ses tuiles"
     },
     "organisation": {
-      "you": "Jouez une carte ou échangez 2 cartes et gagnez 1 <food/>",
-      "player": "{player} joue une carte ou échange 2 cartes et gagne 1 <food/>"
+      "you": "Jouez une carte ou échangez 2 cases et gagnez 1 <food/>",
+      "player": "{player} joue une carte ou échange 2 cases et gagne 1 <food/>"
     },
     "upgrade-tile": {
       "you": "Améliorez une de vos tuiles permanentes",

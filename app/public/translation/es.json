@@ -63,7 +63,7 @@
   },
   "organisation": {
     "food": {
-      "explain": "Intercambia la posición de 2 cartas, y luego gana 1 <food/>. No estás obligado a intercambiar para tomar 1 <food/>.",
+      "explain": "Intercambia la posición de 2 casillas, y luego gana 1 <food/>. No estás obligado a intercambiar para tomar 1 <food/>.",
       "take": "Solo tomar 1"
     }
   },
@@ -373,8 +373,8 @@
       "player": "{player} coloca una ficha de Tiburón en una de sus losetas"
     },
     "organisation": {
-      "you": "Juega una carta o intercambia 2 cartas y gana 1 <food/>",
-      "player": "{player} juega una carta o intercambia 2 cartas y gana 1 <food/>"
+      "you": "Juega una carta o intercambia 2 casillas y gana 1 <food/>",
+      "player": "{player} juega una carta o intercambia 2 casillas y gana 1 <food/>"
     },
     "upgrade-tile": {
       "you": "Mejora una de tus losetas permanentes",

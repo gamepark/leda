@@ -63,7 +63,7 @@
   },
   "organisation": {
     "food": {
-      "explain": "Scambia la posizione di 2 carte, e poi guadagna 1 <food/>. Non sei obbligato a scambiare per prendere 1 <food/>.",
+      "explain": "Scambia la posizione di 2 caselle, e poi guadagna 1 <food/>. Non sei obbligato a scambiare per prendere 1 <food/>.",
       "take": "Prendi solo 1"
     }
   },
@@ -373,8 +373,8 @@
       "player": "{player} mette un segnalino Squalo su una delle sue tessere"
     },
     "organisation": {
-      "you": "Gioca una carta oppure scambia 2 carte e guadagna 1 <food/>",
-      "player": "{player} gioca una carta oppure scambia 2 carte e guadagna 1 <food/>"
+      "you": "Gioca una carta oppure scambia 2 caselle e guadagna 1 <food/>",
+      "player": "{player} gioca una carta oppure scambia 2 caselle e guadagna 1 <food/>"
     },
     "upgrade-tile": {
       "you": "Migliora una delle tue tessere permanenti",

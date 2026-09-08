@@ -63,7 +63,7 @@
   },
   "organisation": {
     "food": {
-      "explain": "Tausche die Position von 2 Karten und erhalte anschließend 1 <food/>. Du musst nicht tauschen, um 1 <food/> zu nehmen.",
+      "explain": "Tausche die Position von 2 Feldern und erhalte anschließend 1 <food/>. Du musst nicht tauschen, um 1 <food/> zu nehmen.",
       "take": "Nur 1 nehmen"
     }
   },
@@ -373,8 +373,8 @@
       "player": "{player} legt einen Hai-Marker auf eines seiner Plättchen"
     },
     "organisation": {
-      "you": "Spiele eine Karte oder tausche 2 Karten und erhalte 1 <food/>",
-      "player": "{player} spielt eine Karte oder tauscht 2 Karten und erhält 1 <food/>"
+      "you": "Spiele eine Karte oder tausche 2 Felder und erhalte 1 <food/>",
+      "player": "{player} spielt eine Karte oder tauscht 2 Felder und erhält 1 <food/>"
     },
     "upgrade-tile": {
       "you": "Verbessere eines deiner dauerhaften Plättchen",

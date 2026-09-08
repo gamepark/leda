@@ -63,7 +63,7 @@
   },
   "organisation": {
     "food": {
-      "explain": "Swap the position of 2 cards, then gain 1 <food/>. You are not required to swap in order to take 1 <food/>.",
+      "explain": "Swap the position of 2 spaces, then gain 1 <food/>. You are not required to swap in order to take 1 <food/>.",
       "take": "Just take 1"
     }
   },
@@ -373,8 +373,8 @@
       "player": "{player} places a Shark token on one of their tiles"
     },
     "organisation": {
-      "you": "Play a card or swap 2 cards and gain 1 <food/>",
-      "player": "{player} plays a card or swaps 2 cards and gains 1 <food/>"
+      "you": "Play a card or swap 2 spaces and gain 1 <food/>",
+      "player": "{player} plays a card or swaps 2 spaces and gains 1 <food/>"
     },
     "upgrade-tile": {
       "you": "Upgrade one of your permanent tiles",

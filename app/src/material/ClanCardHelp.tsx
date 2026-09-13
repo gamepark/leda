@@ -9,6 +9,7 @@ import { isPortal } from '@gamepark/leda/material/clanCards/scorpionCards'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { awakeningGroup } from '@gamepark/leda/rules/awakening'
+import { eggCost } from '@gamepark/leda/rules/snake'
 import { MaterialHelpProps, useRules } from '@gamepark/react-game'
 import { useTranslation } from 'react-i18next'
 import PandaBronzeImage from '../images/icons/PandaBronze.png'
@@ -22,7 +23,7 @@ import { ringConditions } from './ringConditions'
  * belongs to is what makes them checkable against the rulebook.
  *
  * A card that prints 2 effects has a second key, suffixed `-2`: effect 2 of a Cat card, the Pack effect of a Shark
- * card. A Portal has one too, `-cost`, for the formula its price is written as.
+ * card, the Hatching effect of a Snake. A Portal has one too, `-cost`, for the formula its price is written as.
  *
  * Total rather than partial: a card added to {@link ClanCardId} without a text of its own does not compile.
  */
@@ -72,8 +73,25 @@ const clanCardCodes: Record<ClanCardId, string> = {
   [ClanCardId.ScorpionPortalDoubleSpy]: 'scorpion-portal-double-spy',
   [ClanCardId.ScorpionPortalFlipOpponentTile]: 'scorpion-portal-flip-opponent-tile',
   [ClanCardId.ScorpionPortalSwap]: 'scorpion-portal-swap',
-  [ClanCardId.ScorpionPortalBlockMilitaryVictory]: 'scorpion-portal-block-military-victory'
+  [ClanCardId.ScorpionPortalBlockMilitaryVictory]: 'scorpion-portal-block-military-victory',
+  [ClanCardId.SnakeStealFoodAndMilitary]: 'snake-steal-food-and-military',
+  [ClanCardId.SnakeDrawAndFlipDesert]: 'snake-draw-and-flip-desert',
+  [ClanCardId.SnakeSpyAndUpgrade]: 'snake-spy-and-upgrade',
+  [ClanCardId.SnakeMilitary]: 'snake-military',
+  [ClanCardId.SnakeDrawAndFoodPerEgg]: 'snake-draw-and-food-per-egg',
+  [ClanCardId.SnakeStealFoodAndMoveEgg]: 'snake-steal-food-and-move-egg',
+  [ClanCardId.SnakeSpyAndMilitary]: 'snake-spy-and-military',
+  [ClanCardId.SnakeMilitaryWithThreeSnakes]: 'snake-military-with-three-snakes',
+  [ClanCardId.SnakeCopySnake]: 'snake-copy-snake',
+  [ClanCardId.SnakeMilitaryVictoryAndFlipBack]: 'snake-military-victory-and-flip-back',
+  [ClanCardId.SnakeDrawPlayCardAndFlipBack]: 'snake-draw-play-card-and-flip-back'
 }
+
+/**
+ * The number a reminder reads, for the ones that read one off the rules rather than print it: what an Egg costs
+ * to play and to hatch, and, everywhere else, the Pandas an Awakening asks for.
+ */
+const noteCounts: Record<string, number> = { 'help.note.egg': eggCost }
 
 /** The Scorpion cards whose text counts the Deserts of their owner, which is worth a word of what a Desert is. */
 const desertCards: ClanCardId[] = [
@@ -115,14 +133,18 @@ export const ClanCardHelp = ({ item }: MaterialHelpProps<number, MaterialType, L
        */}
       {id !== undefined && <HelpTitle>{t(`help.title.${id.back}`)}</HelpTitle>}
       {card === undefined ? (
-        <Paragraph>{t('help.hidden')}</Paragraph>
+        <>
+          <Paragraph>{t('help.hidden')}</Paragraph>
+          {/* The one keyword a hidden card can be told by its back: every Snake is an Egg until it hatches. */}
+          {id?.back === Clan.Snake && <Note code="help.note.egg" values={{ count: eggCost }} />}
+        </>
       ) : (
         <>
           <CardCost card={card} player={item.location?.player} />
           <CardEffects card={card} />
           {/* The Awakening reminder is the one that counts the Pandas it takes; the others read no number. */}
           {cardNotes(card).map((note) => (
-            <Note key={note} code={note} values={{ count: awakeningGroup }} />
+            <Note key={note} code={note} values={{ count: noteCounts[note] ?? awakeningGroup }} />
           ))}
         </>
       )}
@@ -185,8 +207,24 @@ const CardCost = ({ card, player }: { card: ClanCardId; player?: number }) => {
 const CardEffects = ({ card }: { card: ClanCardId }) => {
   const { t } = useTranslation()
   const code = clanCardCodes[card]
-  const { effects } = clanCardProperties[card]
+  const { effects, secondEffects } = clanCardProperties[card]
   switch (clanOf(card)) {
+    /**
+     * A Snake prints its Hatching effect above what it gives every round, which is the order the 2 are resolved
+     * in the round the Egg opens, and half of them print no Hatching effect at all (see {@link snakeCards}).
+     * The card with nothing but a Hatching effect is the one Snake whose square, once hatched, gives nothing.
+     */
+    case Clan.Snake:
+      return (
+        <>
+          {secondEffects !== undefined && (
+            <Line label={t('help.hatching')}>
+              <CardText code={`${code}-2`} />
+            </Line>
+          )}
+          <Line label={t('help.effect')}>{effects === undefined ? t('help.none') : <CardText code={code} />}</Line>
+        </>
+      )
     case Clan.Cat:
       if (isRing(card)) break
       return (
@@ -245,7 +283,7 @@ const activationEffects: Effect[] = [
 const effectsOf = (effects?: EffectSet): Effect[] =>
   effects === undefined ? [] : isEffectChoice(effects) ? effects.or.flatMap(effectsOf) : (Object.keys(effects) as Effect[])
 
-/** Whether either face of the card prints one of them: a Cat card prints 2, and a Shark card prints its Pack. */
+/** Whether either effect of the card prints one of them: a Cat card prints 2, a Shark its Pack, a Snake its Hatching. */
 const activatesOutOfTurn = (card: ClanCardId): boolean => {
   const { effects, secondEffects } = clanCardProperties[card]
   return [...effectsOf(effects), ...effectsOf(secondEffects)].some((effect) => activationEffects.includes(effect))
@@ -263,6 +301,9 @@ const clanNotes = (card: ClanCardId): string[] => {
       return [isRing(card) ? 'help.note.ring' : 'help.note.rotation']
     case Clan.Scorpion:
       return isPortal(card) ? ['help.note.portal'] : desertCards.includes(card) ? ['help.note.desert'] : []
+    /** Every Snake card is played as an Egg and hatched for 2 Food, which is the whole keyword of the clan. */
+    case Clan.Snake:
+      return ['help.note.egg']
   }
 }
 

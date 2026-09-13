@@ -98,6 +98,18 @@ export enum Effect {
   /** You may turn one of your Cat cards in play half a turn, onto the other of the 2 effects it prints. */
   RotateCatCard = 'rotateCatCard',
 
+  /** Move one of your Eggs onto another square of your grid, where it covers whatever stood there. */
+  MoveEgg = 'moveEgg',
+
+  /** Turn one of your Snakes back onto its Egg side, where it gives nothing until it is hatched again. */
+  FlipSnakeToEgg = 'flipSnakeToEgg',
+
+  /**
+   * Resolve what one of your Snakes gives, without activating it: that Snake is left exactly as it stands, and
+   * its own activation of the round is still ahead of it (see {@link CopySnakeRule}).
+   */
+  CopySnake = 'copySnake',
+
   /**
    * The card giving it takes half a turn, onto the other of the 2 effects it prints: what every Cat card but the
    * Rings gives on top of what it prints, and the whole of what a blank face gives.

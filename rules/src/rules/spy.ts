@@ -1,7 +1,8 @@
-import { Material, MaterialMove, MaterialRules, MaterialRulesPart } from '@gamepark/rules-api'
+import { isMoveItem, Material, MaterialMove, MaterialRules, MaterialRulesPart, MoveItem } from '@gamepark/rules-api'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { Memory } from './Memory'
+import { playedEggs, spiedSide } from './snake'
 
 /** All these helpers need, which a part of the rules and the MaterialRules instance of the app both satisfy. */
 type Rules = Pick<MaterialRules<number, MaterialType, LocationType>, 'game' | 'material'>
@@ -80,7 +81,18 @@ export const putBackMoves = (rules: Rules, player: number): { onTop: Move; under
  * The pile is its material type, which is what tells the 3 of them apart (see {@link spiedPiles}), and the player
  * is the owner of the one pile that belongs to somebody: a Spy only ever looks into its own player's deck.
  */
-export type Spy = { player: number; pile: MaterialType; onTop: boolean }
+export type PileSpy = { player: number; pile: MaterialType; onTop: boolean }
+
+/**
+ * A Spy spent on an Egg of the opponent's grid instead of a pile: there is no end of a pile to write down, only which
+ * card was read, as its index, which follows the card wherever it goes from its square (see {@link spiableEggs}).
+ * Its pile is the material type of that card, like the pile of a look on a deck is, so the look is read the same way.
+ */
+export type EggSpy = { player: number; pile: MaterialType.ClanCard; egg: number }
+
+export type Spy = PileSpy | EggSpy
+
+export const isEggSpy = (spy: Spy): spy is EggSpy => 'egg' in spy
 
 /** The Spies of the round, in the order they were made. */
 export const roundSpies = (rules: Rules): Spy[] => rules.game.memory[Memory.Spies] ?? []
@@ -93,11 +105,14 @@ export const rememberSpy = (rule: Rule, spy: Spy) => rule.memorize<Spy[]>(Memory
  * A deck is a pile of its own, hence its owner: the 2 decks of the table are 2 piles, and a Spy on one of them
  * says nothing about the other.
  */
-export const isSpyOnPile = (spy: Spy, type: MaterialType, owner?: number): boolean => {
+export const isSpyOnPile = (spy: Spy, type: MaterialType, owner?: number): spy is PileSpy => {
   const pile = spiedPiles.find((spiable) => spiable.type === type)
-  if (pile === undefined) return false
+  if (pile === undefined || isEggSpy(spy)) return false
   return spy.pile === type && (!pile.owned || spy.player === owner)
 }
+
+/** Whether a Spy of the round is the one that read a card while it was an Egg, which that card has to show for itself. */
+export const isSpyOnEgg = (spy: Spy, card: number): boolean => isEggSpy(spy) && spy.egg === card
 
 /**
  * Whether an item is the one on top of its pile, which is where the buttons of that pile sit: a pile is drawn as
@@ -109,3 +124,48 @@ export const isPileTop = (rules: Rules, type: MaterialType, index: number, owner
   if (pile === undefined || (pile.owned && owner === undefined)) return false
   return pileTop(rules, owner!, pile).getIndexes().includes(index)
 }
+
+/**
+ * The Eggs a Spy effect may look at instead of a pile, which the sheet of the Snakes adds to the effect for as
+ * long as that clan is in play: "its opponent may use a Spy effect to look at a Snake card placed on its Egg
+ * side, instead of the other options normally offered by that effect".
+ *
+ * Their opponent's Eggs and never their own: a player already knows what they played, and looking at it would be
+ * a Spy spent on nothing. A covered Egg is out of play and out of reach, exactly as it is out of every other
+ * count (see {@link playedEggs}).
+ *
+ * An Egg already read this round is not offered again: its reader knows it, and reading it twice would be a Spy
+ * spent on nothing, exactly as reading one's own Eggs would be (see {@link EggSpy}).
+ */
+export const spiableEggs = (rules: Rules, player: number): Material<number, MaterialType, LocationType> => {
+  const opponent = rules.game.players.find((other: number) => other !== player)
+  if (opponent === undefined) return rules.material(MaterialType.ClanCard).id(() => false)
+  const read = roundSpies(rules).flatMap((spy) => (isEggSpy(spy) ? [spy.egg] : []))
+  return playedEggs(rules, opponent).index((index) => !read.includes(index))
+}
+
+/**
+ * The moves that read an Egg: the card turned over on its own square, onto the side that shows its Snake to both
+ * players without hatching it (see {@link spiedSide}). Nothing is taken anywhere, so nothing has to be remembered
+ * about where it goes back.
+ */
+export const eggLookMoves = (rules: Rules, player: number): Move[] =>
+  spiableEggs(rules, player).moveItems((card) => ({ ...card.location, rotation: spiedSide }))
+
+/** The Egg a Spy effect has turned over to read, if one is being read. */
+export const spiedEgg = (rules: Rules): Material<number, MaterialType, LocationType> =>
+  rules.material(MaterialType.ClanCard).location(LocationType.PlayedCard).rotation(spiedSide)
+
+/** That Egg turned back onto its Egg side, which ends the Spy, exactly as a Snake paid with is (see {@link FlipSnakeToEggRule}). */
+export const eggBackMove = (rules: Rules): Move | undefined => {
+  const egg = spiedEgg(rules)
+  return egg.length === 0 ? undefined : egg.moveItem((card) => ({ ...card.location, rotation: false }))
+}
+
+/**
+ * Whether a move is the first of the 2 a Spy is made of: an item taken off a pile, or an Egg turned over to be read.
+ * Read by the app, which finds the Spies of the round in the history of the moves (see {@link useRoundSpies}).
+ */
+export const isSpyLook = (move: Move): move is MoveItem<number, MaterialType, LocationType> =>
+  isMoveItem(move) &&
+  (move.location.type === LocationType.SpiedItem || (move.location.type === LocationType.PlayedCard && move.location.rotation === spiedSide))

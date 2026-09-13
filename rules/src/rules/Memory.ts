@@ -63,7 +63,8 @@ export enum Memory {
 
   /**
    * The Spies of the round: who looked into which pile, and whether they put the item back on top of it or under
-   * it (see {@link Spy}). Emptied when the next round starts, like the counters above it.
+   * it, or which Egg of their opponent they read (see {@link Spy}). Emptied when the next round starts, like the
+   * counters above it.
    *
    * Nothing secret is written here: around a table everyone sees which pile a player takes an item from and which
    * end of it they slide it back into, and only the face of that item is theirs alone. This is that much, kept for

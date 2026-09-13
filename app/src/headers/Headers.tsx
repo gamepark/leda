@@ -10,6 +10,9 @@ import { ChooseActionHeader } from './ChooseActionHeader'
 import { ChooseClanHeader } from './ChooseClanHeader'
 import { ChooseEffectHeader } from './ChooseEffectHeader'
 import { CopyOpponentCardHeader } from './CopyOpponentCardHeader'
+import { CopySnakeHeader } from './CopySnakeHeader'
+import { FlipSnakeToEggHeader } from './FlipSnakeToEggHeader'
+import { MoveEggHeader } from './MoveEggHeader'
 import { DowngradeTileHeader } from './DowngradeTileHeader'
 import { FlipDesertHeader } from './FlipDesertHeader'
 import { MilitaryVictoryHeader } from './MilitaryVictoryHeader'
@@ -59,5 +62,8 @@ export const Headers: Partial<Record<RuleId, ComponentType>> = {
   [RuleId.SpendRingForToken]: SpendRingForTokenHeader,
   [RuleId.RotateCatCard]: RotateCatCardHeader,
   [RuleId.Awakening]: AwakeningHeader,
-  [RuleId.PlaceRing]: PlaceRingHeader
+  [RuleId.PlaceRing]: PlaceRingHeader,
+  [RuleId.MoveEgg]: MoveEggHeader,
+  [RuleId.FlipSnakeToEgg]: FlipSnakeToEggHeader,
+  [RuleId.CopySnake]: CopySnakeHeader
 }

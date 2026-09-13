@@ -10,7 +10,7 @@ import { playsTournamentRules } from '@gamepark/leda/rules/tournament'
 import { Dialog, PlayMoveButton, ThemeButton, useLegalMoves, usePlay, useRules } from '@gamepark/react-game'
 import { CustomMove, isCustomMoveType, MaterialMoveBuilder } from '@gamepark/rules-api'
 import { useTranslation } from 'react-i18next'
-import { clanBacks } from '../material/ClanCardDescription'
+import { clanEmblems } from '../material/ClanCardDescription'
 import { medallionFace } from '../material/medallion'
 import { copper } from '../theme'
 
@@ -30,9 +30,9 @@ const showClan = (clan: Clan) =>
 
 /**
  * Setup step 6: the player picks a clan among those still in the box.
- * A clan is shown by the back of its cards, which is its emblem, and which is also the back of the Victory
- * condition card the player is about to take. Under it, the 2 things one may do with a clan one is offered: take
- * it, or read it first, which is the same help dialog its card opens once it is on the table.
+ * A clan is shown by its emblem, which is the back of its Victory condition card. Under it, the 2 things one may
+ * do with a clan one is offered: take it, or read it first, which is the same help dialog its card opens once it
+ * is on the table.
  * Opening and closing is owned by ChooseClanHeader, which is what reopens the dialog once it has been dismissed,
  * and what steps aside while a clan is being read.
  */
@@ -72,7 +72,7 @@ export const ChooseClanDialog = ({ open, close }: ChooseClanDialogProps) => {
                * emblem, and a plain one rather than the medallion of an item, which the mark alone borrows.
                */}
               <button type="button" css={clanCard} onClick={() => play(showClan(move.data!), { transient: true })} title={t('clan.view')}>
-                <img src={clanBacks[move.data!]} alt={t(`clan.${move.data}`)} css={clanImage} />
+                <img src={clanEmblems[move.data!]} alt={t(`clan.${move.data}`)} css={clanImage} />
                 <span css={helpMark} aria-hidden="true">
                   ?
                 </span>
@@ -109,9 +109,13 @@ const title = css`
   font-size: 2.5em;
 `
 
+/** Wrapping rather than one row: a box that adds a clan adds a column, and 5 of them run off a narrow screen. */
 const clanList = css`
   display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 2em;
+  max-width: 60em;
 `
 
 /**

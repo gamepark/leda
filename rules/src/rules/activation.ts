@@ -1,5 +1,7 @@
 import { MaterialItem, MaterialMove, MaterialRulesPart, PlayerTurnRule, XYCoordinates } from '@gamepark/rules-api'
 import { ActionZone, actionZoneCells } from '../material/ActionZone'
+import { ClanCardItemId } from '../material/ClanCardId'
+import { clanCardEffects } from '../material/clanCards/cardProperties'
 import { EffectItem, EffectSet, hasEffect, hasHalfTurn } from '../material/Effect'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
@@ -7,11 +9,12 @@ import { cellOf, sameCell, tileAt } from '../material/PlayerGrid'
 import { isPermanent, tileEffects } from '../material/TileEffect'
 import { TileId } from '../material/TileId'
 import { Rules } from '../Rules'
-import { pendingRules, resolveEffects } from './effects'
+import { pendingRules, resolveEffects, resolveEffectSequence } from './effects'
 import { Memory } from './Memory'
 import { cardEffectsOn } from './playedCards'
 import { RoundPhase, roundPhase } from './roundPhase'
 import { RuleId } from './RuleId'
+import { canPayHatching, eggIndexOn, payHatching } from './snake'
 import { topCardIndexOn, visibleCards } from './squares'
 import { swappingPlayer } from './swap'
 
@@ -32,7 +35,7 @@ export const isActivationPhase = (rules: Rules): boolean =>
   rules.game.rule?.id === RuleId.ActivateZone || pendingRules(rules).includes(RuleId.ActivateZone)
 
 /** The squares of the zone a player has already resolved this round. */
-const activatedCells = (rules: Rules, player: number): XYCoordinates[] => rules.game.memory[Memory.ActivatedCells]?.[player] ?? []
+export const activatedCells = (rules: Rules, player: number): XYCoordinates[] => rules.game.memory[Memory.ActivatedCells]?.[player] ?? []
 
 /**
  * Nothing is activated twice during one activation phase, which the FAQ of the game answers and the rulebook
@@ -178,7 +181,9 @@ export const zoneCandidateCells = (rules: Rules, player: number): XYCoordinates[
  */
 export const isCellLeftToActivate = (rules: Rules, player: number, cell: XYCoordinates): boolean => {
   if (!isActivationPhase(rules) || swappingPlayer(rules) !== undefined) return false
-  return activableCells(rules, player).some((activable) => sameCell(activable, cell))
+  // An Egg its owner may still hatch shines with them: it is the one square of the zone they are offered rather
+  // than owed, and the table has no other way of saying there is something to be paid for there.
+  return [...activableCells(rules, player), ...hatchableCells(rules, player)].some((activable) => sameCell(activable, cell))
 }
 
 /**
@@ -272,7 +277,11 @@ export const rotatableCells = (rules: Rules, player: number): XYCoordinates[] =>
  * the copy, on the card that copied it, and the card read stays exactly as it stands
  * (see {@link CopyOpponentCardRule}).
  */
-export const activateCard = (rule: PlayerTurnRule<number, MaterialType, LocationType>, cell: XYCoordinates): MaterialMove<number, MaterialType, LocationType>[] => {
+export const activateCard = (
+  rule: PlayerTurnRule<number, MaterialType, LocationType>,
+  cell: XYCoordinates,
+  ...before: EffectSet[]
+): MaterialMove<number, MaterialType, LocationType>[] => {
   const effects = cardEffectsOn(rule, rule.player, cell)
   const index = topCardIndexOn(rule, rule.player, cell)
   if (effects === undefined || index === undefined) return []
@@ -281,7 +290,65 @@ export const activateCard = (rule: PlayerTurnRule<number, MaterialType, Location
   rememberActivated(rule, { type: MaterialType.ClanCard, index })
   // The card itself is handed to the effects, and not the square it is being activated on: what it still owes once
   // it has asked its owner something is owed by the card, wherever it stands by then (see {@link EffectSource}).
-  return resolveEffects(rule, effects, { item: { type: MaterialType.ClanCard, index } })
+  const source = { item: { type: MaterialType.ClanCard, index } }
+  // What a Snake gives the round it hatches comes before what it gives every round, and as one reading of the 2:
+  // the second set waits for whatever the first one asks (see {@link resolveEffectSequence}).
+  return resolveEffectSequence(rule, [...before, effects].map((set) => ({ effects: set, source })))
+}
+
+/**
+ * The squares of the zone a player may hatch an Egg on: their own Eggs, in the zone of the round, on squares
+ * neither they nor the card standing there has been through yet, and only for as long as they can pay
+ * {@link eggCost} for it.
+ *
+ * Never anything a player has to do, unlike the squares of the zone: an Egg gives nothing, so its square is not
+ * one there is anything to activate on, and hatching it is a purchase the player is free to turn down
+ * (see {@link ActivateZoneRule}).
+ */
+export const hatchableCells = (rules: Rules, player: number): XYCoordinates[] => {
+  const zone = roundZone(rules)
+  if (zone === undefined || !canPayHatching(rules, player)) return []
+  const activated = activatedCells(rules, player)
+  return actionZoneCells[zone].filter((cell) => !activated.some((done) => sameCell(done, cell)) && isHatchable(rules, player, cell))
+}
+
+/** Whether that square holds an Egg of the player that has not given anything this phase. */
+const isHatchable = (rules: Rules, player: number, cell: XYCoordinates): boolean => {
+  const index = eggIndexOn(rules, player, cell)
+  return index !== undefined && !isItemActivated(rules, { type: MaterialType.ClanCard, index })
+}
+
+/**
+ * Hatching an Egg: its owner pays {@link eggCost}, and the card is turned onto its Snake side.
+ *
+ * What it gives is not resolved here but once the card has been turned, on the move that turns it
+ * (see {@link ActivateZoneRule}): a Snake reading "if you have 2 Snakes in play, including this one" counts
+ * itself, and would count one short if what it gives were read against a card still lying on its Egg side.
+ */
+export const hatchMoves = (
+  rule: PlayerTurnRule<number, MaterialType, LocationType>,
+  cell: XYCoordinates
+): MaterialMove<number, MaterialType, LocationType>[] => {
+  const index = eggIndexOn(rule, rule.player, cell)
+  if (index === undefined) return []
+  const cards = rule.material(MaterialType.ClanCard)
+  return [payHatching(rule, rule.player), cards.index(index).moveItem((card) => ({ ...card.location, rotation: true }))]
+}
+
+/**
+ * Everything the Snake that has just hatched gives: its Hatching effect, given once and only the round the Egg
+ * opens, then what its square gives, which is the ordinary activation of a card (see {@link activateCard}).
+ * The square is written down as activated here rather than by the rule that asked, exactly as it is for the
+ * squares of the zone: hatching is how that square is activated.
+ */
+export const hatchedCard = (
+  rule: PlayerTurnRule<number, MaterialType, LocationType>,
+  cell: XYCoordinates
+): MaterialMove<number, MaterialType, LocationType>[] => {
+  const index = topCardIndexOn(rule, rule.player, cell)
+  if (index === undefined) return []
+  const front = rule.material(MaterialType.ClanCard).getItem<ClanCardItemId>(index).id?.front
+  return activateCard(rule, cell, ...(front === undefined ? [] : [clanCardEffects(front, true)]))
 }
 
 /**

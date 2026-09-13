@@ -1,11 +1,11 @@
 import { isCreateItemType, isMoveItemType, ItemMove, MaterialMove, PlayerTurnRule } from '@gamepark/rules-api'
-import { ClanCardItemId, revealedFront } from '../material/ClanCardId'
+import { ClanCardItemId } from '../material/ClanCardId'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { cellOf, gridTiles } from '../material/PlayerGrid'
 import { queueLast } from './effects'
 import { Memory } from './Memory'
-import { afterOrganisation, cardCardCost, cardFoodCost, playCardMoves } from './organisation'
+import { afterOrganisation, cardCardCost, playedCardId, playedCardFoodCost, playCardMoves } from './organisation'
 import { RuleId } from './RuleId'
 import { rememberSwap, swapBackMove, swapMoves } from './swap'
 
@@ -34,14 +34,15 @@ export class OrganisationRule extends PlayerTurnRule<number, MaterialType, Locat
 
   /**
    * What the card at that index costs its owner in Food, undefined when it cannot be bought with Food, and
-   * undefined too when nobody here knows which card it is.
+   * undefined too when nobody here can price it.
    *
    * A hand is secret, so on the client of the opponent a card is still nothing but the back of its clan until the
-   * move that plays it is applied. `front` is what the move reveals in that case: this runs before the item is
-   * moved, hence before its id has been filled in (see {@link beforeItemMove}).
+   * move that plays it is applied. `id` is what the move reveals in that case: this runs before the item is
+   * moved, hence before its id has been filled in (see {@link beforeItemMove}). An Egg reveals nothing and is
+   * priced all the same, its price being printed on the Egg (see {@link playedCardFoodCost}).
    */
-  foodCost(index: number, front = this.material(MaterialType.ClanCard).getItem<ClanCardItemId>(index).id?.front): number | undefined {
-    return cardFoodCost(this, this.player, front)
+  foodCost(index: number, id = this.material(MaterialType.ClanCard).getItem<ClanCardItemId>(index).id): number | undefined {
+    return playedCardFoodCost(this, this.player, id)
   }
 
   /**
@@ -67,7 +68,7 @@ export class OrganisationRule extends PlayerTurnRule<number, MaterialType, Locat
    */
   beforeItemMove(move: ItemMove<number, MaterialType, LocationType>): Move[] {
     if (isMoveItemType(MaterialType.ClanCard)(move) && move.location.type === LocationType.PlayedCard) {
-      const cost = this.foodCost(move.itemIndex, revealedFront(move)) ?? 0
+      const cost = this.foodCost(move.itemIndex, playedCardId(this, move)) ?? 0
       return cost > 0 ? [this.food.deleteItem(cost)] : []
     }
     if (!isMoveItemType(MaterialType.Tile)(move)) return []

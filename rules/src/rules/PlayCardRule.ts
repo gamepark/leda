@@ -1,12 +1,12 @@
 import { CustomMove, isCustomMoveType, isMoveItemType, ItemMove, MaterialMove, MoveItem } from '@gamepark/rules-api'
-import { ClanCardItemId, revealedFront } from '../material/ClanCardId'
+import { ClanCardItemId } from '../material/ClanCardId'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { CustomMoveType } from './CustomMoveType'
 import { EffectRule } from './EffectRule'
 import { queueFirstRule } from './effects'
 import { Memory } from './Memory'
-import { cardCardCost, cardFoodCost, playCardMoves } from './organisation'
+import { cardCardCost, playedCardId, playedCardFoodCost, playCardMoves } from './organisation'
 import { RuleId } from './RuleId'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
@@ -44,8 +44,7 @@ export class PlayCardRule extends EffectRule {
    */
   beforeItemMove(move: ItemMove<number, MaterialType, LocationType>): Move[] {
     if (!this.isCardPlayed(move)) return []
-    const front = revealedFront(move) ?? this.material(MaterialType.ClanCard).getItem<ClanCardItemId>(move.itemIndex).id?.front
-    const cost = cardFoodCost(this, this.player, front, this.discount) ?? 0
+    const cost = playedCardFoodCost(this, this.player, playedCardId(this, move), this.discount) ?? 0
     return cost > 0 ? [this.food.deleteItem(cost)] : []
   }
 

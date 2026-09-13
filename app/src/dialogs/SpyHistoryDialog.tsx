@@ -4,13 +4,13 @@ import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { Dialog, fontSizeCss, MaterialComponent, PlayMoveButton, ThemeButton, useMaterialDescription, usePlayerName } from '@gamepark/react-game'
 import { MaterialMoveBuilder } from '@gamepark/rules-api'
 import { useTranslation } from 'react-i18next'
-import { SeenSpy } from '../history/spiedLooks'
+import { SeenPileSpy, SeenSpy } from '../history/spiedLooks'
 import { copper } from '../theme'
 
 type SpyHistoryDialogProps = {
   open: boolean
   close: () => void
-  spies: SeenSpy[]
+  spies: SeenPileSpy[]
 }
 
 /**
@@ -42,13 +42,39 @@ export const SpyHistoryDialog = ({ open, close, spies }: SpyHistoryDialogProps) 
 }
 
 /**
+ * What a card read while it was an Egg reminds of: who read it this round, in the title, and the card itself, which
+ * is the whole of the content (see {@link EggSpy}). An Egg is read once a round at most (see {@link spiableEggs}),
+ * so there is one Spy to tell and no list to make of it.
+ * The card is shown to everyone: it was turned over for both players, and its owner knows it anyway.
+ */
+export const EggSpyHistoryDialog = ({ open, close, spy }: { open: boolean; close: () => void; spy: SeenSpy }) => {
+  const { t } = useTranslation()
+  const player = usePlayerName(spy.player)
+  return (
+    <Dialog open={open} onBackdropClick={close}>
+      <div css={content}>
+        <h2 css={title}>{t('spy.history.egg', { player })}</h2>
+        {spy.seen !== undefined && (
+          <div css={eggCard}>
+            <SeenItem spy={spy} close={close} />
+          </div>
+        )}
+        <div css={buttons}>
+          <ThemeButton onClick={close}>{t('Close', { ns: 'common' })}</ThemeButton>
+        </div>
+      </div>
+    </Dialog>
+  )
+}
+
+/**
  * One Spy of the round, in the order they were made: the first line is the first look.
  *
  * The item comes with the Spy or does not come at all, so the line has nothing to decide either: it draws what it
  * was handed, which is the face of a card for the player who read it and nothing for the one who watched them
  * read it.
  */
-const SpyLine = ({ spy, close }: { spy: SeenSpy; close: () => void }) => {
+const SpyLine = ({ spy, close }: { spy: SeenPileSpy; close: () => void }) => {
   const { t } = useTranslation()
   const player = usePlayerName(spy.player)
   return (
@@ -151,6 +177,13 @@ const seenButton = css`
     background: none;
     box-shadow: none;
   }
+`
+
+/** The card of an Egg alone, centered, in the em the list gives the piece of a line (see {@link seenItem}). */
+const eggCard = css`
+  display: flex;
+  justify-content: center;
+  font-size: 2em;
 `
 
 const buttons = css`

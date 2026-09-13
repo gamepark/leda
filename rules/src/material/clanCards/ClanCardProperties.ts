@@ -5,12 +5,13 @@ import { PandaLevel } from './PandaLevel'
 /**
  * Everything one clan card is: what it costs today, what it does once effects are implemented.
  * The cards are described clan by clan ({@link pandaCards}, {@link sharkCards}, {@link catCards},
- * {@link scorpionCards}), which is how the game itself is written: one sheet of rules per clan.
+ * {@link scorpionCards}, {@link snakeCards}), which is how the game itself is written: one sheet of rules per clan.
  *
  * Gathered per card rather than split into one record per property, because a clan card is not a uniform row of
- * data: a Cat card has 2 effects it alternates between, a Shark card has an effect and a Pack effect, a Ring has
- * a condition instead of a cost, a Portal has a cost that is read off the game, and a Panda has a level. One
- * record per property would need an exception each, and nothing would keep the exceptions aligned.
+ * data: a Cat card has 2 effects it alternates between, a Shark card has an effect and a Pack effect, a Snake an
+ * effect and a Hatching effect, a Ring has a condition instead of a cost, a Portal has a cost that is read off the
+ * game, and a Panda has a level. One record per property would need an exception each, and nothing would keep the
+ * exceptions aligned.
  */
 export type ClanCardProperties = {
   /**
@@ -33,10 +34,12 @@ export type ClanCardProperties = {
   effects?: EffectSet
 
   /**
-   * The second effect the card prints, for the clans whose cards do not always give the same thing: a Shark card
-   * shows its normal effect and its Pack effect, a Cat card its effect 1 and its effect 2.
-   * Which of the 2 is the live one is never written on the card, it is read off the table, and how depends on the
-   * clan: the Sharks cover one of them with a token, the Cats turn the card over (see {@link cardEffectsOn}).
+   * The second effect the card prints: a Shark card shows its normal effect and its Pack effect, a Cat card its
+   * effect 1 and its effect 2, a Snake card its Hatching effect above its effect.
+   * For the Sharks and the Cats, which of the 2 is the live one is never written on the card, it is read off the
+   * table: the Sharks cover one of them with a token, the Cats turn the card over (see {@link cardEffectsOn}).
+   * For the Snakes, it is not read instead of the first but on top of it, once, the round the Egg opens, and first
+   * (see {@link hatchedCard}). Absent for the Snakes that print no Hatching effect.
    */
   secondEffects?: EffectSet
 

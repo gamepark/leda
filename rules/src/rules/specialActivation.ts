@@ -23,7 +23,8 @@ export const specialActivationEffects: Record<Clan, EffectSet> = {
   [Clan.Panda]: { or: [{ [Effect.Food]: 1 }, { [Effect.Awakening]: 1 }] },
   [Clan.Shark]: { [Effect.Military]: 2 },
   [Clan.Cat]: { [Effect.Draw]: 1 },
-  [Clan.Scorpion]: { [Effect.Spy]: 1 }
+  [Clan.Scorpion]: { [Effect.Spy]: 1 },
+  [Clan.Snake]: { [Effect.StealFood]: 1 }
 }
 
 /** The Awakenings a player has gathered and not resolved yet (see {@link Memory.Awakenings}). */

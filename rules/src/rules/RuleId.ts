@@ -153,5 +153,20 @@ export enum RuleId {
    * The one rule of the game the player never sees, hence its place after everything they do: it opens and hands
    * over within the same set of moves, which is what puts the rest of a card behind the question it comes after.
    */
-  PendingEffects
+  PendingEffects,
+
+  /**
+   * The rules of the Snakes, the clan of the extension. Appended after everything the base box uses, and not
+   * beside the clan rules above: the value of a rule is written into every game already played, so a rule added
+   * in the middle of this enum would rename the steps of every game the server still holds.
+   */
+
+  /** The player moves one of their Eggs onto another square of their grid, where it covers whatever stood there. */
+  MoveEgg,
+
+  /** The player turns one of their Snakes back onto its Egg side, which is what 2 of their cards cost. */
+  FlipSnakeToEgg,
+
+  /** The player resolves what one of their Snakes gives, without that Snake being activated. */
+  CopySnake
 }

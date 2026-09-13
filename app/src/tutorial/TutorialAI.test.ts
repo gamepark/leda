@@ -57,11 +57,14 @@ const playGame = async (clans: [Clan, Clan], cap = 3000): Promise<Outcome> => {
  * The one placement the AI never makes: a card laid on a square that already holds one, which buries the card
  * underneath for the rest of the game (see {@link buriesACard}).
  * An Awakening is not one of those: the Panda it replaces goes back to its owner's hand, and nothing is buried.
+ * Neither is a Snake card turned over where it stands, which is the same card on the same square (see {@link snake}).
  */
 const expectNoCardBuried = (rules: LedaRules, move: Move) => {
   if (rules.game.rule?.id === RuleId.Awakening) return
   if (!isMoveItemType(MaterialType.ClanCard)(move) || move.location.type !== LocationType.PlayedCard) return
   if (move.location.parent === undefined) return
+  // A card turned over on its own square buries nothing: it is the card of that square already, and it stays it.
+  if (topCardIndexOnTile(rules, move.location.parent) === move.itemIndex) return
   expect(topCardIndexOnTile(rules, move.location.parent), `a card was buried on rule ${RuleId[rules.game.rule!.id]}`).toBeUndefined()
 }
 

@@ -65,7 +65,9 @@ export class ChooseClanRule extends PlayerTurnRule<number, MaterialType, Locatio
       // Shuffling swaps the cards between the slots of the deck without moving the slots, so drawing the first
       // slots draws as many random cards even though these moves are built before the shuffle is played.
       ...this.deck.limit(start.cards).moveItems({ type: LocationType.PlayerHand, player }),
-      this.material(MaterialType.FoodToken).createItem({ location: { type: LocationType.PlayerFood, player }, quantity: start.food }),
+      // Nothing at all for a clan that starts with no Food, which the Snakes do: an item of quantity 0 is not
+      // "no Food", it is a token nobody can spend (see {@link clanStart}).
+      ...(start.food > 0 ? [this.material(MaterialType.FoodToken).createItem({ location: { type: LocationType.PlayerFood, player }, quantity: start.food })] : []),
       ...this.nextStep()
     ]
   }

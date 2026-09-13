@@ -1,6 +1,7 @@
 import { Clan } from '@gamepark/leda/Clan'
 import { ActionZone, actionZoneCells } from '@gamepark/leda/material/ActionZone'
 import { ClanCardId, ClanCardItemId, clanOf } from '@gamepark/leda/material/ClanCardId'
+import { clanCardEffects } from '@gamepark/leda/material/clanCards/cardProperties'
 import { isRing } from '@gamepark/leda/material/clanCards/catCards'
 import { Effect, effectEntries, EffectSet, isEffectChoice } from '@gamepark/leda/material/Effect'
 import { LocationType } from '@gamepark/leda/material/LocationType'
@@ -9,13 +10,14 @@ import { cellOf } from '@gamepark/leda/material/PlayerGrid'
 import { activableCells, squareEffects } from '@gamepark/leda/rules/activation'
 import { CustomMoveType } from '@gamepark/leda/rules/CustomMoveType'
 import { cardCardCost, cardFoodCost } from '@gamepark/leda/rules/organisation'
-import { topCardOn } from '@gamepark/leda/rules/squares'
+import { eggCost } from '@gamepark/leda/rules/snake'
+import { topCardIndexOn, topCardOn } from '@gamepark/leda/rules/squares'
 import { isCreateItemType, isCustomMoveType, isMoveItemType, MaterialMove, XYCoordinates } from '@gamepark/rules-api'
 import { sample } from 'es-toolkit'
-import { Ai, bestOf, gainValue, Scored } from './AiPlayer'
+import { Ai, bestOf, effectsGain, gainValue, Scored, sumGains } from './AiPlayer'
 import { playCardValue, spendingPenalty, swapValue } from './cards'
-import { cellOfTile, squareGain, zoneAdvantage } from './grid'
-import { isPass } from './effects'
+import { cellOfTile, squareGain, squareSource, zoneAdvantage } from './grid'
+import { isPass, snakeStep } from './effects'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
@@ -116,6 +118,12 @@ export const activateZone = (ai: Ai, moves: Move[]): Move | undefined => {
   const left = activableCells(ai.rules, ai.player).length
   return bestOf(
     moves.flatMap((move) => {
+      // An Egg of the zone, which a player of the Snakes may pay to open (see {@link hatchValue}).
+      if (isCustomMoveType<CustomMoveType, XYCoordinates>(CustomMoveType.HatchEgg)(move)) {
+        return move.data === undefined ? [] : [{ move, score: hatchValue(ai, move.data) }]
+      }
+      // Being done with the phase, which is worth nothing: it is what is taken when nothing else is worth more.
+      if (isCustomMoveType(CustomMoveType.Pass)(move)) return [{ move, score: 0 }]
       if (!isCustomMoveType<CustomMoveType, XYCoordinates>(CustomMoveType.ActivateSquare)(move) || move.data === undefined) return []
       const cell = move.data
       const effects = squareEffects(ai.rules, ai.player, cell)
@@ -124,6 +132,24 @@ export const activateZone = (ai: Ai, moves: Move[]): Move | undefined => {
     })
   )
 }
+
+/**
+ * What paying 2 Food to hatch an Egg is worth: everything the Snake gives the round it opens, its Hatching effect
+ * first and then what its square gives, less the Food it costs, plus the step of their own race it is.
+ *
+ * That step is priced here and not with the card being played, unlike the Rings and the Portals of the other
+ * clans: an Egg on the grid counts for nothing, and it is the hatching that puts one more Snake in play towards
+ * the 7 the clan wins on (see {@link victoryValue}).
+ */
+const hatchValue = (ai: Ai, cell: XYCoordinates): number => {
+  const index = topCardIndexOn(ai.rules, ai.player, cell)
+  const front = index === undefined ? undefined : ai.rules.material(MaterialType.ClanCard).getItem<ClanCardItemId>(index).id?.front
+  if (front === undefined) return 0
+  const source = squareSource(ai.rules, ai.player, cell)
+  const gain = sumGains([effectsGain(ai, clanCardEffects(front, true), source), effectsGain(ai, clanCardEffects(front), source)])
+  return gainValue(ai, gain) + snakeStep - eggCost * ai.foodCost
+}
+
 
 /**
  * The effects that change what the squares still waiting in the zone are going to give: a tile turned onto its

@@ -6,13 +6,20 @@ import { ClanCardProperties } from './ClanCardProperties'
 import { pandaCards } from './pandaCards'
 import { scorpionCards } from './scorpionCards'
 import { sharkCards } from './sharkCards'
+import { snakeCards } from './snakeCards'
 
 /**
  * Every clan card, gathered from the sheet of its clan (see {@link ClanCardProperties}).
  * The record is total rather than partial: a card added to {@link ClanCardId} without being described here does
  * not compile, which is what keeps the enum and the sheets from drifting apart.
  */
-export const clanCardProperties: Record<ClanCardId, ClanCardProperties> = { ...pandaCards, ...sharkCards, ...catCards, ...scorpionCards }
+export const clanCardProperties: Record<ClanCardId, ClanCardProperties> = {
+  ...pandaCards,
+  ...sharkCards,
+  ...catCards,
+  ...scorpionCards,
+  ...snakeCards
+}
 
 /**
  * One of the 2 effects a card may print, and nothing at all for a face that gives nothing: the 4 cheap Shark
@@ -22,6 +29,7 @@ export const clanCardProperties: Record<ClanCardId, ClanCardProperties> = { ...p
  *
  * Which of the 2 is the live one belongs to the clan of the card and not to the card itself, so it is asked of
  * the table rather than of this: `second` is the answer, not the question (see {@link cardEffectsOn}).
+ * A Snake reads its second one, its Hatching effect, only as it hatches (see {@link hatchedCard}).
  */
 export const clanCardEffects = (card: ClanCardId, second = false): EffectSet =>
   (second ? clanCardProperties[card].secondEffects : clanCardProperties[card].effects) ?? {}

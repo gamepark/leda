@@ -17,7 +17,7 @@ import { upgradedTiles } from '@gamepark/leda/rules/tileChoices'
 import { victorySymbolsToWin } from '@gamepark/leda/rules/victory'
 import { isCustomMoveType, isMoveItemType, MaterialMove, XYCoordinates } from '@gamepark/rules-api'
 import { Ai, bestOf, effectsGain, futureValue, gainValue, Scored } from './AiPlayer'
-import { bestPlacement, playCardValue, spendingPenalty, swapValue, victoryValue } from './cards'
+import { bestPlacement, buriesACard, playCardValue, spendingPenalty, swapValue, victoryValue } from './cards'
 import {
   cellOfTile,
   cellOutlook,
@@ -384,5 +384,51 @@ export const placeRing = (ai: Ai, moves: Move[]): Move | undefined => {
   })
   return bestOf(placements) ?? moves.find(isPass) ?? moves[0]
 }
+
+/**
+ * "Copy the effect of one of your Snakes": the same question as activating one of your cards, minus what it costs
+ * (see {@link activateCard}). The Snake read is left exactly as it stands, so nothing is spent by reading it and
+ * only what it gives counts.
+ */
+export const copySnake = (ai: Ai, moves: Move[]): Move | undefined => bestOf(scoreCells(moves, (cell) => squareValue(ai, cell)))
+
+/**
+ * "Turn one of your Snakes back onto its Egg side", which is the price of the 2 strongest cards of the clan: the
+ * Snake given up is the one that costs least, which is its square over the rounds ahead plus the step of the race
+ * it was worth (see {@link hatchValue}).
+ * Never the Snake standing on a square the AI still has to activate this round: that one is about to give what it
+ * gives, and turning it over first is throwing the round away.
+ */
+export const flipSnakeToEgg = (ai: Ai, moves: Move[]): Move | undefined =>
+  bestOf(
+    moves.flatMap((move) => {
+      if (!isMoveItemType(MaterialType.ClanCard)(move) || move.location.parent === undefined) return []
+      const cell = cellOfTile(ai.rules, move.location.parent)
+      const pending = isPendingCell(ai, cell) ? squareValue(ai, cell) : 0
+      return [{ move, score: -squareFutureValue(ai, cell) * cellOutlook(ai, cell) - pending - snakeStep }]
+    })
+  )
+
+/**
+ * "Move one of your Eggs": the Egg goes where it is most likely to be reached, which is what makes it worth the
+ * 2 Food its owner will spend opening it (see {@link cellOutlook}).
+ * Never onto a square that already holds a card: an Egg laid over one buries it for the rest of the game, which
+ * is the one placement this AI never makes (see {@link buriesACard}).
+ */
+export const moveEgg = (ai: Ai, moves: Move[]): Move | undefined =>
+  bestOf(
+    moves.flatMap((move) => {
+      if (!isMoveItemType(MaterialType.ClanCard)(move) || move.location.parent === undefined) return []
+      if (buriesACard(ai, move.location.parent)) return []
+      return [{ move, score: cellOutlook(ai, cellOfTile(ai.rules, move.location.parent)) }]
+    })
+  ) ?? moves[0]
+
+/**
+ * What one Snake in play is worth to the clan that wins on 7 of them, which is what turning one back into an Egg
+ * gives up and what hatching one earns. Named once for the 2 sides of the same step
+ * (see {@link hatchValue}).
+ */
+export const snakeStep = 5
 
 export { isPass }

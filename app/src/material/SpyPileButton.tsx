@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { RuleId } from '@gamepark/leda/rules/RuleId'
-import { spiablePile, spiedItem } from '@gamepark/leda/rules/spy'
+import { spiablePile, spiedEgg, spiedItem } from '@gamepark/leda/rules/spy'
 import { useTranslation } from 'react-i18next'
 import { LedaMenuButton } from './LedaMenuButton'
 import { useMenuButtonRules } from './menuButtons'
@@ -22,7 +22,8 @@ export const SpyPileButton = ({ type, index }: { type: MaterialType; index: numb
   if (context === undefined) return null
   const { rules, player: me } = context
   if (rules.getActivePlayer() !== me) return null
-  if (rules.game.rule?.id !== RuleId.Spy || spiedItem(rules) !== undefined) return null
+  // Nothing more to look into while the item taken is out of its pile, or while the Egg read is still turned over.
+  if (rules.game.rule?.id !== RuleId.Spy || spiedItem(rules) !== undefined || spiedEgg(rules).length > 0) return null
   if (spiablePile(rules, me, type, index) === undefined) return null
 
   return (

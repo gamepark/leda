@@ -6,6 +6,8 @@ import { TileId } from '@gamepark/leda/material/TileId'
 import { CustomMoveType } from '@gamepark/leda/rules/CustomMoveType'
 import { RuleId } from '@gamepark/leda/rules/RuleId'
 import { playerClan } from '@gamepark/leda/rules/specialActivation'
+import { isSnakeCard, isSpiedEgg } from '@gamepark/leda/rules/snake'
+import { isSpyLook } from '@gamepark/leda/rules/spy'
 import { isGridSettled } from '@gamepark/leda/rules/swap'
 import { LogDescription, MoveComponentContext, MovePlayedLogDescription } from '@gamepark/react-game'
 import {
@@ -17,7 +19,9 @@ import {
   isStartPlayerTurn,
   isStartRule,
   MaterialGame,
-  MaterialMove
+  MaterialItem,
+  MaterialMove,
+  MoveItem
 } from '@gamepark/rules-api'
 import { clanLogCss } from './logCss'
 import { ActivateSquareLog, ChooseEffectLog, PassLog } from './log/ActivateLogs'
@@ -25,6 +29,7 @@ import { AwakenLog, PayCardLog, PlaceRingLog, PlayCardLog, RotateCatCardLog, Sea
 import { AwakeningLostLog, DrawLog, FoodGainLog, FoodSpendLog, OrganisationFoodLog, StealFoodLog } from './log/ResourceLogs'
 import { ChooseActionLog, ConflictLog, RevealActionTileLog } from './log/RoundLogs'
 import { ChooseClanLog, MulliganLog } from './log/SetupLogs'
+import { FlipSnakeToEggLog, HatchedSnakeLog, HatchEggLog, MoveEggLog, SpyEggLog, SpyEggReturnLog } from './log/SnakeLogs'
 import { SpyLog, SpyReturnLog } from './log/SpyLogs'
 import { DowngradeTileLog, FlipDesertLog, SwapSquaresLog, UpgradeTileLog } from './log/TileLogs'
 import { PlaceSharkTokenLog, RedrawTokenLog, TriggerTokenLog, WinTokenLog } from './log/TokenLogs'
@@ -59,9 +64,12 @@ export class LedaHistory implements LogDescription<Move, number, Game> {
      * cards makes, and the one thing that tells them apart is where the item is coming from.
      */
     if (isMoveItem(move)) {
+      const item = rules.material(move.itemType).getItem(move.itemIndex)
       if (move.location.type === LocationType.SpiedItem) return this.entry(SpyLog, rules, move.location.player, 1)
-      const spied = rules.material(move.itemType).getItem(move.itemIndex)
-      if (spied?.location.type === LocationType.SpiedItem) return this.entry(SpyReturnLog, rules, spied.location.player, 1)
+      if (item?.location.type === LocationType.SpiedItem) return this.entry(SpyReturnLog, rules, item.location.player, 1)
+      // An Egg is read where it lies, turned over on its square and back: a Spy all the same, aimed at no pile.
+      if (isSpyLook(move)) return this.entry(SpyEggLog, rules, player, 1)
+      if (isSpiedEgg(item)) return this.entry(SpyEggReturnLog, rules, player, 1)
     }
 
     // --- What a player is asked, which they answer with a move of their own.
@@ -71,7 +79,10 @@ export class LedaHistory implements LogDescription<Move, number, Game> {
     if (isCustomMoveType(CustomMoveType.Mulligan)(move)) return this.entry(MulliganLog, rules, move.data as number)
     // Keeping the hand drawn is a decision of its own; turning down what an effect offered is only its outcome.
     if (isCustomMoveType(CustomMoveType.Pass)(move)) {
-      return this.entry(PassLog, rules, (move.data as number | undefined) ?? player, ruleId === RuleId.Mulligan ? 0 : 1)
+      // Keeping the hand drawn and being done with a zone are decisions of a turn; turning down what an effect
+      // offered is only the outcome of the entry above it.
+      const ownTurn = ruleId === RuleId.Mulligan || ruleId === RuleId.ActivateZone
+      return this.entry(PassLog, rules, (move.data as number | undefined) ?? player, ownTurn ? 0 : 1)
     }
     if (isCustomMoveType(CustomMoveType.ChooseAction)(move)) return this.entry(ChooseActionLog, rules, player)
     // The zone of the round is what a player spends their phase 1 on; every other square is asked for by an effect.
@@ -82,6 +93,8 @@ export class LedaHistory implements LogDescription<Move, number, Game> {
     if (isCustomMoveType(CustomMoveType.RotateCatCard)(move)) return this.entry(RotateCatCardLog, rules, player, 1)
     if (isCustomMoveType(CustomMoveType.TriggerMilitaryVictory)(move)) return this.entry(TriggerTokenLog, rules, player, 1)
     if (isCustomMoveType(CustomMoveType.SearchRing)(move)) return this.entry(SearchRingLog, rules, player, 1)
+    // Paying to open an Egg is what a player of the Snakes spends their phase 1 on, beside the squares of the zone.
+    if (isCustomMoveType(CustomMoveType.HatchEgg)(move)) return this.entry(HatchEggLog, rules, player)
 
     /**
      * Phase 2 settles itself: nobody is asked anything, so what the conflict came to is read off the step it hands
@@ -112,6 +125,8 @@ export class LedaHistory implements LogDescription<Move, number, Game> {
       const card = rules.material(MaterialType.ClanCard).getItem(move.itemIndex)
       switch (move.location.type) {
         case LocationType.PlayedCard:
+          // A card that was already in play is not being played: it is changing squares, or changing sides.
+          if (card?.location.type === LocationType.PlayedCard) return this.movedInPlay(move, card, rules)
           if (ruleId === RuleId.Awakening) return this.entry(AwakenLog, rules, move.location.player, 1)
           if (ruleId === RuleId.PlaceRing) return this.entry(PlaceRingLog, rules, move.location.player, 1)
           // Playing a card is the whole of an organisation; an effect letting a player play one is not.
@@ -181,6 +196,21 @@ export class LedaHistory implements LogDescription<Move, number, Game> {
     }
 
     return undefined
+  }
+
+  /**
+   * A card of a grid that moves without leaving it, which only the Snakes and the Cats ever do: an Egg laid on
+   * another square, an Egg turned onto its Snake side or a Snake turned back onto its Egg side, and the half turn
+   * a Cat card takes as it is activated (see {@link snake}, {@link Effect.HalfTurn}).
+   *
+   * The half turn says nothing the entry of the activation it comes from does not already say, so it is left out,
+   * exactly as the Desert a temporary tile becomes is.
+   */
+  private movedInPlay(move: MoveItem<number, MaterialType, LocationType>, card: MaterialItem<number, LocationType>, rules: LedaRules) {
+    const owner = move.location.player
+    if (move.location.parent !== card.location.parent) return this.entry(MoveEggLog, rules, owner)
+    if (!isSnakeCard(card)) return undefined
+    return move.location.rotation === true ? this.entry(HatchedSnakeLog, rules, owner, 1) : this.entry(FlipSnakeToEggLog, rules, owner, 1)
   }
 
   /**

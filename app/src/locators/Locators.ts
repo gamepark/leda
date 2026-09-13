@@ -1,4 +1,6 @@
+import { Clan } from '@gamepark/leda/Clan'
 import { ActionZone } from '@gamepark/leda/material/ActionZone'
+import { ClanCardItemId } from '@gamepark/leda/material/ClanCardId'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { cellOf } from '@gamepark/leda/material/PlayerGrid'
@@ -407,9 +409,13 @@ class PlayedCardLocator extends Locator {
    * A Cat card prints its 2 effects at opposite ends, the second one upside down, and alternates between them by
    * taking a half turn as it is activated. That half turn is the rotation of its location, and it is a real half
    * turn on the table: the effect that is up is the one the right way round for its owner.
+   *
+   * The Cats alone: the rotation of a location is which face of a card is up, and every clan reads that its own
+   * way. A Snake card uses it to say that it has hatched, which is a card turned over and not turned round, so
+   * this asks the back of the card before turning anything (see {@link snake}).
    */
-  getItemRotateZ(item: MaterialItem<number, LocationType>) {
-    return item.location.rotation === true ? 180 : 0
+  getItemRotateZ(item: MaterialItem<number, LocationType, ClanCardItemId>) {
+    return (item.id as ClanCardItemId | undefined)?.back === Clan.Cat && item.location.rotation === true ? 180 : 0
   }
 }
 

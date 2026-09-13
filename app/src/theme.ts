@@ -28,7 +28,8 @@ export const clanColors: Record<Clan, string> = {
   [Clan.Panda]: '#62c558',
   [Clan.Shark]: '#0090cf',
   [Clan.Cat]: '#623c91',
-  [Clan.Scorpion]: '#f0921e'
+  [Clan.Scorpion]: '#f0921e',
+  [Clan.Snake]: '#e8514f'
 }
 
 export const clanGold = '#e8c851'

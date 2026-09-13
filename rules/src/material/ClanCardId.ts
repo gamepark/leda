@@ -73,7 +73,24 @@ export enum ClanCardId {
   ScorpionPortalDoubleSpy = 408,
   ScorpionPortalFlipOpponentTile,
   ScorpionPortalSwap,
-  ScorpionPortalBlockMilitaryVictory
+  ScorpionPortalBlockMilitaryVictory,
+
+  /**
+   * Snakes. See {@link snakeCards}.
+   * Nothing is set apart here: the Snakes win on having 7 of their cards hatched, whichever 7 they are, so no
+   * card of theirs is a win condition of its own (see {@link snakesToWin}).
+   */
+  SnakeStealFoodAndMilitary = 501,
+  SnakeDrawAndFlipDesert,
+  SnakeSpyAndUpgrade,
+  SnakeMilitary,
+  SnakeDrawAndFoodPerEgg,
+  SnakeStealFoodAndMoveEgg,
+  SnakeSpyAndMilitary,
+  SnakeMilitaryWithThreeSnakes,
+  SnakeCopySnake,
+  SnakeMilitaryVictoryAndFlipBack,
+  SnakeDrawPlayCardAndFlipBack
 }
 
 /** The clan a card belongs to, which its own value encodes: ids are numbered `100 * clan + n`. */

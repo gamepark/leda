@@ -50,8 +50,10 @@
       "title": "Qui a consulté cette pile à cette manche ?",
       "on-top": "{player} a scruté cette pile, et a remis l'élément au-dessus.",
       "under": "{player} a scruté cette pile, et a remis l'élément au-dessous.",
-      "seen": "Vous aviez vu :"
-    }
+      "seen": "Vous aviez vu :",
+      "egg": "{player} a scruté cet Oeuf à cette manche."
+    },
+    "put-back": "Retourner"
   },
   "activation": {
     "lock": "Celle-ci a déjà été activée : elle ne le sera plus avant la prochaine manche."
@@ -90,6 +92,7 @@
     "2": "Requins",
     "3": "Chats",
     "4": "Scorpions",
+    "5": "Serpents",
     "choose": "Choisissez votre clan",
     "pick": "Choisir",
     "view": "Voir le détail du clan",
@@ -117,6 +120,7 @@
     "effect": "Effet :",
     "effect-1": "Effet 1 :",
     "effect-2": "Effet 2 :",
+    "hatching": "Effet d'Éclosion :",
     "pack": "Effet MEUTE :",
     "portal": "Portail – Effet :",
     "front": "Recto :",
@@ -146,7 +150,8 @@
       "1": "Carte Panda",
       "2": "Carte Requin",
       "3": "Carte Chat",
-      "4": "Carte Scorpion"
+      "4": "Carte Scorpion",
+      "5": "Carte Serpent"
     },
     "note": {
       "awakening": "<awakening/> Effet Éveil : si vous avez au moins {count} <bronze/> en jeu, remettez l'un d'entre eux dans votre main et remplacez-le par un <silver/> ; ou si vous avez au moins {count} <silver/> en jeu, remettez l'un d'entre eux dans votre main et remplacez-le par un <gold/>, au même endroit. L'effet Éveil se résout après avoir résolu toutes les autres activations.",
@@ -166,7 +171,8 @@
       "certain-squares": "La case en haut à gauche (tuile Action {first}) et la case en bas à droite (tuile Action {last}) sont certaines d'être activées lorsque leur tuile Action est révélée, que vous soyez le joueur actif ou non.",
       "shark-victory": "Avoir vos {count} pions Requin en jeu remporte la partie.",
       "food-gain": "Vous en gagnez avec vos tuiles et vos cartes, et pendant l'organisation : échanger la position de 2 de vos cases rapporte 1 <food/>, et vous pouvez la prendre sans échanger.",
-      "food-supply": "La réserve de Nourriture est illimitée."
+      "food-supply": "La réserve de Nourriture est illimitée.",
+      "egg": "Les cartes Serpent sont toujours jouées sur leur face Oeuf <egg/>, pour {count} <food/>, quelle que soit la manière ou la phase où elles sont jouées : votre adversaire ne sait pas de quel Serpent il s'agit. Un Oeuf n'a aucun effet. Pour l'activer, dépensez {count} <food/> pendant l'activation de sa zone : il éclot, la carte est retournée côté Serpent <snake/>, son effet d'Éclosion se résout, puis son effet. L'effet d'Éclosion ne se résout plus, sauf si le Serpent est retourné sur sa face Oeuf puis éclot à nouveau. Votre adversaire peut utiliser un effet Scruter pour regarder un de vos Oeufs."
     },
     "shark": {
       "title": "Pion Requin",
@@ -200,18 +206,20 @@
     },
     "victory": {
       "title": "Carte Condition de Victoire",
-      "start": "Commencez la partie avec {cards, plural, one {# carte} other {# cartes}} et {food} <food/>.",
+      "start": "Commencez la partie avec {cards, plural, one {# carte} other {# cartes}}{food, plural, =0 {} other { et # <food/>}}.",
       "activation": {
         "1": "Gagnez 1 <food/> OU 1 Éveil <awakening/>.",
         "2": "Gagnez 2 <military/>.",
         "3": "Piochez 1 carte.",
-        "4": "Scrutez."
+        "4": "Scrutez.",
+        "5": "Volez 1 <food/> à votre adversaire."
       },
       "clan": {
         "1": "Avoir vos {count} Pandas <gold/> en jeu.",
         "2": "Avoir vos {count} pions Requin <shark/> en jeu.",
         "3": "Jouer {count} Anneaux <ring/>.",
-        "4": "Placer vos {count} Portails <portal/> dans les 4 coins de votre grille d'action."
+        "4": "Placer vos {count} Portails <portal/> dans les 4 coins de votre grille d'action.",
+        "5": "Avoir {count} Serpents <snake/> éclos en jeu."
       },
       "choose": "Choisir ce Clan",
       "show-cards": "Voir toutes les cartes du clan",
@@ -313,7 +321,23 @@
       "scorpion-portal-swap": "Échangez la position de 2 de vos cartes ou tuiles dans votre grille d'action.",
       "scorpion-portal-swap-cost": "9 <food/> moins votre nombre de Portails en jeu",
       "scorpion-portal-block-military-victory": "Aucun joueur ne peut gagner de jeton de Victoire militaire cette manche.",
-      "scorpion-portal-block-military-victory-cost": "9 <food/> moins votre nombre de jetons de Victoire militaire"
+      "scorpion-portal-block-military-victory-cost": "9 <food/> moins votre nombre de jetons de Victoire militaire",
+      "snake-steal-food-and-military-2": "Volez 1 <food/> à votre adversaire.",
+      "snake-steal-food-and-military": "Gagnez 1 <military/>.",
+      "snake-draw-and-flip-desert-2": "Piochez 1 carte.",
+      "snake-draw-and-flip-desert": "Retournez un de vos Déserts sur sa face recto.",
+      "snake-spy-and-upgrade-2": "Scrutez.",
+      "snake-spy-and-upgrade": "Si vous avez 2 Serpents <snake/> en jeu (celui-ci compris), améliorez une de vos tuiles.",
+      "snake-military-2": "Gagnez 2 <military/>.",
+      "snake-draw-and-food-per-egg-2": "Piochez 1 carte.",
+      "snake-draw-and-food-per-egg": "Gagnez 1 <food/> pour chacun de vos Oeufs <egg/>.",
+      "snake-steal-food-and-move-egg-2": "Volez 1 <food/> à votre adversaire.",
+      "snake-steal-food-and-move-egg": "Déplacez un de vos Oeufs <egg/> sur une autre case de votre grille.",
+      "snake-spy-and-military": "Scrutez, puis gagnez 1 <military/>.",
+      "snake-military-with-three-snakes": "Si vous avez 3 Serpents <snake/> en jeu (celui-ci compris), gagnez 2 <military/>.",
+      "snake-copy-snake": "Si vous avez 5 Serpents <snake/> en jeu (celui-ci compris), copiez l'effet d'un de vos Serpents. Ce Serpent n'est pas activé : il pourra encore l'être cette manche.",
+      "snake-military-victory-and-flip-back": "Si vous avez 5 Serpents <snake/> en jeu (celui-ci compris), piochez 1 jeton de Victoire militaire (résolvez son effet), puis retournez un de vos Serpents sur sa face Oeuf <egg/>.",
+      "snake-draw-play-card-and-flip-back": "Piochez 1 carte et vous pouvez jouer une carte de votre main, côté Oeuf <egg/>, gratuitement, puis retournez un de vos Serpents sur sa face Oeuf."
     }
   },
   "header": {
@@ -390,6 +414,10 @@
       "you": "Scrutez le premier élément d'une pile",
       "player": "{player} scrute une pile"
     },
+    "spy-egg": {
+      "you": "Scrutez le premier élément d'une pile, ou un Oeuf de votre adversaire",
+      "player": "{player} scrute une pile ou un de vos Oeufs"
+    },
     "spy-return": {
       "you": "Remettez cet élément sur ou sous sa pile",
       "player": "{player} remet l'élément scruté sur ou sous sa pile"
@@ -433,6 +461,30 @@
     "place-ring": {
       "you": "Posez un Anneau sur une case de votre plateau ou <decline>passez</decline>",
       "player": "{player} peut poser un Anneau sur son plateau"
+    },
+    "activate-zone-hatch": {
+      "you": "Activez les cases de la zone, ou faites éclore un Oeuf pour {count} <food/>",
+      "player": "{player} active les cases de la zone, ou fait éclore un Oeuf"
+    },
+    "hatch-egg": {
+      "you": "Faites éclore un Oeuf pour {count} <food/> ou <decline>passez</decline>",
+      "player": "{player} peut faire éclore un Oeuf pour {count} <food/>"
+    },
+    "spy-return-egg": {
+      "you": "Retournez cet Oeuf face cachée",
+      "player": "{player} retourne l'Oeuf scruté face cachée"
+    },
+    "move-egg": {
+      "you": "Déplacez un de vos Oeufs sur une autre case de votre grille",
+      "player": "{player} déplace un de ses Oeufs"
+    },
+    "flip-snake-to-egg": {
+      "you": "Retournez un de vos Serpents sur sa face Oeuf",
+      "player": "{player} retourne un de ses Serpents sur sa face Oeuf"
+    },
+    "copy-snake": {
+      "you": "Copiez l'effet d'un de vos Serpents",
+      "player": "{player} copie l'effet d'un de ses Serpents"
     }
   },
   "game-over": {
@@ -456,6 +508,10 @@
       "4": {
         "you": "Vous avez gagné avec vos {count} Portails <portal/> dans les 4 coins",
         "player": "{player} a gagné avec ses {count} Portails <portal/> dans les 4 coins"
+      },
+      "5": {
+        "you": "Vous avez gagné avec {count} Serpents <snake/> éclos en jeu",
+        "player": "{player} a gagné avec {count} Serpents <snake/> éclos en jeu"
       }
     },
     "race": {
@@ -510,7 +566,8 @@
       "play-card": "{player} renonce à jouer une carte",
       "spend-ring": "{player} renonce à échanger un Anneau",
       "rotate": "{player} renonce à pivoter une carte",
-      "place-ring": "{player} renonce à poser un Anneau"
+      "place-ring": "{player} renonce à poser un Anneau",
+      "hatch": "{player} ne fait éclore aucun autre Oeuf"
     },
     "spy": {
       "deck": "{player} scrute la première carte de sa pioche",
@@ -518,13 +575,20 @@
       "action-tile": "{player} scrute la première tuile de la pile Action",
       "action-tile-seen": "{player} scrute la première tuile de la pile Action : <material/>",
       "military-victory": "{player} scrute le premier jeton de Victoire militaire",
-      "military-victory-seen": "{player} scrute le premier jeton de Victoire militaire : <material/>"
+      "military-victory-seen": "{player} scrute le premier jeton de Victoire militaire : <material/>",
+      "egg": "{player} scrute un Oeuf de son adversaire",
+      "egg-seen": "{player} scrute un Oeuf de son adversaire : <material/>"
     },
     "spy-return": {
       "on-top": "{player} remet l'élément scruté sur sa pile",
       "on-top-seen": "{player} remet <material/> sur sa pile",
       "under": "{player} remet l'élément scruté sous sa pile",
-      "under-seen": "{player} remet <material/> sous sa pile"
-    }
+      "under-seen": "{player} remet <material/> sous sa pile",
+      "egg": "{player} retourne l'Oeuf face cachée"
+    },
+    "hatch": "{player} fait éclore un de ses Oeufs",
+    "hatched": "L'Oeuf éclot : <material/>",
+    "flip-snake-to-egg": "{player} retourne <material/> sur sa face Oeuf",
+    "move-egg": "{player} déplace un de ses Oeufs"
   }
 }

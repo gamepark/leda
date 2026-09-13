@@ -89,7 +89,11 @@ const baseWeights: Record<Effect, number> = {
   [Effect.SearchRing]: 2,
   [Effect.SpendRingForToken]: 0.4,
   [Effect.RotateCatCard]: 0.9,
-  [Effect.HalfTurn]: 0
+  [Effect.HalfTurn]: 0,
+  [Effect.MoveEgg]: 0.8,
+  /** Priced at nothing: it is what the 2 strongest Snake cards cost, and {@link hatchValue} is what pays it. */
+  [Effect.FlipSnakeToEgg]: 0,
+  [Effect.CopySnake]: 2
 }
 
 /**
@@ -99,12 +103,15 @@ const baseWeights: Record<Effect, number> = {
  * The Sharks win on their 9 tokens, so placing one is worth more to them than anything a card gives.
  * The Cats win on 3 Rings, which they reach by drawing their deck out and by searching it.
  * The Scorpions win on 4 Portals, which are bought with Food and with nothing else.
+ * The Snakes win on 7 of their cards hatched, which are paid for twice over, 2 Food to play and 2 to open: they
+ * therefore price Food, and what steals it, above everything a card gives (see {@link hatchValue}).
  */
 const clanWeights: Record<Clan, Partial<Record<Effect, number>>> = {
   [Clan.Panda]: { [Effect.Awakening]: 4, [Effect.PlayCard]: 1.1 },
   [Clan.Shark]: { [Effect.PlaceSharkToken]: 6 },
   [Clan.Cat]: { [Effect.Draw]: 2.6, [Effect.SearchRing]: 4, [Effect.RotateCatCard]: 1.6 },
-  [Clan.Scorpion]: { [Effect.Food]: 1.8, [Effect.StealFood]: 2.6, [Effect.ActivateDesert]: 1.8, [Effect.SwapSquares]: 2.5 }
+  [Clan.Scorpion]: { [Effect.Food]: 1.8, [Effect.StealFood]: 2.6, [Effect.ActivateDesert]: 1.8, [Effect.SwapSquares]: 2.5 },
+  [Clan.Snake]: { [Effect.Food]: 1.6, [Effect.StealFood]: 2.4, [Effect.PlayCard]: 1.3 }
 }
 
 /**
@@ -116,7 +123,9 @@ const clanFoodCost: Record<Clan, number> = {
   [Clan.Panda]: 1,
   [Clan.Shark]: 1,
   [Clan.Cat]: 1,
-  [Clan.Scorpion]: 1.6
+  [Clan.Scorpion]: 1.6,
+  /** Every Egg is bought once and opened again, so a Snake spends its Food twice for one step of its race. */
+  [Clan.Snake]: 1.4
 }
 
 /**

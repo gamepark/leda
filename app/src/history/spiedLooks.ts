@@ -1,7 +1,7 @@
 import { LedaRules } from '@gamepark/leda/LedaRules'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
-import { roundSpies, Spy } from '@gamepark/leda/rules/spy'
+import { isEggSpy, isSpyLook, PileSpy, roundSpies, Spy } from '@gamepark/leda/rules/spy'
 import { useActions, useRules } from '@gamepark/react-game'
 import { Action, isMoveItem, MaterialMove, MoveItem } from '@gamepark/rules-api'
 import { useMemo } from 'react'
@@ -20,6 +20,9 @@ type PlayedAction = Action<Move, number> & { cancelled?: boolean; transient?: bo
 
 /** A Spy of the round, with the item it looked at for the client it was shown to, and nothing for the others. */
 export type SeenSpy = Spy & { seen?: unknown }
+
+/** A Spy of the round made on a pile, which is what the list of a pile is made of (see {@link SpyHistoryDialog}). */
+export type SeenPileSpy = PileSpy & { seen?: unknown }
 
 /**
  * The Spies of the round, each with what its player saw when this very client is the one it was shown to
@@ -53,7 +56,7 @@ const seenSpies = (rules: LedaRules, actions: PlayedAction[]): SeenSpy[] => {
   const looks = spyLooks(actions)
   const round = looks.slice(looks.length - spies.length)
   if (round.length < spies.length || spies.some((spy, index) => !isLookOf(round[index], spy))) return spies
-  return spies.map((spy, index) => ({ ...spy, seen: seenId(rules, round[index]) }))
+  return spies.map((spy, index) => ({ ...spy, seen: seenId(rules, round[index], isEggSpy(spy)) }))
 }
 
 /**
@@ -72,7 +75,7 @@ const spyLooks = (actions: PlayedAction[]): Look[] => {
     if (action.cancelled || action.transient) continue
     for (const move of [action.move, ...action.consequences]) {
       if (!isMoveItem(move)) continue
-      if (move.location.type === LocationType.SpiedItem) {
+      if (isSpyLook(move)) {
         open = move
       } else if (open !== undefined && move.itemType === open.itemType && move.itemIndex === open.itemIndex) {
         looks.push(open)
@@ -83,8 +86,12 @@ const spyLooks = (actions: PlayedAction[]): Look[] => {
   return looks
 }
 
-/** Whether a look is the one a Spy was made with: the pile it took from, and the player who took. */
-const isLookOf = (look: Look, spy: Spy): boolean => look.itemType === spy.pile && look.location.player === spy.player
+/**
+ * Whether a look is the one a Spy was made with: the pile it took from and the player who took, or the Egg it read,
+ * which stays in front of its owner and says who read it no more than any card of a grid does.
+ */
+const isLookOf = (look: Look, spy: Spy): boolean =>
+  look.itemType === spy.pile && (isEggSpy(spy) ? look.itemIndex === spy.egg : look.location.player === spy.player)
 
 /**
  * What a look showed, and nothing at all when it showed this client nothing: the move only carries what the item
@@ -95,8 +102,11 @@ const isLookOf = (look: Look, spy: Spy): boolean => look.itemType === spy.pile &
  * opponent what a pile held and in which order, which is the whole of the effect.
  * The face of a clan card is completed with its back, which is the one half of it a deck never hid
  * (see {@link revealedId}).
+ *
+ * An Egg is the exception: it was turned over for both players, so it is shown to all of them, its owner reading
+ * it off the card the move had nothing to reveal to them about (see {@link EggSpyHistoryDialog}).
  */
-const seenId = (rules: LedaRules, look: Look): unknown => {
-  if (look.reveal?.id === undefined) return undefined
+const seenId = (rules: LedaRules, look: Look, shownToAll: boolean): unknown => {
+  if (!shownToAll && look.reveal?.id === undefined) return undefined
   return revealedId(look, rules.material(look.itemType).getItem(look.itemIndex))
 }

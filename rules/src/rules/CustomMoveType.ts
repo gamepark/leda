@@ -48,5 +48,19 @@ export enum CustomMoveType {
    * know. Which Rings are still in there is not a secret at all, being what is left once the ones in hand and in
    * play are counted out, so the player names the one they want (see {@link ringsInDeck}).
    */
-  SearchRing
+  SearchRing,
+
+  /**
+   * A player spends 2 Food to hatch one of their Eggs: it is turned onto its Snake side, and the square it stands
+   * on is activated on the spot, its Hatching effect first (see {@link hatchCard}). The data is the
+   * {@link XYCoordinates} of that square, like every other square a player designates.
+   *
+   * Told apart from activating a square because it is what the player pays for rather than what they are asked
+   * to do: the squares of the zone are activated for free and cannot be turned down, and an Egg is neither
+   * (see {@link ActivateZoneRule}).
+   *
+   * Last of the list, like the rules of its clan: the value of a move is written into every game already played
+   * (see {@link RuleId}).
+   */
+  HatchEgg
 }

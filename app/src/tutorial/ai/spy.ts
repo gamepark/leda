@@ -8,7 +8,7 @@ import { activableCells } from '@gamepark/leda/rules/activation'
 import { roundsPerCycle } from '@gamepark/leda/rules/EndOfRoundRule'
 import { Memory } from '@gamepark/leda/rules/Memory'
 import { militarySymbols } from '@gamepark/leda/rules/militaryConflict'
-import { spiedItem } from '@gamepark/leda/rules/spy'
+import { spiedEgg, spiedItem } from '@gamepark/leda/rules/spy'
 import { isMoveItem, isMoveItemType, MaterialMove } from '@gamepark/rules-api'
 import { Ai, bestOf, effectsGain, gainValue } from './AiPlayer'
 import { bestPlacement } from './cards'
@@ -28,8 +28,8 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  * thing the rules hand it that its opponent does not get to see (see {@link SpyRule}).
  */
 
-/** Which of the 2 moves of the effect the AI is being asked for: an item is out of its pile, or none is yet. */
-export const isPuttingSpiedItemBack = (ai: Ai): boolean => spiedItem(ai.rules) !== undefined
+/** Which of the 2 moves of the effect the AI is being asked for: an item is out of its pile or an Egg turned over, or none is yet. */
+export const isPuttingSpiedItemBack = (ai: Ai): boolean => spiedItem(ai.rules) !== undefined || spiedEgg(ai.rules).length > 0
 
 /**
  * Which pile to look into.

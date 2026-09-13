@@ -1,12 +1,15 @@
-import { faRotate } from '@fortawesome/free-solid-svg-icons'
+import { faEgg, faEye, faRotate, faRotateLeft } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { LedaRules } from '@gamepark/leda/LedaRules'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { cellOf, sameCell } from '@gamepark/leda/material/PlayerGrid'
 import { CustomMoveType } from '@gamepark/leda/rules/CustomMoveType'
+import { LocationType } from '@gamepark/leda/material/LocationType'
 import { activableCards } from '@gamepark/leda/rules/playedCards'
 import { RuleId } from '@gamepark/leda/rules/RuleId'
-import { MaterialMoveBuilder, XYCoordinates } from '@gamepark/rules-api'
+import { isSpiedEgg } from '@gamepark/leda/rules/snake'
+import { isMoveItemType, MaterialMove, MaterialMoveBuilder, XYCoordinates } from '@gamepark/rules-api'
+import { useTranslation } from 'react-i18next'
 import { ActivateSquareButton } from './ActivateSquareButton'
 import { ChooseZoneButton } from './ChooseActionTileButton'
 import { LedaMenuButton } from './LedaMenuButton'
@@ -38,6 +41,12 @@ export const PlayedCardMenuButton = ({ index }: { index: number }) => {
       return <CopyOpponentCardButton index={index} rules={rules} player={me} />
     case RuleId.RotateCatCard:
       return <RotateCatCardButton index={index} rules={rules} player={me} />
+    case RuleId.CopySnake:
+      return <CopySnakeButton index={index} rules={rules} player={me} />
+    case RuleId.FlipSnakeToEgg:
+      return <FlipSnakeToEggButton index={index} rules={rules} player={me} />
+    case RuleId.Spy:
+      return <SpyEggButton index={index} rules={rules} player={me} />
     default:
       return null
   }
@@ -116,3 +125,62 @@ const RotateCatCardButton = ({ index, rules, player }: CardButtonProps) => {
     </LedaMenuButton>
   )
 }
+
+/**
+ * A Snake of the player, when one of their cards is copying one of them. The card doing the copying carries none:
+ * reading itself would ask the same question over again (see {@link copiableSnakes}).
+ */
+const CopySnakeButton = ({ index, rules, player }: CardButtonProps) => {
+  const card = rules.material(MaterialType.ClanCard).getItem(index)
+  const cell = cardCell(rules, index)
+  if (card.location.player !== player || cell === undefined) return null
+  if (!offeredCells(rules, player, CustomMoveType.ActivateSquare).some((copiable) => sameCell(copiable, cell))) return null
+  return <ActivateSquareButton cell={cell} />
+}
+
+/**
+ * A Snake of the player, when one of their cards is turning one of them back onto its Egg side, which is what the
+ * 2 strongest cards of the clan are paid with (see {@link FlipSnakeToEggRule}).
+ * The move is read off the rules rather than built here, so a button can never turn a card the rules would not.
+ */
+const FlipSnakeToEggButton = ({ index, rules, player }: CardButtonProps) => {
+  const move = cardMove(rules, player, index)
+  if (move === undefined) return null
+  return (
+    <LedaMenuButton {...tileButtonPosition} move={move}>
+      <FontAwesomeIcon icon={faEgg} />
+    </LedaMenuButton>
+  )
+}
+
+/**
+ * An Egg of the opponent, when a Spy effect may be spent reading one: the one way across the bluff of the Snakes,
+ * and the one Spy of the game that is aimed at a grid rather than at a pile (see {@link spiableEggs}).
+ * On their grid, which is where the Egg is, exactly as the button that copies one of their squares is.
+ * The same card carries the button that turns it back once it has been read, which is the one move left then.
+ * Both in the top right corner, the one turning into the other right where the player clicked.
+ */
+const SpyEggButton = ({ index, rules, player }: CardButtonProps) => {
+  const { t } = useTranslation()
+  const move = cardMove(rules, player, index)
+  if (move === undefined) return null
+  if (isSpiedEgg(rules.material(MaterialType.ClanCard).getItem(index))) {
+    return (
+      <LedaMenuButton x={-tileButtonPosition.x} y={tileButtonPosition.y} labelPosition="right" move={move} label={t('spy.put-back')}>
+        <FontAwesomeIcon icon={faRotateLeft} />
+      </LedaMenuButton>
+    )
+  }
+  return (
+    <LedaMenuButton x={-tileButtonPosition.x} y={tileButtonPosition.y} move={move}>
+      <FontAwesomeIcon icon={faEye} />
+    </LedaMenuButton>
+  )
+}
+
+/**
+ * The move the rules are offering on that very card, if there is one: read off the legal moves rather than built
+ * beside them, so that there is one button exactly where there is one move (see {@link offeredCells}).
+ */
+const cardMove = (rules: LedaRules, player: number, index: number): MaterialMove<number, MaterialType, LocationType> | undefined =>
+  rules.getLegalMoves(player).find((move) => isMoveItemType(MaterialType.ClanCard)(move) && move.itemIndex === index)

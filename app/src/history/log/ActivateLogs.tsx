@@ -74,6 +74,8 @@ export const ChooseEffectLog = ({ move, context }: MaterialLogProps<CustomMove>)
  */
 const passCodes: Partial<Record<RuleId, string>> = {
   [RuleId.Mulligan]: 'log.keep-hand',
+  /** Being done with the zone, which only a player of the Snakes is ever asked: the Eggs left are theirs to keep. */
+  [RuleId.ActivateZone]: 'log.pass.hatch',
   [RuleId.PlayCard]: 'log.pass.play-card',
   [RuleId.SpendRingForToken]: 'log.pass.spend-ring',
   [RuleId.RotateCatCard]: 'log.pass.rotate',

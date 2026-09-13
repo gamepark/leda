@@ -12,10 +12,13 @@ import {
   awaken,
   chooseEffect,
   copyOpponentCard,
+  copySnake,
   downgradeTile,
+  flipSnakeToEgg,
   flipDesert,
   payCardCost,
   placeRing,
+  moveEgg,
   placeSharkToken,
   playCardEffect,
   redrawMilitaryVictory,
@@ -129,6 +132,12 @@ const decide = (ai: Ai, moves: Move[]): Move | undefined => {
       return swapSquares(ai, moves)
     case RuleId.CopyOpponentCard:
       return copyOpponentCard(ai, moves)
+    case RuleId.CopySnake:
+      return copySnake(ai, moves)
+    case RuleId.MoveEgg:
+      return moveEgg(ai, moves)
+    case RuleId.FlipSnakeToEgg:
+      return flipSnakeToEgg(ai, moves)
     case RuleId.SearchRing:
       return searchRing(ai, moves)
     case RuleId.SpendRingForToken:

@@ -9,6 +9,7 @@ import { Rules } from '../Rules'
 import { pandaLevel } from './awakening'
 import { victorySymbols } from './militaryConflict'
 import { placedSharkTokens, sharkTokens } from './sharkPack'
+import { snakesInPlay, snakesToWin } from './snake'
 import { playerClan } from './specialActivation'
 import { topCardOn, visibleCards } from './squares'
 
@@ -30,6 +31,7 @@ import { topCardOn, visibleCards } from './squares'
 export const victorySymbolsToWin: Record<Clan, number> = {
   [Clan.Scorpion]: 6,
   [Clan.Panda]: 7,
+  [Clan.Snake]: 7,
   [Clan.Cat]: 8,
   [Clan.Shark]: 9
 }
@@ -83,7 +85,14 @@ const specialVictoryCounts: Record<Clan, (rules: Rules, player: number) => numbe
   [Clan.Cat]: (rules, player) => visibleCards(rules, player).id<ClanCardItemId>((id) => isRing(id.front)).length,
 
   /** The Portals standing in a corner of the grid, which a swap of 2 squares is another way of reaching. */
-  [Clan.Scorpion]: (rules, player) => gridCorners.filter((corner) => isPortalOn(rules, player, corner)).length
+  [Clan.Scorpion]: (rules, player) => gridCorners.filter((corner) => isPortalOn(rules, player, corner)).length,
+
+  /**
+   * The Snakes hatched and in play, whichever they are: the one clan whose win condition is a count of its cards
+   * and not a set of them, and the one both players read the same way, an Egg hiding its front and not its side
+   * (see {@link snake}).
+   */
+  [Clan.Snake]: (rules, player) => snakesInPlay(rules, player)
 }
 
 /** How many of them each clan needs, which is all there is of the material in every case but the Rings. */
@@ -91,7 +100,8 @@ export const specialVictoryGoals: Record<Clan, number> = {
   [Clan.Panda]: goldPandasToWin,
   [Clan.Shark]: sharkTokens,
   [Clan.Cat]: ringsToWin,
-  [Clan.Scorpion]: gridCorners.length
+  [Clan.Scorpion]: gridCorners.length,
+  [Clan.Snake]: snakesToWin
 }
 
 const isPortalOn = (rules: Rules, player: number, cell: XYCoordinates): boolean => {

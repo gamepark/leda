@@ -11,7 +11,9 @@ import PandaBronzeImage from '../images/icons/PandaBronze.png'
 import PandaGoldImage from '../images/icons/PandaGold.png'
 import PandaSilverImage from '../images/icons/PandaSilver.png'
 import ScorpionPortalImage from '../images/icons/ScorpionPortal.png'
+import EggImage from '../images/icons/Egg.png'
 import SharkImage from '../images/icons/Shark.png'
+import SnakeImage from '../images/icons/Snake.png'
 import SpecialActivationImage from '../images/icons/SpecialActivation.png'
 import UpgradeImage from '../images/icons/Upgrade.png'
 import FoodImage from '../images/tokens/food.png'
@@ -81,7 +83,9 @@ const icons = {
   gold: <Icon src={PandaGoldImage} />,
   shark: <Icon src={SharkImage} />,
   ring: <Icon src={CatRingImage} />,
-  portal: <Icon src={ScorpionPortalImage} />
+  portal: <Icon src={ScorpionPortalImage} />,
+  snake: <Icon src={SnakeImage} />,
+  egg: <Icon src={EggImage} />
 }
 
 /** Over the texts rather than over the pane: the dialog centers what it holds, which is wider than what is read. */

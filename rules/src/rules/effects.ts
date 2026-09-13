@@ -84,9 +84,21 @@ type Asked = { rules: RuleId[]; choices: EffectChoice[]; pending: PendingEffects
  * it has to ask. The source is where the set was reached from, which some effects are read against
  * (see {@link EffectSource}).
  */
-export const resolveEffects = (rule: Rule, effects: EffectSet, source: EffectSource = {}): Move[] => {
+export const resolveEffects = (rule: Rule, effects: EffectSet, source: EffectSource = {}): Move[] =>
+  resolveEffectSequence(rule, [{ effects, source }])
+
+/**
+ * Several sets resolved as one, one after the other: what hatching an Egg gives, which is the Hatching effect of
+ * the card and then what it gives when it is activated (see {@link hatchCard}).
+ *
+ * One call rather than one per set, because what a set asks the player has to be asked before the next set is
+ * given: they are read into the same lists, so the questions of the second one queue behind those of the first,
+ * and whatever the second one gives waits for the first to be answered exactly as the rest of a card does
+ * (see {@link queuePending}). Two calls would put the second set in front of the first.
+ */
+export const resolveEffectSequence = (rule: Rule, sets: { effects: EffectSet; source?: EffectSource }[]): Move[] => {
   const asked: Asked = { rules: [], choices: [], pending: [] }
-  const moves = collect(rule, effects, source, asked)
+  const moves = sets.flatMap(({ effects, source = {} }) => collect(rule, effects, source, asked))
   if (asked.rules.length > 0) queueFirst(rule, asked.rules)
   if (asked.choices.length > 0) rule.memorize(Memory.EffectChoices, [...asked.choices, ...pendingChoices(rule)])
   // What is left over goes in front of what was already waiting, exactly as the rules that will resolve it do:
@@ -244,7 +256,10 @@ const effectRules: Partial<Record<Effect, RuleId>> = {
   [Effect.CopyOpponentCard]: RuleId.CopyOpponentCard,
   [Effect.SearchRing]: RuleId.SearchRing,
   [Effect.SpendRingForToken]: RuleId.SpendRingForToken,
-  [Effect.RotateCatCard]: RuleId.RotateCatCard
+  [Effect.RotateCatCard]: RuleId.RotateCatCard,
+  [Effect.MoveEgg]: RuleId.MoveEgg,
+  [Effect.FlipSnakeToEgg]: RuleId.FlipSnakeToEgg,
+  [Effect.CopySnake]: RuleId.CopySnake
 }
 
 /** The Spies of one effect that have to land on different piles, and the piles they have used so far. */
@@ -259,12 +274,15 @@ export const spyDifferentPiles = (rules: Rules): SpyDifferentPiles | undefined =
 /**
  * One of those Spies is done: the pile it used is taken, and the constraint is forgotten once the last of them
  * has been resolved, so that it never reaches a Spy the same activation gathers from somewhere else.
+ * No pile at all for a Spy spent reading an Egg off a grid, which is not one of them: it uses up one of the 2
+ * Spies and leaves the 3 piles open to the other (see {@link SpyRule}).
  */
-export const spentDifferentPileSpy = (rule: AnyRule, pile: MaterialType) => {
+export const spentDifferentPileSpy = (rule: AnyRule, pile?: MaterialType) => {
   const constraint = spyDifferentPiles(rule)
   if (constraint === undefined) return
   const left = constraint.left - 1
-  rule.memorize(Memory.SpyDifferentPiles, left > 0 ? { left, piles: [...constraint.piles, pile] } : undefined)
+  const piles = pile === undefined ? constraint.piles : [...constraint.piles, pile]
+  rule.memorize(Memory.SpyDifferentPiles, left > 0 ? { left, piles } : undefined)
 }
 
 /** Whether a Military Victory token may still be won this round (see {@link Effect.BlockMilitaryVictory}). */

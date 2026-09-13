@@ -20,10 +20,10 @@ export const SpiedItemButtons = ({ type }: { type: MaterialType }) => {
   const { rules, player: me } = context
   if (rules.getActivePlayer() !== me) return null
   if (rules.game.rule?.id !== RuleId.Spy) return null
+  const x = spyButtonX(type)
   const back = putBackMoves(rules, me)
   if (back === undefined) return null
 
-  const x = spyButtonX(type)
   return (
     <>
       <LedaMenuButton move={back.onTop} label={t('spy.on-top')} x={x} y={-2} labelPosition="right">

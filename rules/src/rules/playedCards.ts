@@ -7,7 +7,8 @@ import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { Rules } from '../Rules'
 import { isPackActive } from './sharkPack'
-import { topCardIndexOn, topCardOn, visibleCards } from './squares'
+import { isEgg, isHatched } from './snake'
+import { topCardIndexOn, visibleCards } from './squares'
 
 /**
  * What the clan cards a player has played onto their grid give. Which card a square holds is read off the squares
@@ -33,16 +34,24 @@ const isRotated = (rules: Rules, player: number, cell: XYCoordinates): boolean =
  */
 const clanCardReaders: Partial<Record<Clan, (rules: Rules, player: number, cell: XYCoordinates, card: ClanCardId) => EffectSet>> = {
   [Clan.Shark]: (rules, player, cell, card) => clanCardEffects(card, isPackActive(rules, player, cell)),
-  [Clan.Cat]: (rules, player, cell, card) => clanCardEffects(card, isRotated(rules, player, cell))
+  [Clan.Cat]: (rules, player, cell, card) => clanCardEffects(card, isRotated(rules, player, cell)),
+  /** A Snake card played is an Egg, and an Egg gives nothing: hatching it is what puts its Snake side up. */
+  [Clan.Snake]: (rules, player, cell, card) => (isRotated(rules, player, cell) ? clanCardEffects(card) : {})
 }
 
 /**
  * What activating a square gives: what the card on it gives, or nothing at all when no card covers it, in which
  * case what the tile gives is what counts.
+ *
+ * Nothing at all as well for a card the reader may not see the front of, which only an Egg of the opponent ever
+ * is: that is the truth of it rather than a hole in what they know, an Egg giving nothing until it hatches
+ * (see {@link snake}). So both players read the same thing off it, and neither reads the tile it covers.
  */
 export const cardEffectsOn = (rules: Rules, player: number, cell: XYCoordinates): EffectSet | undefined => {
-  const card = topCardOn(rules, player, cell)
-  if (card === undefined) return undefined
+  const index = topCardIndexOn(rules, player, cell)
+  if (index === undefined) return undefined
+  const card = rules.material(MaterialType.ClanCard).getItem<ClanCardItemId>(index).id?.front
+  if (card === undefined) return {}
   const read = clanCardReaders[clanOf(card)]
   return read === undefined ? clanCardEffects(card) : read(rules, player, cell, card)
 }
@@ -83,7 +92,24 @@ export const rotateCardOn = (rules: Rules, player: number, cell: XYCoordinates):
  * activating her over and over is not something the rulebook ever asks a player to stop doing.
  */
 export const activableCards = (rules: Rules, player: number) =>
-  visibleCards(rules, player).id<ClanCardItemId>((id) => id.front !== undefined && isActivableCard(clanCardEffects(id.front)))
+  visibleCards(rules, player)
+    .id<ClanCardItemId>((id) => id.front !== undefined && isActivableCard(clanCardEffects(id.front)))
+    // An Egg is a card in play that gives nothing, and activating one is not a way around paying to hatch it.
+    .filter((card) => !isEgg(card))
 
 const isActivableCard = (effects: EffectSet): boolean =>
   hasEffect(effects) && (isEffectChoice(effects) || (effects[Effect.ActivateCard] ?? 0) === 0)
+
+/**
+ * The Snakes a "copy the effect of one of your Snakes" may read, which is every Snake their owner has hatched and
+ * can still see, minus the ones that would read this very question again: with 1 such card per deck that means
+ * the card doing the copying, and copying itself is not something the rulebook ever asks a player to stop doing
+ * (see {@link activableCards}).
+ */
+export const copiableSnakes = (rules: Rules, player: number) =>
+  visibleCards(rules, player)
+    .filter((card) => isHatched(card))
+    .id<ClanCardItemId>((id) => id.front !== undefined && isCopiableSnake(clanCardEffects(id.front)))
+
+const isCopiableSnake = (effects: EffectSet): boolean =>
+  hasEffect(effects) && (isEffectChoice(effects) || effects[Effect.CopySnake] === undefined)

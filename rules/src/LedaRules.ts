@@ -28,6 +28,9 @@ import { AwakeningRule } from './rules/AwakeningRule'
 import { ChooseActionRule } from './rules/ChooseActionRule'
 import { ChooseEffectRule } from './rules/ChooseEffectRule'
 import { CopyOpponentCardRule } from './rules/CopyOpponentCardRule'
+import { CopySnakeRule } from './rules/CopySnakeRule'
+import { FlipSnakeToEggRule } from './rules/FlipSnakeToEggRule'
+import { MoveEggRule } from './rules/MoveEggRule'
 import { DowngradeTileRule } from './rules/DowngradeTileRule'
 import { EndOfOrganisationRule } from './rules/EndOfOrganisationRule'
 import { EndOfRoundRule } from './rules/EndOfRoundRule'
@@ -54,6 +57,7 @@ import { sharkMoves } from './rules/sharkPack'
 import { SpyRule } from './rules/SpyRule'
 import { StartOrganisationRule } from './rules/StartOrganisationRule'
 import { UpgradeTileRule } from './rules/UpgradeTileRule'
+import { hiddenEgg } from './rules/snake'
 import { gameWinner, hasWon } from './rules/victory'
 
 /**
@@ -99,7 +103,10 @@ export class LedaRules
     [RuleId.RotateCatCard]: RotateCatCardRule,
     [RuleId.Awakening]: AwakeningRule,
     [RuleId.PlaceRing]: PlaceRingRule,
-    [RuleId.PendingEffects]: PendingEffectsRule
+    [RuleId.PendingEffects]: PendingEffectsRule,
+    [RuleId.MoveEgg]: MoveEggRule,
+    [RuleId.FlipSnakeToEgg]: FlipSnakeToEggRule,
+    [RuleId.CopySnake]: CopySnakeRule
   }
 
   /**
@@ -114,6 +121,11 @@ export class LedaRules
    *
    * An item a Spy effect took off a pile is secret the same way a hand is: whoever took it sees it, and nobody
    * else does. That is the whole of the effect, so it needs an entry for each of the 3 piles it can look into.
+   *
+   * A card on a grid is the one thing here that is hidden while it is face up on the table: a Snake card is played
+   * on its Egg side, and every Egg looks the same, so which Snake it is belongs to its owner until they pay to
+   * hatch it (see {@link hiddenEgg}). That is the whole of what the clan plays for, and the one way across it is
+   * the Spy their opponent may spend turning one over, which shows it to both players (see {@link SpyRule}).
    */
   hidingStrategies = {
     [MaterialType.ActionTile]: {
@@ -127,7 +139,8 @@ export class LedaRules
     [MaterialType.ClanCard]: {
       [LocationType.PlayerDeck]: hideFront,
       [LocationType.PlayerHand]: hideFrontToOthers,
-      [LocationType.SpiedItem]: hideFrontToOthers
+      [LocationType.SpiedItem]: hideFrontToOthers,
+      [LocationType.PlayedCard]: hiddenEgg
     }
   }
 

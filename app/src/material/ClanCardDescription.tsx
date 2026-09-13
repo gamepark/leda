@@ -4,11 +4,13 @@ import { ClanCardId, ClanCardItemId } from '@gamepark/leda/material/ClanCardId'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { cellOf } from '@gamepark/leda/material/PlayerGrid'
+import { isEgg, isSpiedEgg } from '@gamepark/leda/rules/snake'
 import { isCellLeftToActivate } from '@gamepark/leda/rules/activation'
 import { swappingPlayer } from '@gamepark/leda/rules/swap'
 import { ItemContext, MaterialContext } from '@gamepark/react-game'
 import { MaterialItem, MaterialMoveBuilder } from '@gamepark/rules-api'
 import CatBack from '../images/cards/cat/back.jpg'
+import CatEmblem from '../images/cards/cat/emblem.jpg'
 import CatCopyOpponentCard from '../images/cards/cat/cat-copy-opponent-card.jpg'
 import CatDrawAndFood from '../images/cards/cat/cat-draw-and-food.jpg'
 import CatFoodAndMilitary from '../images/cards/cat/cat-food-and-military.jpg'
@@ -23,6 +25,7 @@ import CatSpendRingForToken from '../images/cards/cat/cat-spend-ring-for-token.j
 import CatSpyAndDraw from '../images/cards/cat/cat-spy-and-draw.jpg'
 import CatUpgradeCardOrActivateTile from '../images/cards/cat/cat-upgrade-card-or-activate-tile.jpg'
 import PandaBack from '../images/cards/panda/back.jpg'
+import PandaEmblem from '../images/cards/panda/emblem.jpg'
 import PandaDrawAndSpecialActivation from '../images/cards/panda/panda-draw-and-special-activation.jpg'
 import PandaDrawOrMilitary from '../images/cards/panda/panda-draw-or-military.jpg'
 import PandaFoodAndDiscount from '../images/cards/panda/panda-food-and-discount.jpg'
@@ -35,6 +38,7 @@ import PandaQueen from '../images/cards/panda/panda-queen.jpg'
 import PandaSpyAndDiscount from '../images/cards/panda/panda-spy-and-discount.jpg'
 import PandaUpgrade from '../images/cards/panda/panda-upgrade.jpg'
 import ScorpionBack from '../images/cards/scorpion/back.jpg'
+import ScorpionEmblem from '../images/cards/scorpion/emblem.jpg'
 import ScorpionActivateDesert from '../images/cards/scorpion/scorpion-activate-desert.jpg'
 import ScorpionDiscountPerDesertPair from '../images/cards/scorpion/scorpion-discount-per-desert-pair.jpg'
 import ScorpionDrawAndFood from '../images/cards/scorpion/scorpion-draw-and-food.jpg'
@@ -47,6 +51,7 @@ import ScorpionPortalFlipOpponentTile from '../images/cards/scorpion/scorpion-po
 import ScorpionPortalSwap from '../images/cards/scorpion/scorpion-portal-swap.jpg'
 import ScorpionUpgradeAndActivate from '../images/cards/scorpion/scorpion-upgrade-and-activate.jpg'
 import SharkBack from '../images/cards/shark/back.jpg'
+import SharkEmblem from '../images/cards/shark/emblem.jpg'
 import SharkFoodOrDiscount from '../images/cards/shark/shark-food-or-discount.jpg'
 import SharkFoodPerToken from '../images/cards/shark/shark-food-per-token.jpg'
 import SharkMilitaryAndDraw from '../images/cards/shark/shark-military-and-draw.jpg'
@@ -58,24 +63,59 @@ import SharkPackRedrawToken from '../images/cards/shark/shark-pack-redraw-token.
 import SharkPackSpy from '../images/cards/shark/shark-pack-spy.jpg'
 import SharkSpyOrTriggerToken from '../images/cards/shark/shark-spy-or-trigger-token.jpg'
 import SharkUpgrade from '../images/cards/shark/shark-upgrade.jpg'
+import SnakeBack from '../images/cards/snake/back.jpg'
+import SnakeEmblem from '../images/cards/snake/emblem.jpg'
+import SnakeCopySnake from '../images/cards/snake/snake-copy-snake.jpg'
+import SnakeDrawAndFlipDesert from '../images/cards/snake/snake-draw-and-flip-desert.jpg'
+import SnakeDrawAndFoodPerEgg from '../images/cards/snake/snake-draw-and-food-per-egg.jpg'
+import SnakeDrawPlayCardAndFlipBack from '../images/cards/snake/snake-draw-play-card-and-flip-back.jpg'
+import SnakeMilitary from '../images/cards/snake/snake-military.jpg'
+import SnakeMilitaryVictoryAndFlipBack from '../images/cards/snake/snake-military-victory-and-flip-back.jpg'
+import SnakeMilitaryWithThreeSnakes from '../images/cards/snake/snake-military-with-three-snakes.jpg'
+import SnakeSpyAndMilitary from '../images/cards/snake/snake-spy-and-military.jpg'
+import SnakeSpyAndUpgrade from '../images/cards/snake/snake-spy-and-upgrade.jpg'
+import SnakeStealFoodAndMilitary from '../images/cards/snake/snake-steal-food-and-military.jpg'
+import SnakeStealFoodAndMoveEgg from '../images/cards/snake/snake-steal-food-and-move-egg.jpg'
 import { ClanCardHelp } from './ClanCardHelp'
+import { HatchEggButton } from './HatchEggButton'
 import { LedaCardDescription } from './LedaCardDescription'
 import { ActivationLockButton } from './ActivationLockButton'
 import { PlayedCardMenuButton } from './PlayedCardMenuButton'
 import { PutUnderDeckButton } from './PutUnderDeckButton'
 import { isSpiedByOther } from './spiedItem'
 import { SpiedItemButtons } from './SpiedItemButtons'
-import { SpyHistoryButton } from './SpyHistoryButton'
+import { EggSpyHistoryButton, SpyHistoryButton } from './SpyHistoryButton'
 import { SpyPileButton } from './SpyPileButton'
 import { SwapHistoryButton } from './SwapHistoryButton'
 import { tileSize } from './TileDescription'
 
-/** All the cards of a clan share one back, the emblem of that clan, including their Victory condition card. */
+/**
+ * The back of the cards of a clan: the emblem of that clan for the 4 of the base box, which is what a card face
+ * down in a deck or held in a hand shows.
+ *
+ * The Snakes are the one clan whose cards are not backed by their emblem but by an Egg, the same Egg on all 11 of
+ * them: their deck is a pile of Eggs, and so is what they play onto their grid (see {@link snake}).
+ */
 export const clanBacks: Record<Clan, string> = {
   [Clan.Panda]: PandaBack,
   [Clan.Shark]: SharkBack,
   [Clan.Cat]: CatBack,
-  [Clan.Scorpion]: ScorpionBack
+  [Clan.Scorpion]: ScorpionBack,
+  [Clan.Snake]: SnakeBack
+}
+
+/**
+ * The emblem of a clan, which is what stands for it where the clan itself is being shown rather than one of its
+ * cards: the choice of a clan during setup (see {@link ChooseClanDialog}).
+ * The back of the Victory condition card, which crowns the emblem the other cards of the clan carry with a laurel
+ * wreath: a clan is picked as a whole, and the card it hands over first is the one that says how it wins.
+ */
+export const clanEmblems: Record<Clan, string> = {
+  [Clan.Panda]: PandaEmblem,
+  [Clan.Shark]: SharkEmblem,
+  [Clan.Cat]: CatEmblem,
+  [Clan.Scorpion]: ScorpionEmblem,
+  [Clan.Snake]: SnakeEmblem
 }
 
 /**
@@ -128,7 +168,18 @@ export const clanCardFronts: Record<ClanCardId, string> = {
   [ClanCardId.ScorpionPortalDoubleSpy]: ScorpionPortalDoubleSpy,
   [ClanCardId.ScorpionPortalFlipOpponentTile]: ScorpionPortalFlipOpponentTile,
   [ClanCardId.ScorpionPortalSwap]: ScorpionPortalSwap,
-  [ClanCardId.ScorpionPortalBlockMilitaryVictory]: ScorpionPortalBlockMilitaryVictory
+  [ClanCardId.ScorpionPortalBlockMilitaryVictory]: ScorpionPortalBlockMilitaryVictory,
+  [ClanCardId.SnakeStealFoodAndMilitary]: SnakeStealFoodAndMilitary,
+  [ClanCardId.SnakeDrawAndFlipDesert]: SnakeDrawAndFlipDesert,
+  [ClanCardId.SnakeSpyAndUpgrade]: SnakeSpyAndUpgrade,
+  [ClanCardId.SnakeMilitary]: SnakeMilitary,
+  [ClanCardId.SnakeDrawAndFoodPerEgg]: SnakeDrawAndFoodPerEgg,
+  [ClanCardId.SnakeStealFoodAndMoveEgg]: SnakeStealFoodAndMoveEgg,
+  [ClanCardId.SnakeSpyAndMilitary]: SnakeSpyAndMilitary,
+  [ClanCardId.SnakeMilitaryWithThreeSnakes]: SnakeMilitaryWithThreeSnakes,
+  [ClanCardId.SnakeCopySnake]: SnakeCopySnake,
+  [ClanCardId.SnakeMilitaryVictoryAndFlipBack]: SnakeMilitaryVictoryAndFlipBack,
+  [ClanCardId.SnakeDrawPlayCardAndFlipBack]: SnakeDrawPlayCardAndFlipBack
 }
 
 /**
@@ -165,13 +216,28 @@ export class ClanCardDescription extends LedaCardDescription<ClanCardItemId> {
    * Which face is up is decided by the location rather than left to the default, which flips a card whose front id
    * is missing: once the game is over the server reveals everything, so the fronts come back and a deck would turn
    * itself face up.
+   *
+   * A Snake played on its Egg side is the one card of the game that is face down on a square of a grid, and it is
+   * face down for its owner too: they know which Snake it is, and what the table shows is the Egg either way, so
+   * this is asked of the card and not of who is looking at it (see {@link snake}).
    */
   isFlipped(item: Partial<MaterialItem<number, LocationType, ClanCardItemId>>, context: MaterialContext) {
     return (
       item.location?.type === LocationType.PlayerDeck ||
       (item.location?.type === LocationType.PlayerHand && context.player !== item.location.player) ||
-      isSpiedByOther(item.location, context)
+      isSpiedByOther(item.location, context) ||
+      showsAnEgg(item)
     )
+  }
+
+  /**
+   * The help of an Egg shows the Snake it is to whoever can read it, which is its owner: the table draws the Egg,
+   * since that is what the square shows, but the help is where a player looks up what their own card does.
+   * An Egg of the opponent has no front to show, and stays an Egg there as it does on the table.
+   */
+  isFlippedInDialog(item: Partial<MaterialItem<number, LocationType, ClanCardItemId>>, context: MaterialContext) {
+    if (showsAnEgg(item) && item.id?.front !== undefined) return false
+    return this.isFlipped(item, context)
   }
 
   /** The buttons a card carries are read off the state of the game, and each decides on its own whether to show. */
@@ -184,7 +250,8 @@ export class ClanCardDescription extends LedaCardDescription<ClanCardItemId> {
    *
    * A card played on a grid covers the tile of its square, buttons included, so it carries the mark of a swap and
    * the lock of a square already activated in place of the tile it hides, and asks for both through that very tile
-   * (see {@link SwapHistoryButton} and {@link ActivationLockButton}).
+   * (see {@link SwapHistoryButton} and {@link ActivationLockButton}). It carries the mark of a Spy that read it
+   * while it was an Egg as well, which is the card's own and not its square's (see {@link EggSpyHistoryButton}).
    */
   getItemMenu(item: MaterialItem<number, LocationType, ClanCardItemId>, context: ItemContext<number, MaterialType, LocationType>) {
     if (item.location.type === LocationType.SpiedItem) return <SpiedItemButtons type={MaterialType.ClanCard} />
@@ -192,8 +259,10 @@ export class ClanCardDescription extends LedaCardDescription<ClanCardItemId> {
       return (
         <>
           <PlayedCardMenuButton index={context.index} />
+          <HatchEggButton index={context.index} />
           {item.location.parent !== undefined && <ActivationLockButton tile={item.location.parent} />}
           {item.location.parent !== undefined && <SwapHistoryButton tile={item.location.parent} />}
+          <EggSpyHistoryButton index={context.index} />
         </>
       )
     if (item.location.type === LocationType.PlayerHand) return <PutUnderDeckButton index={context.index} />
@@ -254,3 +323,14 @@ export class ClanCardDescription extends LedaCardDescription<ClanCardItemId> {
 const letTheTileThrough = css`
   pointer-events: none;
 `
+
+/**
+ * Whether the card is a Snake lying on its Egg side, which is the face the table draws: the back of the card, and
+ * the same Egg on all 11 of them (see {@link clanBacks}).
+ * Read off the location, which is where the side of a card is written down, so a card being dragged and a card
+ * standing on a square are read the same way.
+ */
+const showsAnEgg = (item: Partial<MaterialItem<number, LocationType, ClanCardItemId>>): boolean =>
+  item.location?.type === LocationType.PlayedCard &&
+  isEgg(item as MaterialItem<number, LocationType>) &&
+  !isSpiedEgg(item as MaterialItem<number, LocationType>)

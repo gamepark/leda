@@ -1,5 +1,6 @@
-import { MaterialMove, PlayerTurnRule } from '@gamepark/rules-api'
-import { ClanCardId, ClanCardItemId } from '../material/ClanCardId'
+import { MaterialMove, MoveItem, PlayerTurnRule } from '@gamepark/rules-api'
+import { Clan } from '../Clan'
+import { ClanCardId, ClanCardItemId, revealedFront } from '../material/ClanCardId'
 import { clanCardCardCost, clanCardFoodCost } from '../material/clanCards/cardProperties'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
@@ -8,6 +9,7 @@ import { Rules } from '../Rules'
 import { pendingRules } from './effects'
 import { Memory } from './Memory'
 import { RuleId } from './RuleId'
+import { eggCost } from './snake'
 
 /**
  * Where the organisation of a grid stands, and what playing a card out of a hand costs and looks like, which the
@@ -48,6 +50,30 @@ export const cardFoodCost = (rules: Rules, player: number, front?: ClanCardId, d
 export const cardCardCost = (front?: ClanCardId): number | undefined => (front === undefined ? undefined : clanCardCardCost(front))
 
 /**
+ * The same price, read off both faces of the card being played rather than off its front alone.
+ *
+ * A Snake is played on its Egg side, and the 2 Food it costs is printed on that very side: it is the same price
+ * whichever Snake it turns out to be, so their opponent pays the Food along with them without ever being told
+ * what they bought (see {@link snake}). Every other clan prints its price on the front, which a card played out
+ * of a hand reveals as it lands.
+ */
+export const playedCardFoodCost = (rules: Rules, player: number, id?: ClanCardItemId, discount = 0): number | undefined => {
+  if (id === undefined) return undefined
+  if (id.front !== undefined) return cardFoodCost(rules, player, id.front, discount)
+  return id.back === Clan.Snake ? Math.max(0, eggCost - discount) : undefined
+}
+
+/**
+ * Both faces of the card a move is playing, as everyone reading that move knows them: the front comes from the
+ * move itself when the move is what reveals it, and from the card when its reader could already see it
+ * (see {@link revealedFront}).
+ */
+export const playedCardId = (rules: Rules, move: MoveItem<number, MaterialType, LocationType>): ClanCardItemId | undefined => {
+  const id = rules.material(MaterialType.ClanCard).getItem<ClanCardItemId>(move.itemIndex).id
+  return id === undefined ? undefined : { ...id, front: revealedFront(move) ?? id.front }
+}
+
+/**
  * How many cards their owner still owes for the card they have just played, and 0 when nothing is due
  * (see {@link Memory.CardsOwed}).
  */
@@ -66,7 +92,7 @@ export const playCardMoves = (rules: Rules, player: number, discount = 0): Mater
   const rest = hand.length - 1
   const parents = gridTiles(rules.material(MaterialType.Tile), player).getIndexes()
   return hand.getIndexes().flatMap((index) => {
-    if (!canPayFor(rules, player, cards.getItem<ClanCardItemId>(index).id?.front, food, rest, discount)) return []
+    if (!canPayFor(rules, player, cards.getItem<ClanCardItemId>(index).id, food, rest, discount)) return []
     return parents.map((parent) => cards.index(index).moveItem({ type: LocationType.PlayedCard, player, parent }))
   })
 }
@@ -75,10 +101,10 @@ export const playCardMoves = (rules: Rules, player: number, discount = 0): Mater
  * Whether the player can pay the price of that card: the Food it costs, or the cards it costs, taken from the
  * hand it leaves behind. A card that is never bought cannot be paid for at all, nor can one nobody here knows.
  */
-const canPayFor = (rules: Rules, player: number, front: ClanCardId | undefined, food: number, rest: number, discount: number): boolean => {
-  const cards = cardCardCost(front)
+const canPayFor = (rules: Rules, player: number, id: ClanCardItemId | undefined, food: number, rest: number, discount: number): boolean => {
+  const cards = cardCardCost(id?.front)
   if (cards !== undefined) return cards <= rest
-  const cost = cardFoodCost(rules, player, front, discount)
+  const cost = playedCardFoodCost(rules, player, id, discount)
   return cost !== undefined && cost <= food
 }
 

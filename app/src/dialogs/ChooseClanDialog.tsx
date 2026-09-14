@@ -1,9 +1,13 @@
 import { css } from '@emotion/react'
+import { faCircleQuestion } from '@fortawesome/free-regular-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Clan } from '@gamepark/leda/Clan'
+import { LedaRules } from '@gamepark/leda/LedaRules'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { CustomMoveType } from '@gamepark/leda/rules/CustomMoveType'
-import { Dialog, PlayMoveButton, ThemeButton, useLegalMoves, usePlay } from '@gamepark/react-game'
+import { playsTournamentRules } from '@gamepark/leda/rules/tournament'
+import { Dialog, PlayMoveButton, ThemeButton, useLegalMoves, usePlay, useRules } from '@gamepark/react-game'
 import { CustomMove, isCustomMoveType, MaterialMoveBuilder } from '@gamepark/rules-api'
 import { useTranslation } from 'react-i18next'
 import { clanBacks } from '../material/ClanCardDescription'
@@ -36,6 +40,9 @@ export const ChooseClanDialog = ({ open, close }: ChooseClanDialogProps) => {
   const { t } = useTranslation()
   const play = usePlay()
   const moves = useLegalMoves<CustomMove<CustomMoveType, Clan>>(isCustomMoveType(CustomMoveType.ChooseClan))
+  const rules = useRules<LedaRules>()
+  // Said here because it is what the list shows: the clan the opponent took is still offered.
+  const tournamentRules = rules !== undefined && playsTournamentRules(rules)
 
   /**
    * Picking at random is a client side shortcut, not a rule: it plays one of the moves the player could have
@@ -77,6 +84,12 @@ export const ChooseClanDialog = ({ open, close }: ChooseClanDialogProps) => {
             </div>
           ))}
         </div>
+        {tournamentRules && (
+          <p css={tournamentNote}>
+            <FontAwesomeIcon icon={faCircleQuestion} css={infoIcon} />
+            {t('clan.tournament')}
+          </p>
+        )}
         <ThemeButton css={randomButton} onClick={chooseAtRandom}>
           {t('clan.random')}
         </ThemeButton>
@@ -158,6 +171,19 @@ const helpMark = css`
 const pickButton = css`
   align-self: stretch;
   padding: 0.3em 0;
+`
+
+/** A rule the list above it follows, set apart in italics and sized between the clan names and the button under it. */
+const tournamentNote = css`
+  margin: 1em 0 0;
+  text-align: center;
+  font-size: 2em;
+  font-style: italic;
+`
+
+/** Set apart from the sentence it opens by a gap rather than a space, which the translation files would have to carry. */
+const infoIcon = css`
+  margin-right: 0.4em;
 `
 
 /** Sized between the clan labels and the title, so it reads as a choice of its own rather than as a footnote. */

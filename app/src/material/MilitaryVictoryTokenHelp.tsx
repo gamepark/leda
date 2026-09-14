@@ -3,6 +3,7 @@ import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { militaryVictoryEffects, militaryVictorySymbols, MilitaryVictoryTokenId } from '@gamepark/leda/material/MilitaryVictoryTokenId'
 import { playerClan } from '@gamepark/leda/rules/specialActivation'
+import { militaryVictoryPile, playsTournamentRules } from '@gamepark/leda/rules/tournament'
 import { victorySymbolsToWin } from '@gamepark/leda/rules/victory'
 import { MaterialHelpProps, useRules } from '@gamepark/react-game'
 import { useTranslation } from 'react-i18next'
@@ -38,12 +39,14 @@ const tokenCodes: Record<MilitaryVictoryTokenId, string> = {
 export const MilitaryVictoryTokenHelp = ({ item }: MaterialHelpProps<number, MaterialType, LocationType>) => {
   const { t } = useTranslation()
   const token = item.id as MilitaryVictoryTokenId | undefined
+  const rules = useRules<LedaRules>()
+  const tournamentRules = rules !== undefined && playsTournamentRules(rules)
   return (
     <>
       <HelpTitle>{t('help.token.title')}</HelpTitle>
       {token === undefined ? (
         /** The pile is shuffled face down between the players: there is nothing to read on the token on top of it. */
-        <Paragraph>{t('help.token.hidden')}</Paragraph>
+        <Paragraph>{t('help.token.hidden', { count: militaryVictoryPile(tournamentRules).length })}</Paragraph>
       ) : (
         <>
           <Line label={t('help.symbols')}>

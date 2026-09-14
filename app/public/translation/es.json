@@ -93,7 +93,8 @@
     "choose": "Elige tu clan",
     "pick": "Elegir",
     "view": "Ver el detalle del clan",
-    "random": "¡Al azar!"
+    "random": "¡Al azar!",
+    "tournament": "Reglas de torneo: ambos jugadores pueden elegir el mismo clan"
   },
   "zone": {
     "1": "la fila 1",
@@ -221,7 +222,8 @@
       "pile-title": "Montón de fichas de Victoria militar",
       "pile-count": "{count, plural, one {Queda # ficha} other {Quedan # fichas}} en el montón.",
       "all": "Las {count} fichas del juego, y el número de ejemplares de cada una:",
-      "hidden": "El montón de 18 fichas se mezcla boca abajo entre los 2 jugadores: solo se revelará la siguiente en ser robada.",
+      "hidden": "El montón de {count} fichas se mezcla boca abajo entre los 2 jugadores: solo se revelará la siguiente en ser robada.",
+      "tournament": "Reglas de torneo: se excluyen las fichas que otorgan 2 victorias militares",
       "symbols": "{count} <victory/>",
       "spy": "Espía.",
       "flip-desert": "Voltea uno de tus Desiertos a su anverso, si es posible: su efecto podrá activarse de nuevo.",

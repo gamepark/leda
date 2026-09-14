@@ -5,6 +5,7 @@ import { MaterialType } from '../material/MaterialType'
 import { CustomMoveType } from './CustomMoveType'
 import { RuleId } from './RuleId'
 import { sharkTokens } from './sharkPack'
+import { playsTournamentRules } from './tournament'
 
 /**
  * Setup step 6: in turn order, a player picks a clan from the box and takes its material.
@@ -16,8 +17,12 @@ export class ChooseClanRule extends PlayerTurnRule<number, MaterialType, Locatio
     return this.availableClans.map((clan) => this.customMove(CustomMoveType.ChooseClan, clan))
   }
 
-  /** A clan that has been picked has its Victory condition card in front of its owner, which is what marks it taken. */
+  /**
+   * A clan that has been picked has its Victory condition card in front of its owner, which is what marks it taken.
+   * The tournament rules allow a mirror match: every clan stays available, whatever the opponent took.
+   */
   get availableClans(): Clan[] {
+    if (playsTournamentRules(this)) return playableClans
     const taken = this.material(MaterialType.VictoryConditionCard).getItems<Clan>()
     return playableClans.filter((clan) => !taken.some((card) => card.id === clan))
   }

@@ -93,7 +93,8 @@
     "choose": "Choose your clan",
     "pick": "Pick",
     "view": "See the clan details",
-    "random": "Random!"
+    "random": "Random!",
+    "tournament": "Tournament rules: both players may pick the same clan"
   },
   "zone": {
     "1": "row 1",
@@ -221,7 +222,8 @@
       "pile-title": "Military Victory token pile",
       "pile-count": "There {count, plural, one {is # token} other {are # tokens}} left in the pile.",
       "all": "The {count} tokens in the game, and the number of copies of each:",
-      "hidden": "The pile of 18 tokens is shuffled face down between the 2 players: only the next one to be drawn will be revealed.",
+      "hidden": "The pile of {count} tokens is shuffled face down between the 2 players: only the next one to be drawn will be revealed.",
+      "tournament": "Tournament rules: the tokens granting 2 military victories are excluded",
       "symbols": "{count} <victory/>",
       "spy": "Spy.",
       "flip-desert": "Flip one of your Deserts to its front side, if possible: its effect can then be activated again.",

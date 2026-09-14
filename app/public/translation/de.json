@@ -93,7 +93,8 @@
     "choose": "Wähle deinen Clan",
     "pick": "Wählen",
     "view": "Clan-Details ansehen",
-    "random": "Zufällig!"
+    "random": "Zufällig!",
+    "tournament": "Turnierregeln: Beide Spieler dürfen denselben Clan wählen"
   },
   "zone": {
     "1": "die Reihe 1",
@@ -221,7 +222,8 @@
       "pile-title": "Stapel der Militärsieg-Marker",
       "pile-count": "Es {count, plural, one {ist noch # Marker} other {sind noch # Marker}} im Stapel.",
       "all": "Die {count} Marker des Spiels und die Anzahl der Exemplare von jedem:",
-      "hidden": "Der Stapel aus 18 Markern wird verdeckt zwischen den 2 Spielern gemischt: Nur der nächste zu ziehende wird aufgedeckt.",
+      "hidden": "Der Stapel aus {count} Markern wird verdeckt zwischen den 2 Spielern gemischt: Nur der nächste zu ziehende wird aufgedeckt.",
+      "tournament": "Turnierregeln: Die Marker, die 2 Militärsiege geben, sind ausgeschlossen",
       "symbols": "{count} <victory/>",
       "spy": "Spähe.",
       "flip-desert": "Drehe eine deiner Wüsten auf ihre Vorderseite, wenn möglich: Ihr Effekt kann dann erneut aktiviert werden.",

@@ -4,9 +4,10 @@ import { LedaRules } from './LedaRules'
 import { ActionTileId } from './material/ActionTileId'
 import { LocationType } from './material/LocationType'
 import { MaterialType } from './material/MaterialType'
-import { militaryVictoryTokens } from './material/MilitaryVictoryTokenId'
 import { baseTiles } from './material/TileId'
+import { Memory } from './rules/Memory'
 import { RuleId } from './rules/RuleId'
+import { militaryVictoryPile } from './rules/tournament'
 
 /** Side of a player's square grid. */
 const gridSize = 4
@@ -23,12 +24,14 @@ export class LedaSetup extends MaterialGameSetup<number, MaterialType, LocationT
    * of their clan, such as the Shark tokens, are created by that rule and not here.
    * Food is not set up either: its supply is not modelled, players are given their starting Food when they pick a clan.
    */
-  setupMaterial() {
+  setupMaterial(options: LedaOptions) {
+    const tournamentRules = options.tournamentRules === true
+    if (tournamentRules) this.memorize(Memory.TournamentRules, true)
     for (const player of this.players) {
       this.setupGrid(player)
     }
     this.setupActionTiles()
-    this.setupMilitaryVictoryTokens()
+    this.setupMilitaryVictoryTokens(tournamentRules)
   }
 
   /**
@@ -55,10 +58,13 @@ export class LedaSetup extends MaterialGameSetup<number, MaterialType, LocationT
     this.material(MaterialType.ActionTile).shuffle()
   }
 
-  /** Setup step 3: the 18 Military Victory tokens, shuffled into a face down pile between the players. */
-  setupMilitaryVictoryTokens() {
+  /**
+   * Setup step 3: the 18 Military Victory tokens, shuffled into a face down pile between the players.
+   * The tournament rules leave the 2 tokens worth 2 Victory symbols in the box, which makes a pile of 16.
+   */
+  setupMilitaryVictoryTokens(tournamentRules: boolean) {
     this.material(MaterialType.MilitaryVictoryToken).createItems(
-      militaryVictoryTokens.map((id) => ({ id, location: { type: LocationType.MilitaryVictoryDeck } }))
+      militaryVictoryPile(tournamentRules).map((id) => ({ id, location: { type: LocationType.MilitaryVictoryDeck } }))
     )
     this.material(MaterialType.MilitaryVictoryToken).shuffle()
   }

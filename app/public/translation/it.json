@@ -93,7 +93,8 @@
     "choose": "Scegli il tuo clan",
     "pick": "Scegli",
     "view": "Vedi i dettagli del clan",
-    "random": "A caso!"
+    "random": "A caso!",
+    "tournament": "Regole da torneo: entrambi i giocatori possono scegliere lo stesso clan"
   },
   "zone": {
     "1": "la riga 1",
@@ -221,7 +222,8 @@
       "pile-title": "Pila dei gettoni Vittoria militare",
       "pile-count": "{count, plural, one {Resta # gettone} other {Restano # gettoni}} nella pila.",
       "all": "I {count} gettoni del gioco, e il numero di esemplari di ciascuno:",
-      "hidden": "La pila dei 18 gettoni è mescolata coperta tra i 2 giocatori: solo il prossimo a essere pescato sarà rivelato.",
+      "hidden": "La pila dei {count} gettoni è mescolata coperta tra i 2 giocatori: solo il prossimo a essere pescato sarà rivelato.",
+      "tournament": "Regole da torneo: i gettoni che danno 2 vittorie militari sono esclusi",
       "symbols": "{count} <victory/>",
       "spy": "Spia.",
       "flip-desert": "Gira uno dei tuoi Deserti sul suo fronte, se possibile: il suo effetto potrà essere attivato di nuovo.",

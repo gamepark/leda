@@ -1,8 +1,11 @@
 import { css } from '@emotion/react'
+import { faCircleQuestion } from '@fortawesome/free-regular-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { LedaRules } from '@gamepark/leda/LedaRules'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
-import { militaryVictoryTokenQuantities, militaryVictoryTokens, MilitaryVictoryTokenId } from '@gamepark/leda/material/MilitaryVictoryTokenId'
+import { MilitaryVictoryTokenId } from '@gamepark/leda/material/MilitaryVictoryTokenId'
+import { militaryVictoryPile, militaryVictoryTokenCopies, playsTournamentRules } from '@gamepark/leda/rules/tournament'
 import { MaterialComponent, pointerCursorCss, usePlay, useRules } from '@gamepark/react-game'
 import { getEnumValues, MaterialMoveBuilder } from '@gamepark/rules-api'
 import { useTranslation } from 'react-i18next'
@@ -26,12 +29,19 @@ export const MilitaryVictoryDeckHelp = () => {
   const rules = useRules<LedaRules>()
   if (rules === undefined) return null
   const count = rules.material(MaterialType.MilitaryVictoryToken).location(LocationType.MilitaryVictoryDeck).length
+  const tournamentRules = playsTournamentRules(rules)
   return (
     <>
       <HelpTitle>{t('help.token.pile-title')}</HelpTitle>
       <Paragraph>{t('help.token.pile-count', { count })}</Paragraph>
-      <Paragraph>{t('help.token.all', { count: militaryVictoryTokens.length })}</Paragraph>
-      <MilitaryVictoryTokensRow />
+      <Paragraph>{t('help.token.all', { count: militaryVictoryPile(tournamentRules).length })}</Paragraph>
+      <MilitaryVictoryTokensRow tournamentRules={tournamentRules} />
+      {tournamentRules && (
+        <Paragraph>
+          <FontAwesomeIcon icon={faCircleQuestion} css={infoIcon} />
+          {t('help.token.tournament')}
+        </Paragraph>
+      )}
       <Note code="help.note.conflict" />
       <ClanGoals />
     </>
@@ -43,12 +53,14 @@ export const MilitaryVictoryDeckHelp = () => {
  * they ever come out in: the pile is shuffled, and nothing says which of them is next.
  * Each opens what it is worth, its own help, as a token won by a player would (see {@link MilitaryVictoryTokenHelp}),
  * and is opened by its id alone rather than as an item of the pile, whose items have no face to show.
+ * The tokens the tournament rules leave in the box are not shown: they are not in this game at all.
  */
-const MilitaryVictoryTokensRow = () => {
+const MilitaryVictoryTokensRow = ({ tournamentRules }: { tournamentRules: boolean }) => {
   const play = usePlay()
+  const tokens = getEnumValues(MilitaryVictoryTokenId).filter((token) => militaryVictoryTokenCopies(token, tournamentRules) > 0)
   return (
     <ol css={row}>
-      {getEnumValues(MilitaryVictoryTokenId).map((token) => (
+      {tokens.map((token) => (
         <li key={token}>
           <MaterialComponent
             type={MaterialType.MilitaryVictoryToken}
@@ -60,12 +72,17 @@ const MilitaryVictoryTokensRow = () => {
               })
             }
           />
-          <span css={copies}>×{militaryVictoryTokenQuantities[token]}</span>
+          <span css={copies}>×{militaryVictoryTokenCopies(token, tournamentRules)}</span>
         </li>
       ))}
     </ol>
   )
 }
+
+/** Set apart from the sentence it opens by a gap rather than a space, which the translation files would have to carry. */
+const infoIcon = css`
+  margin-right: 0.4em;
+`
 
 /** The gap between 2 tokens of the row, in the em of the list itself, which its width is counted in as well. */
 const rowGap = 0.6

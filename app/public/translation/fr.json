@@ -93,7 +93,8 @@
     "choose": "Choisissez votre clan",
     "pick": "Choisir",
     "view": "Voir le détail du clan",
-    "random": "Au hasard !"
+    "random": "Au hasard !",
+    "tournament": "Règles de tournoi : les deux joueurs peuvent choisir le même clan"
   },
   "zone": {
     "1": "la ligne 1",
@@ -221,7 +222,8 @@
       "pile-title": "Pile des jetons Victoire militaire",
       "pile-count": "Il reste {count, plural, one {# jeton} other {# jetons}} dans la pile.",
       "all": "Les {count} jetons du jeu, et le nombre d’exemplaires de chacun :",
-      "hidden": "La pile des 18 jetons est mélangée face cachée entre les 2 joueurs : seul le prochain à être pioché sera révélé.",
+      "hidden": "La pile des {count} jetons est mélangée face cachée entre les 2 joueurs : seul le prochain à être pioché sera révélé.",
+      "tournament": "Règles de tournoi : les jetons donnant 2 victoires militaires sont exclus",
       "symbols": "{count} <victory/>",
       "spy": "Scrutez.",
       "flip-desert": "Retournez un de vos Déserts sur sa face recto, si possible : son effet pourra être de nouveau activé.",

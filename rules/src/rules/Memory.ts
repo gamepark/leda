@@ -111,5 +111,12 @@ export enum Memory {
    * One list for the table rather than one per player, an index naming an item of the game and not of a grid.
    * Emptied when the next round starts, like the counters and the swaps above.
    */
-  ActivatedItems
+  ActivatedItems,
+
+  /**
+   * Set once by the setup when the game is played with the tournament rules (see {@link LedaOptions}): both players
+   * may pick the same clan, and the 2 Military Victory tokens worth 2 Victory symbols are left in the box.
+   * Written down because the rules never see the options again once the game has started (see {@link playsTournamentRules}).
+   */
+  TournamentRules
 }

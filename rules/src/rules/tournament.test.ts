@@ -47,7 +47,7 @@ describe('Tournament rules', () => {
   })
 
   it('allow a mirror match', () => {
-    const rules = new LedaRules(new LedaSetup().setup({ players: 2, tournamentRules: true }))
+    const rules = new LedaRules(new LedaSetup().setup({ players: 2, tournamentRules: true, snakesClan: true }))
     const [first, second] = rules.players
     chooseClan(rules, Clan.Shark)
     expect(clansOffered(rules)).toEqual(playableClans)
@@ -61,5 +61,25 @@ describe('Tournament rules', () => {
         rules.material(MaterialType.ClanCard).player(first === player ? second : first).length
       )
     }
+  })
+})
+
+describe('Snakes clan option', () => {
+  it('leaves the Snakes out without the option', () => {
+    const rules = new LedaRules(new LedaSetup().setup({ players: 2 }))
+    expect(clansOffered(rules)).toEqual(playableClans.filter((clan) => clan !== Clan.Snake))
+  })
+
+  it('leaves the Snakes out of the tournament rules without the option', () => {
+    const rules = new LedaRules(new LedaSetup().setup({ players: 2, tournamentRules: true }))
+    chooseClan(rules, Clan.Shark)
+    expect(clansOffered(rules)).not.toContain(Clan.Snake)
+  })
+
+  it('offers the Snakes with the option', () => {
+    const rules = new LedaRules(new LedaSetup().setup({ players: 2, snakesClan: true }))
+    expect(clansOffered(rules)).toEqual(playableClans)
+    chooseClan(rules, Clan.Snake)
+    expect(clansOffered(rules)).not.toContain(Clan.Snake)
   })
 })

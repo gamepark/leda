@@ -5,6 +5,7 @@ import { MaterialType } from '../material/MaterialType'
 import { CustomMoveType } from './CustomMoveType'
 import { RuleId } from './RuleId'
 import { sharkTokens } from './sharkPack'
+import { playsSnakesClan } from './snake'
 import { playsTournamentRules } from './tournament'
 
 /**
@@ -22,9 +23,14 @@ export class ChooseClanRule extends PlayerTurnRule<number, MaterialType, Locatio
    * The tournament rules allow a mirror match: every clan stays available, whatever the opponent took.
    */
   get availableClans(): Clan[] {
-    if (playsTournamentRules(this)) return playableClans
+    if (playsTournamentRules(this)) return this.clansInTheBox
     const taken = this.material(MaterialType.VictoryConditionCard).getItems<Clan>()
-    return playableClans.filter((clan) => !taken.some((card) => card.id === clan))
+    return this.clansInTheBox.filter((clan) => !taken.some((card) => card.id === clan))
+  }
+
+  /** The Snakes are only in the box when the host added them; the dialog lists the moves, so they are not shown either. */
+  get clansInTheBox(): Clan[] {
+    return playsSnakesClan(this) ? playableClans : playableClans.filter((clan) => clan !== Clan.Snake)
   }
 
   hasClan(player: number) {

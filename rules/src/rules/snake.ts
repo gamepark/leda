@@ -5,6 +5,7 @@ import { EffectQuantity } from '../material/Effect'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { cellOf } from '../material/PlayerGrid'
+import { LedaOptions } from '../LedaOptions'
 import { Rules } from '../Rules'
 import { topCardIndexOn, visibleCards } from './squares'
 
@@ -35,6 +36,13 @@ const idOf = (card?: Card): ClanCardItemId | undefined => card?.id as ClanCardIt
  * the same. Named once for both, and read as "the price of the Egg" wherever it comes up.
  */
 export const eggCost = 2
+
+/**
+ * Whether the host added the Snakes to the game (see {@link LedaOptions}), read off the options the game state
+ * records. Absent from a game created before they were recorded, which is a game without the Snakes.
+ * Read on the game rather than through a rule, so the app answers it the same way.
+ */
+export const playsSnakesClan = (rules: Rules): boolean => (rules.game.options as LedaOptions | undefined)?.snakesClan === true
 
 /** How many Snakes their owner has to have hatched and in play to win (see {@link specialVictoryGoals}). */
 export const snakesToWin = 7

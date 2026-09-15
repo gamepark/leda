@@ -1,4 +1,6 @@
 {
   "option.tournamentRules": "Regole da torneo",
-  "option.tournamentRules.help": "Entrambi i giocatori possono scegliere lo stesso clan, e i 2 gettoni Vittoria militare che danno 2 vittorie militari vengono rimossi dal gioco."
+  "option.tournamentRules.help": "Entrambi i giocatori possono scegliere lo stesso clan, e i 2 gettoni Vittoria militare che danno 2 vittorie militari vengono rimossi dal gioco.",
+  "option.snakesClan": "Clan dei Serpenti",
+  "option.snakesClan.help": "Aggiunge il clan dei Serpenti, dall'espansione, ai clan che i giocatori possono scegliere."
 }

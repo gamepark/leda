@@ -30,7 +30,7 @@ type Outcome = { winner?: number; moves: number; cards: number[]; progress: numb
  * of playing forever, which is exactly what this is here to catch.
  */
 const playGame = async (clans: [Clan, Clan], cap = 3000): Promise<Outcome> => {
-  const rules = new LedaRules(new LedaSetup().setup({ players: 2 }))
+  const rules = new LedaRules(new LedaSetup().setup({ players: 2, snakesClan: true }))
   let moves = 0
   while (!rules.isOver() && moves < cap) {
     const player = rules.game.players.find((player) => rules.isTurnToPlay(player))

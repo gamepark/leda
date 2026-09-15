@@ -1,4 +1,6 @@
 {
   "option.tournamentRules": "Turnierregeln",
-  "option.tournamentRules.help": "Beide Spieler dürfen denselben Clan wählen, und die 2 Militärsieg-Marker, die 2 Militärsiege geben, werden aus dem Spiel genommen."
+  "option.tournamentRules.help": "Beide Spieler dürfen denselben Clan wählen, und die 2 Militärsieg-Marker, die 2 Militärsiege geben, werden aus dem Spiel genommen.",
+  "option.snakesClan": "Clan der Schlangen",
+  "option.snakesClan.help": "Fügt den Clan der Schlangen aus der Erweiterung zu den Clans hinzu, die die Spieler wählen können."
 }

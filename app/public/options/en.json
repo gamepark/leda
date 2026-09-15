@@ -1,4 +1,6 @@
 {
   "option.tournamentRules": "Tournament rules",
-  "option.tournamentRules.help": "Both players may pick the same clan, and the 2 Military Victory tokens granting 2 military victories are removed from the game."
+  "option.tournamentRules.help": "Both players may pick the same clan, and the 2 Military Victory tokens granting 2 military victories are removed from the game.",
+  "option.snakesClan": "Snakes clan",
+  "option.snakesClan.help": "Adds the Snakes clan, from the expansion, to the clans the players may pick."
 }

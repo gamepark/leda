@@ -173,28 +173,30 @@ Follow existing key naming patterns in the JSON files. Keep keys descriptive and
 Options are declared in `rules/src/LedaOptions.ts` with `OptionsSpecV2` — **plain JSON, no functions
 and no text**. The platform snapshots it when the bundle is prepared and reads it from its database.
 
-Leda has no identity to choose, since the clan is picked during the game. Beside the table size, its only
-option is a boolean, `tournamentRules`: mirror matches allowed, and the 2 Military Victory tokens worth 2
-Victory symbols left out of the pile.
+Leda has no identity to choose, since the clan is picked during the game. Beside the table size, it has 2
+boolean options: `tournamentRules` (mirror matches allowed, and the 2 Military Victory tokens worth 2
+Victory symbols left out of the pile) and `snakesClan` (the Snakes of the extension offered in `ChooseClanRule`).
 
 ```typescript
 export const LedaOptionsSpecV2: OptionsSpecV2 = {
   specVersion: 2,
   players: { min: 2, max: 2 },
   options: {
-    tournamentRules: { kind: 'boolean' }
+    tournamentRules: { kind: 'boolean' },
+    snakesClan: { kind: 'boolean' }
   }
 }
 ```
 
-The rules never see the options after setup: `LedaSetup` writes `Memory.TournamentRules`, and both the
-rules and the app read it through `playsTournamentRules` (`rules/src/rules/tournament.ts`).
+Since rules-api 7.8, the game state records its options in `game.options` (absent in older games):
+`playsSnakesClan` (`rules/src/rules/snake.ts`) reads it there. `tournamentRules` predates that and still goes
+through `Memory.TournamentRules`, read by `playsTournamentRules` (`rules/src/rules/tournament.ts`).
 
 Three things do **not** belong in it:
 
 - **Texts** go to `app/public/options/{locale}.json`, keyed by convention: `option.<option>`,
   `option.<option>.<value>`, `identities.<value>`, plus optional `.help` and `.warn` variants. A
-  boolean has no value to label, so `option.tournamentRules` and its `.help` are all Leda has.
+  boolean has no value to label, so `option.<option>` and its `.help` are all each Leda option needs.
 - **`subscriberRequired`, `competitiveDisabled`, `competitivePlayers`** belong to the platform database.
 - **`validate`** no longer exists. Express constraints as `playerCount` (on an option or a value),
   `requires` on a value, or a `forbidden-combination` rule whose `message` is a key in the options

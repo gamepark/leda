@@ -1,4 +1,4 @@
-import { isMoveItem, Material, MaterialMove, MaterialRules, MaterialRulesPart, MoveItem } from '@gamepark/rules-api'
+import { isMoveItem, Material, MaterialMove, MaterialRules, MaterialRulesPart } from '@gamepark/rules-api'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { Memory } from './Memory'
@@ -166,6 +166,6 @@ export const eggBackMove = (rules: Rules): Move | undefined => {
  * Whether a move is the first of the 2 a Spy is made of: an item taken off a pile, or an Egg turned over to be read.
  * Read by the app, which finds the Spies of the round in the history of the moves (see {@link useRoundSpies}).
  */
-export const isSpyLook = (move: Move): move is MoveItem<number, MaterialType, LocationType> =>
+export const isSpyLook = (move: Move): boolean =>
   isMoveItem(move) &&
   (move.location.type === LocationType.SpiedItem || (move.location.type === LocationType.PlayedCard && move.location.rotation === spiedSide))

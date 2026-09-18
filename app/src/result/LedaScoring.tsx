@@ -4,8 +4,8 @@ import { militaryVictoryProgress, specialVictoryProgress } from '@gamepark/leda/
 import { ScoringDescription, ScoringValue } from '@gamepark/react-game'
 import MilitaryVictoryImage from '../images/icons/MilitaryVictory.png'
 import { specialVictoryImages } from '../victoryProgress'
-import { GameOverHeader } from './GameOverHeader'
 import { RaceName, RaceProgress, VictoryRace } from './RaceCells'
+import { ResultHeader } from './ResultHeader'
 
 /**
  * What the result popup shows under the sentence naming the winner: where each player stood on each of the 2
@@ -32,5 +32,5 @@ export class LedaScoring implements ScoringDescription<number, LedaRules, Victor
     return <RaceProgress image={key === 'clan' ? specialVictoryImages[clan] : MilitaryVictoryImage} progress={progress} />
   }
 
-  ResultHeader = GameOverHeader
+  ResultHeader = ResultHeader
 }

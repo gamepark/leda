@@ -177,6 +177,7 @@
       "use": "Nahrung dient dazu, die Clan-Karten zu bezahlen, die du spielst."
     },
     "round": {
+      "number": "Runde {round}",
       "title": "Der Ablauf einer Runde",
       "activation": "1) Aktivierung:",
       "activation-text": "Der aktive Spieler deckt das oberste Aktionsplättchen auf und wählt eine der Zonen aus 4 Feldern, die es angibt. Danach aktiviert jeder diese Zone in seinem eigenen Raster, der aktive Spieler zuerst. Die Spezialaktivierungen der Clans werden nach allen anderen ausgeführt.",
@@ -458,6 +459,7 @@
         "player": "{player} hat mit seinen {count} Portalen <portal/> in den 4 Ecken gewonnen"
       }
     },
+    "round": "Spiel beendet in Runde {round}",
     "race": {
       "clan": "Clan-Sieg",
       "military": "Militärsieg"

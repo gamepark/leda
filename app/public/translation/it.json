@@ -177,6 +177,7 @@
       "use": "Il Cibo serve a pagare le carte clan che giochi."
     },
     "round": {
+      "number": "Round {round}",
       "title": "Lo svolgimento di un round",
       "activation": "1) Attivazione:",
       "activation-text": "Il giocatore attivo rivela la prima tessera Azione e sceglie una delle zone di 4 caselle che indica. Ognuno attiva poi quella zona nella propria griglia, il giocatore attivo per primo. Le attivazioni speciali di clan si risolvono dopo tutte le altre.",
@@ -458,6 +459,7 @@
         "player": "{player} ha vinto con i suoi {count} Portali <portal/> nei 4 angoli"
       }
     },
+    "round": "Partita terminata al round {round}",
     "race": {
       "clan": "Vittoria di clan",
       "military": "Vittoria militare"

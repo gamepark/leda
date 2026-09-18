@@ -177,6 +177,7 @@
       "use": "Food is used to pay for the clan cards you play."
     },
     "round": {
+      "number": "Round {round}",
       "title": "How a round unfolds",
       "activation": "1) Activation:",
       "activation-text": "The active player reveals the top Action tile and chooses one of the zones of 4 spaces it indicates. Each player then activates that zone in their own grid, the active player first. Clan special activations are resolved after all the others.",
@@ -458,6 +459,7 @@
         "player": "{player} won with their {count} Portals <portal/> in the 4 corners"
       }
     },
+    "round": "Game over in round {round}",
     "race": {
       "clan": "Clan victory",
       "military": "Military victory"

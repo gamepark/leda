@@ -177,6 +177,7 @@
       "use": "La Comida sirve para pagar las cartas de clan que juegas."
     },
     "round": {
+      "number": "Ronda {round}",
       "title": "El desarrollo de una ronda",
       "activation": "1) Activación:",
       "activation-text": "El jugador activo revela la primera loseta de Acción y elige una de las zonas de 4 casillas que indica. Cada uno activa después esa zona en su propia cuadrícula, el jugador activo primero. Las activaciones especiales de clan se resuelven después de todas las demás.",
@@ -458,6 +459,7 @@
         "player": "{player} ha ganado con sus {count} Portales <portal/> en las 4 esquinas"
       }
     },
+    "round": "Partida terminada en la ronda {round}",
     "race": {
       "clan": "Victoria de clan",
       "military": "Victoria militar"

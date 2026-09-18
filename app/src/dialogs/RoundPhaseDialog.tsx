@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { HelpText, HelpTitle, Line, Note } from '../material/helpLayout'
 import { roundPhaseImages } from '../roundPhaseImages'
 import { copper, parchmentDark } from '../theme'
+import { useRoundNumber } from '../useRoundNumber'
 
 type RoundPhaseDialogProps = {
   open: boolean
@@ -21,10 +22,14 @@ type RoundPhaseDialogProps = {
  */
 export const RoundPhaseDialog = ({ open, close }: RoundPhaseDialogProps) => {
   const { t } = useTranslation()
+  const round = useRoundNumber()
   return (
     <Dialog open={open} onBackdropClick={close}>
       <div css={content}>
-        <HelpTitle>{t('help.round.title')}</HelpTitle>
+        <div css={titleLine}>
+          <HelpTitle>{t('help.round.title')}</HelpTitle>
+          <span css={roundNumber}>{t('help.round.number', { round })}</span>
+        </div>
         <div css={columns}>
           {/* The 3 lines with nothing between them: stacked edge to edge, they are the card as it is printed. */}
           <div css={card}>
@@ -58,6 +63,20 @@ export const RoundPhaseDialog = ({ open, close }: RoundPhaseDialogProps) => {
 const content = css`
   padding: 1em 1.5em;
   font-size: 2em;
+`
+
+/** The title on the left and the round on the right, both read on the same baseline. */
+const titleLine = css`
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1em;
+`
+
+/** The round the table is on, which the card cannot say: it prints the same 3 lines for every round. */
+const roundNumber = css`
+  font-weight: bold;
+  white-space: nowrap;
 `
 
 /**
@@ -99,4 +118,8 @@ const textColumn = css`
   flex: 1 1 16em;
   border-left: 0.1em solid ${parchmentDark};
   padding-left: 1.2em;
+
+  p {
+    text-align: justify;
+  }
 `

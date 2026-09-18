@@ -183,6 +183,7 @@
       "use": "La Nourriture sert à payer les cartes de clan que vous jouez."
     },
     "round": {
+      "number": "Manche {round}",
       "title": "Le déroulement d'une manche",
       "activation": "1) Activation :",
       "activation-text": "Le joueur actif révèle la première tuile Action et choisit une des zones de 4 cases qu'elle indique. Chacun active ensuite cette zone dans sa propre grille, le joueur actif en premier. Les activations spéciales de clan se résolvent après toutes les autres.",
@@ -514,6 +515,7 @@
         "player": "{player} a gagné avec {count} Serpents <snake/> éclos en jeu"
       }
     },
+    "round": "Partie terminée à la manche {round}",
     "race": {
       "clan": "Victoire de clan",
       "military": "Victoire militaire"

@@ -39,7 +39,9 @@ export const PlayerPanels = () => {
     return [
       { image: FoodTokenImage, value: playerFood(rules, player) },
       { image: MilitarySymbolImage, value: militarySymbols(rules, player) },
-      ...(clan !== undefined && special !== undefined ? [{ image: specialVictoryImages[clan], value: race(special) }] : []),
+      ...(clan !== undefined && special !== undefined
+        ? [{ image: specialVictoryImages[clan], imageCss: clan === Clan.Snake ? whiteOutline : undefined, value: race(special) }]
+        : []),
       ...(military !== undefined ? [{ image: MilitaryVictoryImage, value: race(military) }] : [])
     ]
   }
@@ -62,6 +64,14 @@ export const PlayerPanels = () => {
  */
 const panel = css`
   position: relative;
+`
+
+/**
+ * The Snake is drawn in plain black, which vanishes into the dark panel of its clan: a white rim, made of a
+ * drop-shadow in each direction so it follows the drawing rather than its box, sets it apart.
+ */
+const whiteOutline = css`
+  filter: drop-shadow(0.06em 0 0 white) drop-shadow(-0.06em 0 0 white) drop-shadow(0 0.06em 0 white) drop-shadow(0 -0.06em 0 white);
 `
 
 /**

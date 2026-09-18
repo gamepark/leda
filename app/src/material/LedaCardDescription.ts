@@ -16,6 +16,10 @@ import { CardDescription, MaterialContentProps } from '@gamepark/react-game'
  * shining, and the ones the rules were lighting up go quiet until the popup is closed.
  */
 export abstract class LedaCardDescription<ItemId> extends CardDescription<number, MaterialType, LocationType, ItemId> {
-  content = (props: MaterialContentProps<ItemId, MaterialType>) =>
-    this.contentWithBackChildren(props.playDown ? { ...props, highlight: false } : props)
+  content = (props: MaterialContentProps<ItemId, MaterialType>) => this.faces(props)
+
+  /** The 2 faces of the card, which is all a card is made of, and what a clan card wraps (see {@link EggPeek}). */
+  faces(props: MaterialContentProps<ItemId, MaterialType>) {
+    return this.contentWithBackChildren(props.playDown ? { ...props, highlight: false } : props)
+  }
 }

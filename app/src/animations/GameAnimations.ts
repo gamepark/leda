@@ -1,9 +1,11 @@
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
+import { isEgg } from '@gamepark/leda/rules/snake'
 import { spiedPiles } from '@gamepark/leda/rules/spy'
 import { MaterialAnimationContext, MaterialGameAnimations } from '@gamepark/react-game'
 import { isCreateItemType, isMoveItem, MaterialMove } from '@gamepark/rules-api'
 import { revealedCardLocator, underPileApproach } from '../locators/Locators'
+import EggCrackSound from '../sounds/egg-crack.wav'
 
 export const gameAnimations = new MaterialGameAnimations<number, MaterialType, LocationType>()
 
@@ -103,6 +105,21 @@ const turnsOver = (move: MaterialMove<number, MaterialType, LocationType>, conte
   const item = context.rules.material(move.itemType).getItem(move.itemIndex)
   return item !== undefined && (move.location.rotation === true) !== (item.location.rotation === true)
 }
+
+/**
+ * An Egg hatching, which is one of the moves above: the card is turned onto its Snake side (see `hatchMoves`), and
+ * the shell is heard cracking. Read off the back of the card, so the opponent, who cannot see which Snake is inside,
+ * hears it all the same. An Egg turned face up for a Spy to read is not on its Snake side, and stays silent.
+ *
+ * Before the configuration of every other turn, a move being animated with the first configuration that matches it.
+ */
+const hatches = (move: MaterialMove<number, MaterialType, LocationType>, context: Context): boolean =>
+  isMoveItem(move) &&
+  move.itemType === MaterialType.ClanCard &&
+  move.location.rotation === true &&
+  isEgg(context.rules.material(MaterialType.ClanCard).getItem(move.itemIndex))
+
+gameAnimations.configure(hatches).duration(shortAnimation).sound({ sound: EggCrackSound, volume: 0.5 })
 
 gameAnimations.configure(turnsOver).duration(shortAnimation)
 

@@ -7,7 +7,7 @@ import { cellOf } from '@gamepark/leda/material/PlayerGrid'
 import { isEgg, isSpiedEgg } from '@gamepark/leda/rules/snake'
 import { isCellLeftToActivate } from '@gamepark/leda/rules/activation'
 import { swappingPlayer } from '@gamepark/leda/rules/swap'
-import { ItemContext, MaterialContext } from '@gamepark/react-game'
+import { ItemContext, MaterialContentProps, MaterialContext } from '@gamepark/react-game'
 import { MaterialItem, MaterialMoveBuilder } from '@gamepark/rules-api'
 import CatBack from '../images/cards/cat/back.jpg'
 import CatEmblem from '../images/cards/cat/emblem.jpg'
@@ -77,6 +77,7 @@ import SnakeSpyAndUpgrade from '../images/cards/snake/snake-spy-and-upgrade.jpg'
 import SnakeStealFoodAndMilitary from '../images/cards/snake/snake-steal-food-and-military.jpg'
 import SnakeStealFoodAndMoveEgg from '../images/cards/snake/snake-steal-food-and-move-egg.jpg'
 import { ClanCardHelp } from './ClanCardHelp'
+import { EggPeek, eggPeekOnHover } from './EggPeek'
 import { HatchEggButton } from './HatchEggButton'
 import { LedaCardDescription } from './LedaCardDescription'
 import { ActivationLockButton } from './ActivationLockButton'
@@ -240,6 +241,13 @@ export class ClanCardDescription extends LedaCardDescription<ClanCardItemId> {
     return this.isFlipped(item, context)
   }
 
+  /**
+   * A Snake its reader knows is wrapped in what turns an Egg face up under the pointer (see {@link EggPeek}): the
+   * front is only there for the owner (see {@link hiddenEgg}), so the opponent's Eggs stay Eggs.
+   */
+  content = (props: MaterialContentProps<ClanCardItemId, MaterialType>) =>
+    props.itemId?.back === Clan.Snake && props.itemId.front !== undefined ? <EggPeek>{this.faces(props)}</EggPeek> : this.faces(props)
+
   /** The buttons a card carries are read off the state of the game, and each decides on its own whether to show. */
   menuAlwaysVisible = true
 
@@ -280,9 +288,13 @@ export class ClanCardDescription extends LedaCardDescription<ClanCardItemId> {
    * square is taken by dragging its tile, which is exactly what these cards cover, and dropped onto a square just
    * the same. Only for as long as the swap is being asked, so that a card is clickable again, help dialog
    * included, as soon as there is nothing to drag underneath it.
+   *
+   * An Egg its reader knows turns face up under the pointer, on the table alone and not while it is dragged
+   * (see {@link eggPeekOnHover}).
    */
   getItemExtraCss(item: MaterialItem<number, LocationType, ClanCardItemId>, context: ItemContext<number, MaterialType, LocationType>) {
-    return this.coversATileToDrag(item, context) ? letTheTileThrough : undefined
+    if (this.coversATileToDrag(item, context)) return letTheTileThrough
+    return showsAnEgg(item) && item.id?.front !== undefined && !context.isDragging ? eggPeekOnHover : undefined
   }
 
   /**

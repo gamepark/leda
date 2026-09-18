@@ -37,7 +37,7 @@ export const useMenuButtonRules = (): { rules: LedaRules; player: number } | und
  * client could not tell (delayed); it is being played, and some of its moves are still to be shown; or it is being
  * undone, and some of its moves are still to be taken back.
  */
-const tableIsLate = (action: DisplayedAction) =>
+export const tableIsLate = (action: DisplayedAction) =>
   action.delayed === true || (action.cancelled ? action.played > 0 : action.played <= action.consequences.length)
 
 /**

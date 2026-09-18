@@ -50,8 +50,10 @@
       "title": "¿Quién ha consultado este montón en esta ronda?",
       "on-top": "{player} ha espiado este montón, y ha devuelto el elemento encima.",
       "under": "{player} ha espiado este montón, y ha devuelto el elemento debajo.",
-      "seen": "Habías visto:"
-    }
+      "seen": "Habías visto:",
+      "egg": "{player} ha espiado este Huevo en esta ronda."
+    },
+    "put-back": "Voltear"
   },
   "activation": {
     "lock": "Esta ya ha sido activada: no volverá a activarse antes de la próxima ronda."
@@ -90,6 +92,7 @@
     "2": "Tiburones",
     "3": "Gatos",
     "4": "Escorpiones",
+    "5": "Serpientes",
     "choose": "Elige tu clan",
     "pick": "Elegir",
     "view": "Ver el detalle del clan",
@@ -117,6 +120,7 @@
     "effect": "Efecto:",
     "effect-1": "Efecto 1:",
     "effect-2": "Efecto 2:",
+    "hatching": "Efecto de Eclosión:",
     "pack": "Efecto MANADA:",
     "portal": "Portal – Efecto:",
     "front": "Anverso:",
@@ -146,7 +150,8 @@
       "1": "Carta de Panda",
       "2": "Carta de Tiburón",
       "3": "Carta de Gato",
-      "4": "Carta de Escorpión"
+      "4": "Carta de Escorpión",
+      "5": "Carta de Serpiente"
     },
     "note": {
       "awakening": "<awakening/> Efecto Despertar: si tienes al menos {count} <bronze/> en juego, devuelve uno de ellos a tu mano y sustitúyelo por un <silver/>; o si tienes al menos {count} <silver/> en juego, devuelve uno de ellos a tu mano y sustitúyelo por un <gold/>, en el mismo lugar. El efecto Despertar se resuelve después de haber resuelto todas las demás activaciones.",
@@ -166,7 +171,8 @@
       "certain-squares": "La casilla superior izquierda (loseta de Acción {first}) y la casilla inferior derecha (loseta de Acción {last}) tienen garantizada su activación cuando se revela su loseta de Acción, seas o no el jugador activo.",
       "shark-victory": "Tener tus {count} fichas de Tiburón en juego hace ganar la partida.",
       "food-gain": "La ganas con tus losetas y tus cartas, y durante la organización: intercambiar la posición de 2 de tus casillas da 1 <food/>, y puedes tomarla sin intercambiar.",
-      "food-supply": "La reserva de Comida es ilimitada."
+      "food-supply": "La reserva de Comida es ilimitada.",
+      "egg": "Las cartas de Serpiente siempre se juegan por su cara de Huevo <egg/>, por {count} <food/>, sea cual sea la manera o la fase en que se jueguen: tu oponente no sabe de qué Serpiente se trata. Un Huevo no tiene ningún efecto. Para activarlo, gasta {count} <food/> durante la activación de su zona: eclosiona, la carta se voltea por su cara de Serpiente <snake/>, se resuelve su efecto de Eclosión y luego su efecto. El efecto de Eclosión no vuelve a resolverse, salvo si la Serpiente se voltea de nuevo por su cara de Huevo y vuelve a eclosionar. Tu oponente puede usar un efecto Espiar para mirar uno de tus Huevos."
     },
     "shark": {
       "title": "Ficha de Tiburón",
@@ -201,18 +207,20 @@
     },
     "victory": {
       "title": "Carta de Condición de Victoria",
-      "start": "Empieza la partida con {cards, plural, one {# carta} other {# cartas}} y {food} <food/>.",
+      "start": "Empieza la partida con {cards, plural, one {# carta} other {# cartas}}{food, plural, =0 {} other { y # <food/>}}.",
       "activation": {
         "1": "Gana 1 <food/> O 1 Despertar <awakening/>.",
         "2": "Gana 2 <military/>.",
         "3": "Roba 1 carta.",
-        "4": "Espía."
+        "4": "Espía.",
+        "5": "Róbale 1 <food/> a tu oponente."
       },
       "clan": {
         "1": "Tener tus {count} Pandas <gold/> en juego.",
         "2": "Tener tus {count} fichas de Tiburón <shark/> en juego.",
         "3": "Jugar {count} Anillos <ring/>.",
-        "4": "Colocar tus {count} Portales <portal/> en las 4 esquinas de tu cuadrícula de acción."
+        "4": "Colocar tus {count} Portales <portal/> en las 4 esquinas de tu cuadrícula de acción.",
+        "5": "Tener {count} Serpientes <snake/> eclosionadas en juego."
       },
       "choose": "Elegir este Clan",
       "show-cards": "Ver todas las cartas del clan",
@@ -314,7 +322,23 @@
       "scorpion-portal-swap": "Intercambia la posición de 2 de tus cartas o losetas en tu cuadrícula de acción.",
       "scorpion-portal-swap-cost": "9 <food/> menos tu número de Portales en juego",
       "scorpion-portal-block-military-victory": "Ningún jugador puede ganar una ficha de Victoria militar esta ronda.",
-      "scorpion-portal-block-military-victory-cost": "9 <food/> menos tu número de fichas de Victoria militar"
+      "scorpion-portal-block-military-victory-cost": "9 <food/> menos tu número de fichas de Victoria militar",
+      "snake-steal-food-and-military-2": "Róbale 1 <food/> a tu oponente.",
+      "snake-steal-food-and-military": "Gana 1 <military/>.",
+      "snake-draw-and-flip-desert-2": "Roba 1 carta.",
+      "snake-draw-and-flip-desert": "Voltea uno de tus Desiertos a su anverso.",
+      "snake-spy-and-upgrade-2": "Espía.",
+      "snake-spy-and-upgrade": "Si tienes 2 Serpientes <snake/> en juego (incluida esta), mejora una de tus losetas.",
+      "snake-military-2": "Gana 2 <military/>.",
+      "snake-draw-and-food-per-egg-2": "Roba 1 carta.",
+      "snake-draw-and-food-per-egg": "Gana 1 <food/> por cada uno de tus Huevos <egg/>.",
+      "snake-steal-food-and-move-egg-2": "Róbale 1 <food/> a tu oponente.",
+      "snake-steal-food-and-move-egg": "Mueve uno de tus Huevos <egg/> a otra casilla de tu cuadrícula.",
+      "snake-spy-and-military": "Espía, y luego gana 1 <military/>.",
+      "snake-military-with-three-snakes": "Si tienes 3 Serpientes <snake/> en juego (incluida esta), gana 2 <military/>.",
+      "snake-copy-snake": "Si tienes 5 Serpientes <snake/> en juego (incluida esta), copia el efecto de una de tus Serpientes. Esa Serpiente no se activa: todavía podrá activarse esta ronda.",
+      "snake-military-victory-and-flip-back": "Si tienes 5 Serpientes <snake/> en juego (incluida esta), roba 1 ficha de Victoria militar (resuelve su efecto), y luego voltea una de tus Serpientes por su cara de Huevo <egg/>.",
+      "snake-draw-play-card-and-flip-back": "Roba 1 carta y puedes jugar una carta de tu mano, por su cara de Huevo <egg/>, gratis, y luego voltea una de tus Serpientes por su cara de Huevo."
     }
   },
   "header": {
@@ -391,6 +415,10 @@
       "you": "Espía el primer elemento de un montón",
       "player": "{player} espía un montón"
     },
+    "spy-egg": {
+      "you": "Espía el primer elemento de un montón, o un Huevo de tu oponente",
+      "player": "{player} espía un montón o uno de tus Huevos"
+    },
     "spy-return": {
       "you": "Devuelve este elemento encima o debajo de su montón",
       "player": "{player} devuelve el elemento espiado encima o debajo de su montón"
@@ -434,6 +462,30 @@
     "place-ring": {
       "you": "Coloca un Anillo en una casilla de tu tablero o <decline>pasa</decline>",
       "player": "{player} puede colocar un Anillo en su tablero"
+    },
+    "activate-zone-hatch": {
+      "you": "Activa las casillas de la zona, o haz eclosionar un Huevo por {count} <food/>",
+      "player": "{player} activa las casillas de la zona, o hace eclosionar un Huevo"
+    },
+    "hatch-egg": {
+      "you": "Haz eclosionar un Huevo por {count} <food/> o <decline>pasa</decline>",
+      "player": "{player} puede hacer eclosionar un Huevo por {count} <food/>"
+    },
+    "spy-return-egg": {
+      "you": "Vuelve a poner este Huevo boca abajo",
+      "player": "{player} vuelve a poner el Huevo espiado boca abajo"
+    },
+    "move-egg": {
+      "you": "Mueve uno de tus Huevos a otra casilla de tu cuadrícula",
+      "player": "{player} mueve uno de sus Huevos"
+    },
+    "flip-snake-to-egg": {
+      "you": "Voltea una de tus Serpientes por su cara de Huevo",
+      "player": "{player} voltea una de sus Serpientes por su cara de Huevo"
+    },
+    "copy-snake": {
+      "you": "Copia el efecto de una de tus Serpientes",
+      "player": "{player} copia el efecto de una de sus Serpientes"
     }
   },
   "game-over": {
@@ -457,6 +509,10 @@
       "4": {
         "you": "Has ganado con tus {count} Portales <portal/> en las 4 esquinas",
         "player": "{player} ha ganado con sus {count} Portales <portal/> en las 4 esquinas"
+      },
+      "5": {
+        "you": "Has ganado con {count} Serpientes <snake/> eclosionadas en juego",
+        "player": "{player} ha ganado con {count} Serpientes <snake/> eclosionadas en juego"
       }
     },
     "round": "Partida terminada en la ronda {round}",
@@ -512,7 +568,8 @@
       "play-card": "{player} renuncia a jugar una carta",
       "spend-ring": "{player} renuncia a cambiar un Anillo",
       "rotate": "{player} renuncia a rotar una carta",
-      "place-ring": "{player} renuncia a colocar un Anillo"
+      "place-ring": "{player} renuncia a colocar un Anillo",
+      "hatch": "{player} no hace eclosionar ningún otro Huevo"
     },
     "spy": {
       "deck": "{player} espía la primera carta de su mazo",
@@ -520,13 +577,20 @@
       "action-tile": "{player} espía la primera loseta del montón de Acción",
       "action-tile-seen": "{player} espía la primera loseta del montón de Acción: <material/>",
       "military-victory": "{player} espía la primera ficha de Victoria militar",
-      "military-victory-seen": "{player} espía la primera ficha de Victoria militar: <material/>"
+      "military-victory-seen": "{player} espía la primera ficha de Victoria militar: <material/>",
+      "egg": "{player} espía un Huevo de su oponente",
+      "egg-seen": "{player} espía un Huevo de su oponente: <material/>"
     },
     "spy-return": {
       "on-top": "{player} devuelve el elemento espiado encima de su montón",
       "on-top-seen": "{player} devuelve <material/> encima de su montón",
       "under": "{player} devuelve el elemento espiado debajo de su montón",
-      "under-seen": "{player} devuelve <material/> debajo de su montón"
-    }
+      "under-seen": "{player} devuelve <material/> debajo de su montón",
+      "egg": "{player} vuelve a poner el Huevo boca abajo"
+    },
+    "hatch": "{player} hace eclosionar uno de sus Huevos",
+    "hatched": "El Huevo eclosiona: <material/>",
+    "flip-snake-to-egg": "{player} voltea <material/> por su cara de Huevo",
+    "move-egg": "{player} mueve uno de sus Huevos"
   }
 }

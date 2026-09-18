@@ -50,8 +50,10 @@
       "title": "Wer hat diesen Stapel in dieser Runde angesehen?",
       "on-top": "{player} hat diesen Stapel ausgespäht und das Element oben zurückgelegt.",
       "under": "{player} hat diesen Stapel ausgespäht und das Element unten zurückgelegt.",
-      "seen": "Du hattest gesehen:"
-    }
+      "seen": "Du hattest gesehen:",
+      "egg": "{player} hat dieses Ei in dieser Runde ausgespäht."
+    },
+    "put-back": "Umdrehen"
   },
   "activation": {
     "lock": "Dieses wurde bereits aktiviert: Es wird vor der nächsten Runde nicht erneut aktiviert."
@@ -90,6 +92,7 @@
     "2": "Haie",
     "3": "Katzen",
     "4": "Skorpione",
+    "5": "Schlangen",
     "choose": "Wähle deinen Clan",
     "pick": "Wählen",
     "view": "Clan-Details ansehen",
@@ -117,6 +120,7 @@
     "effect": "Effekt:",
     "effect-1": "Effekt 1:",
     "effect-2": "Effekt 2:",
+    "hatching": "Schlüpf-Effekt:",
     "pack": "RUDEL-Effekt:",
     "portal": "Portal – Effekt:",
     "front": "Vorderseite:",
@@ -146,7 +150,8 @@
       "1": "Panda-Karte",
       "2": "Hai-Karte",
       "3": "Katzen-Karte",
-      "4": "Skorpion-Karte"
+      "4": "Skorpion-Karte",
+      "5": "Schlangen-Karte"
     },
     "note": {
       "awakening": "<awakening/> Erwachen-Effekt: Wenn du mindestens {count} <bronze/> im Spiel hast, nimm eines davon zurück auf die Hand und ersetze es durch ein <silver/>; oder wenn du mindestens {count} <silver/> im Spiel hast, nimm eines davon zurück auf die Hand und ersetze es durch ein <gold/>, auf demselben Feld. Der Erwachen-Effekt wird ausgeführt, nachdem alle anderen Aktivierungen ausgeführt wurden.",
@@ -166,7 +171,8 @@
       "certain-squares": "Das Feld oben links (Aktionsplättchen {first}) und das Feld unten rechts (Aktionsplättchen {last}) werden garantiert aktiviert, wenn ihr Aktionsplättchen aufgedeckt wird, egal ob du der aktive Spieler bist oder nicht.",
       "shark-victory": "Wer seine {count} Hai-Marker im Spiel hat, gewinnt das Spiel.",
       "food-gain": "Du erhältst sie mit deinen Plättchen und deinen Karten sowie während der Organisation: Die Position von 2 deiner Felder zu tauschen bringt 1 <food/>, und du darfst sie auch ohne Tausch nehmen.",
-      "food-supply": "Der Nahrungsvorrat ist unbegrenzt."
+      "food-supply": "Der Nahrungsvorrat ist unbegrenzt.",
+      "egg": "Schlangen-Karten werden immer auf ihrer Ei-Seite <egg/> gespielt, für {count} <food/>, egal auf welche Weise oder in welcher Phase sie gespielt werden: Dein Gegner weiß nicht, um welche Schlange es sich handelt. Ein Ei hat keinen Effekt. Um es zu aktivieren, gib während der Aktivierung seiner Zone {count} <food/> aus: Es schlüpft, die Karte wird auf ihre Schlangen-Seite <snake/> gedreht, ihr Schlüpf-Effekt wird ausgeführt, dann ihr Effekt. Der Schlüpf-Effekt wird nicht erneut ausgeführt, es sei denn, die Schlange wird wieder auf ihre Ei-Seite gedreht und schlüpft erneut. Dein Gegner kann einen Spähen-Effekt nutzen, um sich eines deiner Eier anzusehen."
     },
     "shark": {
       "title": "Hai-Marker",
@@ -201,18 +207,20 @@
     },
     "victory": {
       "title": "Siegbedingungskarte",
-      "start": "Beginne das Spiel mit {cards, plural, one {# Karte} other {# Karten}} und {food} <food/>.",
+      "start": "Beginne das Spiel mit {cards, plural, one {# Karte} other {# Karten}}{food, plural, =0 {} other { und # <food/>}}.",
       "activation": {
         "1": "Erhalte 1 <food/> ODER 1 Erwachen <awakening/>.",
         "2": "Erhalte 2 <military/>.",
         "3": "Ziehe 1 Karte.",
-        "4": "Spähe."
+        "4": "Spähe.",
+        "5": "Stiehl deinem Gegner 1 <food/>."
       },
       "clan": {
         "1": "Habe deine {count} Pandas <gold/> im Spiel.",
         "2": "Habe deine {count} Hai-Marker <shark/> im Spiel.",
         "3": "Spiele {count} Ringe <ring/>.",
-        "4": "Lege deine {count} Portale <portal/> in die 4 Ecken deines Aktionsrasters."
+        "4": "Lege deine {count} Portale <portal/> in die 4 Ecken deines Aktionsrasters.",
+        "5": "{count} geschlüpfte Schlangen <snake/> im Spiel haben."
       },
       "choose": "Diesen Clan wählen",
       "show-cards": "Alle Karten des Clans ansehen",
@@ -314,7 +322,23 @@
       "scorpion-portal-swap": "Tausche die Position von 2 deiner Karten oder Plättchen in deinem Aktionsraster.",
       "scorpion-portal-swap-cost": "9 <food/> minus die Anzahl deiner Portale im Spiel",
       "scorpion-portal-block-military-victory": "Kein Spieler kann in dieser Runde einen Militärsieg-Marker gewinnen.",
-      "scorpion-portal-block-military-victory-cost": "9 <food/> minus die Anzahl deiner Militärsieg-Marker"
+      "scorpion-portal-block-military-victory-cost": "9 <food/> minus die Anzahl deiner Militärsieg-Marker",
+      "snake-steal-food-and-military-2": "Stiehl deinem Gegner 1 <food/>.",
+      "snake-steal-food-and-military": "Erhalte 1 <military/>.",
+      "snake-draw-and-flip-desert-2": "Ziehe 1 Karte.",
+      "snake-draw-and-flip-desert": "Drehe eine deiner Wüsten auf ihre Vorderseite.",
+      "snake-spy-and-upgrade-2": "Spähe.",
+      "snake-spy-and-upgrade": "Wenn du 2 Schlangen <snake/> im Spiel hast (diese eingeschlossen), verbessere eines deiner Plättchen.",
+      "snake-military-2": "Erhalte 2 <military/>.",
+      "snake-draw-and-food-per-egg-2": "Ziehe 1 Karte.",
+      "snake-draw-and-food-per-egg": "Erhalte 1 <food/> für jedes deiner Eier <egg/>.",
+      "snake-steal-food-and-move-egg-2": "Stiehl deinem Gegner 1 <food/>.",
+      "snake-steal-food-and-move-egg": "Versetze eines deiner Eier <egg/> auf ein anderes Feld deines Rasters.",
+      "snake-spy-and-military": "Spähe und erhalte dann 1 <military/>.",
+      "snake-military-with-three-snakes": "Wenn du 3 Schlangen <snake/> im Spiel hast (diese eingeschlossen), erhalte 2 <military/>.",
+      "snake-copy-snake": "Wenn du 5 Schlangen <snake/> im Spiel hast (diese eingeschlossen), kopiere den Effekt einer deiner Schlangen. Diese Schlange gilt nicht als aktiviert: Sie kann in dieser Runde noch aktiviert werden.",
+      "snake-military-victory-and-flip-back": "Wenn du 5 Schlangen <snake/> im Spiel hast (diese eingeschlossen), ziehe 1 Militärsieg-Marker (führe seinen Effekt aus) und drehe dann eine deiner Schlangen auf ihre Ei-Seite <egg/> zurück.",
+      "snake-draw-play-card-and-flip-back": "Ziehe 1 Karte, und du darfst eine Karte aus deiner Hand kostenlos mit der Ei-Seite <egg/> nach oben spielen. Drehe dann eine deiner Schlangen auf ihre Ei-Seite zurück."
     }
   },
   "header": {
@@ -391,6 +415,10 @@
       "you": "Spähe das oberste Element eines Stapels aus",
       "player": "{player} späht einen Stapel aus"
     },
+    "spy-egg": {
+      "you": "Spähe das oberste Element eines Stapels oder ein Ei deines Gegners aus",
+      "player": "{player} späht einen Stapel oder eines deiner Eier aus"
+    },
     "spy-return": {
       "you": "Lege dieses Element oben oder unten auf seinen Stapel zurück",
       "player": "{player} legt das ausgespähte Element oben oder unten auf seinen Stapel zurück"
@@ -434,6 +462,30 @@
     "place-ring": {
       "you": "Lege einen Ring auf ein Feld deines Tableaus oder <decline>passe</decline>",
       "player": "{player} darf einen Ring auf sein Tableau legen"
+    },
+    "activate-zone-hatch": {
+      "you": "Aktiviere die Felder der Zone oder lass ein Ei für {count} <food/> schlüpfen",
+      "player": "{player} aktiviert die Felder der Zone oder lässt ein Ei schlüpfen"
+    },
+    "hatch-egg": {
+      "you": "Lass ein Ei für {count} <food/> schlüpfen oder <decline>passe</decline>",
+      "player": "{player} darf ein Ei für {count} <food/> schlüpfen lassen"
+    },
+    "spy-return-egg": {
+      "you": "Drehe dieses Ei wieder verdeckt um",
+      "player": "{player} dreht das ausgespähte Ei wieder verdeckt um"
+    },
+    "move-egg": {
+      "you": "Versetze eines deiner Eier auf ein anderes Feld deines Rasters",
+      "player": "{player} versetzt eines seiner Eier"
+    },
+    "flip-snake-to-egg": {
+      "you": "Drehe eine deiner Schlangen auf ihre Ei-Seite zurück",
+      "player": "{player} dreht eine seiner Schlangen auf ihre Ei-Seite zurück"
+    },
+    "copy-snake": {
+      "you": "Kopiere den Effekt einer deiner Schlangen",
+      "player": "{player} kopiert den Effekt einer seiner Schlangen"
     }
   },
   "game-over": {
@@ -457,6 +509,10 @@
       "4": {
         "you": "Du hast mit deinen {count} Portalen <portal/> in den 4 Ecken gewonnen",
         "player": "{player} hat mit seinen {count} Portalen <portal/> in den 4 Ecken gewonnen"
+      },
+      "5": {
+        "you": "Du hast mit {count} geschlüpften Schlangen <snake/> im Spiel gewonnen",
+        "player": "{player} hat mit {count} geschlüpften Schlangen <snake/> im Spiel gewonnen"
       }
     },
     "round": "Spiel beendet in Runde {round}",
@@ -512,7 +568,8 @@
       "play-card": "{player} verzichtet darauf, eine Karte zu spielen",
       "spend-ring": "{player} verzichtet darauf, einen Ring zu tauschen",
       "rotate": "{player} verzichtet darauf, eine Karte zu drehen",
-      "place-ring": "{player} verzichtet darauf, einen Ring auszulegen"
+      "place-ring": "{player} verzichtet darauf, einen Ring auszulegen",
+      "hatch": "{player} lässt kein weiteres Ei schlüpfen"
     },
     "spy": {
       "deck": "{player} späht die oberste Karte seines Nachziehstapels aus",
@@ -520,13 +577,20 @@
       "action-tile": "{player} späht das oberste Plättchen des Aktionsstapels aus",
       "action-tile-seen": "{player} späht das oberste Plättchen des Aktionsstapels aus: <material/>",
       "military-victory": "{player} späht den obersten Militärsieg-Marker aus",
-      "military-victory-seen": "{player} späht den obersten Militärsieg-Marker aus: <material/>"
+      "military-victory-seen": "{player} späht den obersten Militärsieg-Marker aus: <material/>",
+      "egg": "{player} späht ein Ei seines Gegners aus",
+      "egg-seen": "{player} späht ein Ei seines Gegners aus: <material/>"
     },
     "spy-return": {
       "on-top": "{player} legt das ausgespähte Element oben auf seinen Stapel zurück",
       "on-top-seen": "{player} legt <material/> oben auf seinen Stapel zurück",
       "under": "{player} legt das ausgespähte Element unter seinen Stapel zurück",
-      "under-seen": "{player} legt <material/> unter seinen Stapel zurück"
-    }
+      "under-seen": "{player} legt <material/> unter seinen Stapel zurück",
+      "egg": "{player} dreht das Ei wieder verdeckt um"
+    },
+    "hatch": "{player} lässt eines seiner Eier schlüpfen",
+    "hatched": "Das Ei schlüpft: <material/>",
+    "flip-snake-to-egg": "{player} dreht <material/> auf seine Ei-Seite zurück",
+    "move-egg": "{player} versetzt eines seiner Eier"
   }
 }

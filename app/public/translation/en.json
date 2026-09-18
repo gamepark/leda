@@ -50,8 +50,10 @@
       "title": "Who looked at this pile this round?",
       "on-top": "{player} spied on this pile, and returned the element to the top.",
       "under": "{player} spied on this pile, and returned the element to the bottom.",
-      "seen": "You had seen:"
-    }
+      "seen": "You had seen:",
+      "egg": "{player} spied on this Egg this round."
+    },
+    "put-back": "Flip back"
   },
   "activation": {
     "lock": "This one has already been activated: it will not be activated again before the next round."
@@ -90,6 +92,7 @@
     "2": "Sharks",
     "3": "Cats",
     "4": "Scorpions",
+    "5": "Snakes",
     "choose": "Choose your clan",
     "pick": "Pick",
     "view": "See the clan details",
@@ -117,6 +120,7 @@
     "effect": "Effect:",
     "effect-1": "Effect 1:",
     "effect-2": "Effect 2:",
+    "hatching": "Hatching effect:",
     "pack": "PACK effect:",
     "portal": "Portal – Effect:",
     "front": "Front:",
@@ -146,7 +150,8 @@
       "1": "Panda card",
       "2": "Shark card",
       "3": "Cat card",
-      "4": "Scorpion card"
+      "4": "Scorpion card",
+      "5": "Snake card"
     },
     "note": {
       "awakening": "<awakening/> Awakening effect: if you have at least {count} <bronze/> in play, put one of them back into your hand and replace it with a <silver/>; or if you have at least {count} <silver/> in play, put one of them back into your hand and replace it with a <gold/>, in the same space. The Awakening effect is resolved after all the other activations have been resolved.",
@@ -166,7 +171,8 @@
       "certain-squares": "The top-left space (Action tile {first}) and the bottom-right space (Action tile {last}) are guaranteed to be activated when their Action tile is revealed, whether you are the active player or not.",
       "shark-victory": "Having your {count} Shark tokens in play wins the game.",
       "food-gain": "You gain some with your tiles and your cards, and during the organization: swapping the position of 2 of your spaces gains 1 <food/>, and you may take it without swapping.",
-      "food-supply": "The Food supply is unlimited."
+      "food-supply": "The Food supply is unlimited.",
+      "egg": "Snake cards are always played on their Egg side <egg/>, for {count} <food/>, however and in whichever phase they are played: your opponent does not know which Snake it is. An Egg has no effect. To activate it, spend {count} <food/> during the activation of its zone: it hatches, the card is flipped to its Snake side <snake/>, its Hatching effect is resolved, then its effect. The Hatching effect is not resolved again, unless the Snake is flipped back to its Egg side and then hatches again. Your opponent can use a Spy effect to look at one of your Eggs."
     },
     "shark": {
       "title": "Shark token",
@@ -201,18 +207,20 @@
     },
     "victory": {
       "title": "Victory Condition card",
-      "start": "Start the game with {cards, plural, one {# card} other {# cards}} and {food} <food/>.",
+      "start": "Start the game with {cards, plural, one {# card} other {# cards}}{food, plural, =0 {} other { and # <food/>}}.",
       "activation": {
         "1": "Gain 1 <food/> OR 1 Awakening <awakening/>.",
         "2": "Gain 2 <military/>.",
         "3": "Draw 1 card.",
-        "4": "Spy."
+        "4": "Spy.",
+        "5": "Steal 1 <food/> from your opponent."
       },
       "clan": {
         "1": "Have your {count} <gold/> Pandas in play.",
         "2": "Have your {count} Shark tokens <shark/> in play.",
         "3": "Play {count} Rings <ring/>.",
-        "4": "Place your {count} Portals <portal/> in the 4 corners of your action grid."
+        "4": "Place your {count} Portals <portal/> in the 4 corners of your action grid.",
+        "5": "Have {count} hatched Snakes <snake/> in play."
       },
       "choose": "Choose this Clan",
       "show-cards": "See all the cards of the clan",
@@ -314,7 +322,23 @@
       "scorpion-portal-swap": "Swap the position of 2 of your cards or tiles in your action grid.",
       "scorpion-portal-swap-cost": "9 <food/> minus your number of Portals in play",
       "scorpion-portal-block-military-victory": "No player can win a Military Victory token this round.",
-      "scorpion-portal-block-military-victory-cost": "9 <food/> minus your number of Military Victory tokens"
+      "scorpion-portal-block-military-victory-cost": "9 <food/> minus your number of Military Victory tokens",
+      "snake-steal-food-and-military-2": "Steal 1 <food/> from your opponent.",
+      "snake-steal-food-and-military": "Gain 1 <military/>.",
+      "snake-draw-and-flip-desert-2": "Draw 1 card.",
+      "snake-draw-and-flip-desert": "Flip one of your Deserts to its front side.",
+      "snake-spy-and-upgrade-2": "Spy.",
+      "snake-spy-and-upgrade": "If you have 2 Snakes <snake/> in play (including this one), upgrade one of your tiles.",
+      "snake-military-2": "Gain 2 <military/>.",
+      "snake-draw-and-food-per-egg-2": "Draw 1 card.",
+      "snake-draw-and-food-per-egg": "Gain 1 <food/> for each of your Eggs <egg/>.",
+      "snake-steal-food-and-move-egg-2": "Steal 1 <food/> from your opponent.",
+      "snake-steal-food-and-move-egg": "Move one of your Eggs <egg/> to another space of your grid.",
+      "snake-spy-and-military": "Spy, then gain 1 <military/>.",
+      "snake-military-with-three-snakes": "If you have 3 Snakes <snake/> in play (including this one), gain 2 <military/>.",
+      "snake-copy-snake": "If you have 5 Snakes <snake/> in play (including this one), copy the effect of one of your Snakes. That Snake is not activated: it can still be activated this round.",
+      "snake-military-victory-and-flip-back": "If you have 5 Snakes <snake/> in play (including this one), draw 1 Military Victory token (resolve its effect), then flip one of your Snakes back to its Egg side <egg/>.",
+      "snake-draw-play-card-and-flip-back": "Draw 1 card and you may play a card from your hand, Egg side <egg/> up, for free, then flip one of your Snakes back to its Egg side."
     }
   },
   "header": {
@@ -391,6 +415,10 @@
       "you": "Spy the top element of a pile",
       "player": "{player} spies on a pile"
     },
+    "spy-egg": {
+      "you": "Spy the top element of a pile, or one of your opponent's Eggs",
+      "player": "{player} spies on a pile or one of your Eggs"
+    },
     "spy-return": {
       "you": "Return this element to the top or the bottom of its pile",
       "player": "{player} returns the spied element to the top or the bottom of its pile"
@@ -434,6 +462,30 @@
     "place-ring": {
       "you": "Place a Ring on a space of your board or <decline>pass</decline>",
       "player": "{player} may place a Ring on their board"
+    },
+    "activate-zone-hatch": {
+      "you": "Activate the spaces of the zone, or hatch an Egg for {count} <food/>",
+      "player": "{player} is activating the spaces of the zone, or hatching an Egg"
+    },
+    "hatch-egg": {
+      "you": "Hatch an Egg for {count} <food/> or <decline>pass</decline>",
+      "player": "{player} may hatch an Egg for {count} <food/>"
+    },
+    "spy-return-egg": {
+      "you": "Flip this Egg back face down",
+      "player": "{player} flips the spied Egg back face down"
+    },
+    "move-egg": {
+      "you": "Move one of your Eggs to another space of your grid",
+      "player": "{player} is moving one of their Eggs"
+    },
+    "flip-snake-to-egg": {
+      "you": "Flip one of your Snakes back to its Egg side",
+      "player": "{player} is flipping one of their Snakes back to its Egg side"
+    },
+    "copy-snake": {
+      "you": "Copy the effect of one of your Snakes",
+      "player": "{player} is copying the effect of one of their Snakes"
     }
   },
   "game-over": {
@@ -457,6 +509,10 @@
       "4": {
         "you": "You won with your {count} Portals <portal/> in the 4 corners",
         "player": "{player} won with their {count} Portals <portal/> in the 4 corners"
+      },
+      "5": {
+        "you": "You won with {count} hatched Snakes <snake/> in play",
+        "player": "{player} won with {count} hatched Snakes <snake/> in play"
       }
     },
     "round": "Game over in round {round}",
@@ -512,7 +568,8 @@
       "play-card": "{player} declines to play a card",
       "spend-ring": "{player} declines to trade a Ring",
       "rotate": "{player} declines to rotate a card",
-      "place-ring": "{player} declines to place a Ring"
+      "place-ring": "{player} declines to place a Ring",
+      "hatch": "{player} does not hatch any other Egg"
     },
     "spy": {
       "deck": "{player} spies the top card of their deck",
@@ -520,13 +577,20 @@
       "action-tile": "{player} spies the top tile of the Action pile",
       "action-tile-seen": "{player} spies the top tile of the Action pile: <material/>",
       "military-victory": "{player} spies the top Military Victory token",
-      "military-victory-seen": "{player} spies the top Military Victory token: <material/>"
+      "military-victory-seen": "{player} spies the top Military Victory token: <material/>",
+      "egg": "{player} spies on one of their opponent's Eggs",
+      "egg-seen": "{player} spies on one of their opponent's Eggs: <material/>"
     },
     "spy-return": {
       "on-top": "{player} returns the spied element to the top of its pile",
       "on-top-seen": "{player} returns <material/> to the top of its pile",
       "under": "{player} returns the spied element to the bottom of its pile",
-      "under-seen": "{player} returns <material/> to the bottom of its pile"
-    }
+      "under-seen": "{player} returns <material/> to the bottom of its pile",
+      "egg": "{player} flips the Egg back face down"
+    },
+    "hatch": "{player} hatches one of their Eggs",
+    "hatched": "The Egg hatches: <material/>",
+    "flip-snake-to-egg": "{player} flips <material/> back to its Egg side",
+    "move-egg": "{player} moves one of their Eggs"
   }
 }

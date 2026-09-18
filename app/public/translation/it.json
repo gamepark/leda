@@ -50,8 +50,10 @@
       "title": "Chi ha consultato questa pila in questo round?",
       "on-top": "{player} ha spiato questa pila, e ha rimesso l'elemento sopra.",
       "under": "{player} ha spiato questa pila, e ha rimesso l'elemento sotto.",
-      "seen": "Avevi visto:"
-    }
+      "seen": "Avevi visto:",
+      "egg": "{player} ha spiato questo Uovo in questo round."
+    },
+    "put-back": "Girare"
   },
   "activation": {
     "lock": "Questa è già stata attivata: non lo sarà più prima del prossimo round."
@@ -90,6 +92,7 @@
     "2": "Squali",
     "3": "Gatti",
     "4": "Scorpioni",
+    "5": "Serpenti",
     "choose": "Scegli il tuo clan",
     "pick": "Scegli",
     "view": "Vedi i dettagli del clan",
@@ -117,6 +120,7 @@
     "effect": "Effetto:",
     "effect-1": "Effetto 1:",
     "effect-2": "Effetto 2:",
+    "hatching": "Effetto Schiusa:",
     "pack": "Effetto BRANCO:",
     "portal": "Portale – Effetto:",
     "front": "Fronte:",
@@ -146,7 +150,8 @@
       "1": "Carta Panda",
       "2": "Carta Squalo",
       "3": "Carta Gatto",
-      "4": "Carta Scorpione"
+      "4": "Carta Scorpione",
+      "5": "Carta Serpente"
     },
     "note": {
       "awakening": "<awakening/> Effetto Risveglio: se hai almeno {count} <bronze/> in gioco, rimettine uno in mano e sostituiscilo con un <silver/>; oppure se hai almeno {count} <silver/> in gioco, rimettine uno in mano e sostituiscilo con un <gold/>, nello stesso punto. L'effetto Risveglio si risolve dopo aver risolto tutte le altre attivazioni.",
@@ -166,7 +171,8 @@
       "certain-squares": "La casella in alto a sinistra (tessera Azione {first}) e la casella in basso a destra (tessera Azione {last}) sono certe di essere attivate quando la loro tessera Azione viene rivelata, che tu sia il giocatore attivo o no.",
       "shark-victory": "Avere i tuoi {count} segnalini Squalo in gioco fa vincere la partita.",
       "food-gain": "Ne guadagni con le tue tessere e le tue carte, e durante l'organizzazione: scambiare la posizione di 2 delle tue caselle dà 1 <food/>, e puoi prenderlo senza scambiare.",
-      "food-supply": "La riserva di Cibo è illimitata."
+      "food-supply": "La riserva di Cibo è illimitata.",
+      "egg": "Le carte Serpente si giocano sempre sul loro lato Uovo <egg/>, per {count} <food/>, in qualunque modo o fase vengano giocate: il tuo avversario non sa di quale Serpente si tratti. Un Uovo non ha alcun effetto. Per attivarlo, spendi {count} <food/> durante l'attivazione della sua zona: si schiude, la carta viene girata sul lato Serpente <snake/>, si risolve il suo effetto Schiusa, poi il suo effetto. L'effetto Schiusa non si risolve più, a meno che il Serpente non venga girato di nuovo sul lato Uovo e poi si schiuda di nuovo. Il tuo avversario può usare un effetto Spiare per guardare una delle tue Uova."
     },
     "shark": {
       "title": "Segnalino Squalo",
@@ -201,18 +207,20 @@
     },
     "victory": {
       "title": "Carta Condizione di Vittoria",
-      "start": "Inizia la partita con {cards, plural, one {# carta} other {# carte}} e {food} <food/>.",
+      "start": "Inizia la partita con {cards, plural, one {# carta} other {# carte}}{food, plural, =0 {} other { e # <food/>}}.",
       "activation": {
         "1": "Guadagna 1 <food/> OPPURE 1 Risveglio <awakening/>.",
         "2": "Guadagna 2 <military/>.",
         "3": "Pesca 1 carta.",
-        "4": "Spia."
+        "4": "Spia.",
+        "5": "Ruba 1 <food/> al tuo avversario."
       },
       "clan": {
         "1": "Avere i tuoi {count} Panda <gold/> in gioco.",
         "2": "Avere i tuoi {count} segnalini Squalo <shark/> in gioco.",
         "3": "Giocare {count} Anelli <ring/>.",
-        "4": "Posare i tuoi {count} Portali <portal/> nei 4 angoli della tua griglia d'azione."
+        "4": "Posare i tuoi {count} Portali <portal/> nei 4 angoli della tua griglia d'azione.",
+        "5": "Avere {count} Serpenti <snake/> schiusi in gioco."
       },
       "choose": "Scegli questo Clan",
       "show-cards": "Vedi tutte le carte del clan",
@@ -314,7 +322,23 @@
       "scorpion-portal-swap": "Scambia la posizione di 2 delle tue carte o tessere nella tua griglia d'azione.",
       "scorpion-portal-swap-cost": "9 <food/> meno il tuo numero di Portali in gioco",
       "scorpion-portal-block-military-victory": "Nessun giocatore può vincere un gettone Vittoria militare in questo round.",
-      "scorpion-portal-block-military-victory-cost": "9 <food/> meno il tuo numero di gettoni Vittoria militare"
+      "scorpion-portal-block-military-victory-cost": "9 <food/> meno il tuo numero di gettoni Vittoria militare",
+      "snake-steal-food-and-military-2": "Ruba 1 <food/> al tuo avversario.",
+      "snake-steal-food-and-military": "Guadagna 1 <military/>.",
+      "snake-draw-and-flip-desert-2": "Pesca 1 carta.",
+      "snake-draw-and-flip-desert": "Gira uno dei tuoi Deserti sul suo fronte.",
+      "snake-spy-and-upgrade-2": "Spia.",
+      "snake-spy-and-upgrade": "Se hai 2 Serpenti <snake/> in gioco (compreso questo), migliora una delle tue tessere.",
+      "snake-military-2": "Guadagna 2 <military/>.",
+      "snake-draw-and-food-per-egg-2": "Pesca 1 carta.",
+      "snake-draw-and-food-per-egg": "Guadagna 1 <food/> per ognuna delle tue Uova <egg/>.",
+      "snake-steal-food-and-move-egg-2": "Ruba 1 <food/> al tuo avversario.",
+      "snake-steal-food-and-move-egg": "Sposta una delle tue Uova <egg/> su un'altra casella della tua griglia.",
+      "snake-spy-and-military": "Spia, poi guadagna 1 <military/>.",
+      "snake-military-with-three-snakes": "Se hai 3 Serpenti <snake/> in gioco (compreso questo), guadagna 2 <military/>.",
+      "snake-copy-snake": "Se hai 5 Serpenti <snake/> in gioco (compreso questo), copia l'effetto di uno dei tuoi Serpenti. Quel Serpente non viene attivato: potrà ancora esserlo in questo round.",
+      "snake-military-victory-and-flip-back": "Se hai 5 Serpenti <snake/> in gioco (compreso questo), pesca 1 gettone Vittoria militare (risolvi il suo effetto), poi rigira uno dei tuoi Serpenti sul lato Uovo <egg/>.",
+      "snake-draw-play-card-and-flip-back": "Pesca 1 carta e puoi giocare una carta dalla tua mano, sul lato Uovo <egg/>, gratuitamente, poi rigira uno dei tuoi Serpenti sul lato Uovo."
     }
   },
   "header": {
@@ -391,6 +415,10 @@
       "you": "Spia il primo elemento di una pila",
       "player": "{player} spia una pila"
     },
+    "spy-egg": {
+      "you": "Spia il primo elemento di una pila, o un Uovo del tuo avversario",
+      "player": "{player} spia una pila o una delle tue Uova"
+    },
     "spy-return": {
       "you": "Rimetti questo elemento sopra o sotto la sua pila",
       "player": "{player} rimette l'elemento spiato sopra o sotto la sua pila"
@@ -434,6 +462,30 @@
     "place-ring": {
       "you": "Posa un Anello su una casella della tua plancia oppure <decline>passa</decline>",
       "player": "{player} può posare un Anello sulla sua plancia"
+    },
+    "activate-zone-hatch": {
+      "you": "Attiva le caselle della zona, o fai schiudere un Uovo per {count} <food/>",
+      "player": "{player} attiva le caselle della zona, o fa schiudere un Uovo"
+    },
+    "hatch-egg": {
+      "you": "Fai schiudere un Uovo per {count} <food/> oppure <decline>passa</decline>",
+      "player": "{player} può far schiudere un Uovo per {count} <food/>"
+    },
+    "spy-return-egg": {
+      "you": "Rigira questo Uovo a faccia in giù",
+      "player": "{player} rigira l'Uovo spiato a faccia in giù"
+    },
+    "move-egg": {
+      "you": "Sposta una delle tue Uova su un'altra casella della tua griglia",
+      "player": "{player} sposta una delle sue Uova"
+    },
+    "flip-snake-to-egg": {
+      "you": "Rigira uno dei tuoi Serpenti sul lato Uovo",
+      "player": "{player} rigira uno dei suoi Serpenti sul lato Uovo"
+    },
+    "copy-snake": {
+      "you": "Copia l'effetto di uno dei tuoi Serpenti",
+      "player": "{player} copia l'effetto di uno dei suoi Serpenti"
     }
   },
   "game-over": {
@@ -457,6 +509,10 @@
       "4": {
         "you": "Hai vinto con i tuoi {count} Portali <portal/> nei 4 angoli",
         "player": "{player} ha vinto con i suoi {count} Portali <portal/> nei 4 angoli"
+      },
+      "5": {
+        "you": "Hai vinto con {count} Serpenti <snake/> schiusi in gioco",
+        "player": "{player} ha vinto con {count} Serpenti <snake/> schiusi in gioco"
       }
     },
     "round": "Partita terminata al round {round}",
@@ -512,7 +568,8 @@
       "play-card": "{player} rinuncia a giocare una carta",
       "spend-ring": "{player} rinuncia a scambiare un Anello",
       "rotate": "{player} rinuncia a ruotare una carta",
-      "place-ring": "{player} rinuncia a posare un Anello"
+      "place-ring": "{player} rinuncia a posare un Anello",
+      "hatch": "{player} non fa schiudere nessun altro Uovo"
     },
     "spy": {
       "deck": "{player} spia la prima carta del suo mazzo",
@@ -520,13 +577,20 @@
       "action-tile": "{player} spia la prima tessera della pila Azione",
       "action-tile-seen": "{player} spia la prima tessera della pila Azione: <material/>",
       "military-victory": "{player} spia il primo gettone Vittoria militare",
-      "military-victory-seen": "{player} spia il primo gettone Vittoria militare: <material/>"
+      "military-victory-seen": "{player} spia il primo gettone Vittoria militare: <material/>",
+      "egg": "{player} spia un Uovo del suo avversario",
+      "egg-seen": "{player} spia un Uovo del suo avversario: <material/>"
     },
     "spy-return": {
       "on-top": "{player} rimette l'elemento spiato sopra la sua pila",
       "on-top-seen": "{player} rimette <material/> sopra la sua pila",
       "under": "{player} rimette l'elemento spiato sotto la sua pila",
-      "under-seen": "{player} rimette <material/> sotto la sua pila"
-    }
+      "under-seen": "{player} rimette <material/> sotto la sua pila",
+      "egg": "{player} rigira l'Uovo a faccia in giù"
+    },
+    "hatch": "{player} fa schiudere una delle sue Uova",
+    "hatched": "L'Uovo si schiude: <material/>",
+    "flip-snake-to-egg": "{player} rigira <material/> sul lato Uovo",
+    "move-egg": "{player} sposta una delle sue Uova"
   }
 }

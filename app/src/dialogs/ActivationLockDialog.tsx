@@ -26,7 +26,7 @@ export const ActivationLockDialog = ({ open, close }: ActivationLockDialogProps)
     <Dialog open={open} onBackdropClick={close}>
       <div css={content}>
         <p css={text}>
-          <Trans defaults={t(activationRuleCode)} /> {t('activation.lock')}
+          <Trans i18nKey={activationRuleCode} /> {t('activation.lock')}
         </p>
         <div css={buttons}>
           {/* "Close" is the platform's own word for it, in the namespace the game shares with every other one. */}

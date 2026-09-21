@@ -21,7 +21,7 @@ export const TakeOrganisationFoodDialog = ({ open, close, takeFood }: TakeOrgani
     <Dialog open={open} onBackdropClick={close}>
       <div css={content}>
         <p css={text}>
-          <Trans defaults={t('organisation.food.explain')} components={{ food: <FoodIcon /> }} />
+          <Trans i18nKey="organisation.food.explain" components={{ food: <FoodIcon /> }} />
         </p>
         <div css={buttons}>
           <ThemeButton onClick={close}>{t('Cancel', { ns: 'common' })}</ThemeButton>

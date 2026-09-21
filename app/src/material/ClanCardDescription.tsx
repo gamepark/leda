@@ -4,8 +4,9 @@ import { ClanCardId, ClanCardItemId } from '@gamepark/leda/material/ClanCardId'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { cellOf } from '@gamepark/leda/material/PlayerGrid'
-import { isEgg, isSpiedEgg } from '@gamepark/leda/rules/snake'
 import { isCellLeftToActivate } from '@gamepark/leda/rules/activation'
+import { RuleId } from '@gamepark/leda/rules/RuleId'
+import { isEgg, isSpiedEgg } from '@gamepark/leda/rules/snake'
 import { swappingPlayer } from '@gamepark/leda/rules/swap'
 import { ItemContext, MaterialContentProps, MaterialContext } from '@gamepark/react-game'
 import { MaterialItem, MaterialMoveBuilder } from '@gamepark/rules-api'
@@ -303,15 +304,18 @@ export class ClanCardDescription extends LedaCardDescription<ClanCardItemId> {
    * lights up on the tile alone, since the card has no move of its own; and the square is one still to be
    * activated, which shines until its owner has resolved it (see {@link TileDescription.highlight}).
    * A card covers the whole tile of its square, so without this the zone would only be seen on the bare squares.
+   * A Snake moving an Egg only lets the squares of its Eggs be taken, hence only the Eggs shine then
+   * (see {@link MoveEggRule}).
    */
   highlight(item: MaterialItem<number, LocationType, ClanCardItemId>, context: ItemContext<number, MaterialType, LocationType>) {
-    return this.coversATileToDrag(item, context) || this.coversAnActivatedSquare(item, context) || undefined
+    const draggable = this.coversATileToDrag(item, context) && (context.rules.game.rule?.id !== RuleId.MoveEgg || isEgg(item))
+    return draggable || this.coversAnActivatedSquare(item, context) || undefined
   }
 
   /**
    * Whether the card is played on a square the player watching is being asked to swap, hence on a tile they may
-   * drag: while they organise their grid, and while a Scorpion Portal has them swap 2 squares
-   * (see {@link swappingPlayer}). Their own grid and their own screen alone: there is nothing to drag out of a
+   * drag: while they organise their grid, while a Scorpion Portal has them swap 2 squares, and while a Snake has
+   * them move an Egg (see {@link swappingPlayer}). Their own grid and their own screen alone: there is nothing to drag out of a
    * grid one is only watching, where a card stays clickable and shines no more than the tile it covers.
    */
   coversATileToDrag(item: MaterialItem<number, LocationType, ClanCardItemId>, context: ItemContext<number, MaterialType, LocationType>): boolean {

@@ -333,7 +333,7 @@
       "snake-draw-and-food-per-egg-2": "Pesca 1 carta.",
       "snake-draw-and-food-per-egg": "Guadagna 1 <food/> per ognuna delle tue Uova <egg/>.",
       "snake-steal-food-and-move-egg-2": "Ruba 1 <food/> al tuo avversario.",
-      "snake-steal-food-and-move-egg": "Sposta una delle tue Uova <egg/> su un'altra casella della tua griglia.",
+      "snake-steal-food-and-move-egg": "Sposta una delle tue Uova <egg/> (scambiando la posizione di 2 caselle).",
       "snake-spy-and-military": "Spia, poi guadagna 1 <military/>.",
       "snake-military-with-three-snakes": "Se hai 3 Serpenti <snake/> in gioco (compreso questo), guadagna 2 <military/>.",
       "snake-copy-snake": "Se hai 5 Serpenti <snake/> in gioco (compreso questo), copia l'effetto di uno dei tuoi Serpenti. Quel Serpente non viene attivato: potrà ancora esserlo in questo round.",
@@ -476,7 +476,7 @@
       "player": "{player} rigira l'Uovo spiato a faccia in giù"
     },
     "move-egg": {
-      "you": "Sposta una delle tue Uova su un'altra casella della tua griglia",
+      "you": "Sposta una delle tue Uova scambiando la sua casella con un'altra casella della tua griglia",
       "player": "{player} sposta una delle sue Uova"
     },
     "flip-snake-to-egg": {

@@ -15,6 +15,7 @@ import { Memory } from './Memory'
 import { RuleId } from './RuleId'
 import { eggCost, playedEggs, snakesInPlay } from './snake'
 import { roundSpies } from './spy'
+import { isGridSettled } from './swap'
 import { hasSpecialVictory } from './victory'
 
 /**
@@ -269,17 +270,26 @@ describe('The Snake card that turns one of its own back into an Egg', () => {
 })
 
 describe('The Snake card that moves an Egg', () => {
-  it('lays it on another square of the grid, and never on the one it is already on', () => {
+  it('swaps the square of the Egg with any other square of the grid, the Egg following its tile', () => {
     const egg = zone[0]
     const rules = new LedaRules(
       game({ cards: [{ card: ClanCardId.SnakeStealFoodAndMoveEgg, cell: played }, { card: ClanCardId.SnakeMilitary, cell: egg }], food: eggCost })
     )
     hatch(rules, played)
     expect(rules.game.rule?.id).toBe(RuleId.MoveEgg)
-    const moves = rules.getLegalMoves(1).filter(isMoveItemType(MaterialType.ClanCard))
-    // The 15 squares of the grid that are not the one the Egg stands on.
+    expect(rules.getLegalMoves(1).filter(isMoveItemType(MaterialType.ClanCard))).toEqual([])
+    const moves = rules.getLegalMoves(1).filter(isMoveItemType(MaterialType.Tile))
+    // The tile of the Egg, to the 15 other squares of the grid.
     expect(moves).toHaveLength(15)
-    playAll(rules, moves[0])
+    const eggCard = playedEggs(rules, 1).getIndex()
+    const eggTile = rules.material(MaterialType.ClanCard).getItem(eggCard).location.parent!
+    const move = moves.find((move) => move.location.x === played.x && move.location.y === played.y)!
+    playAll(rules, move)
+    // The Egg follows its tile, which now stands where the Snake was, and the Snake went the other way.
+    const tiles = rules.material(MaterialType.Tile)
+    expect(rules.material(MaterialType.ClanCard).getItem(eggCard).location.parent).toBe(eggTile)
+    expect(tiles.getItem(eggTile).location).toMatchObject(played)
+    expect(isGridSettled(rules, 1)).toBe(true)
     expect(pendingRules(rules)).toEqual([])
   })
 

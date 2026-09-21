@@ -333,7 +333,7 @@
       "snake-draw-and-food-per-egg-2": "Draw 1 card.",
       "snake-draw-and-food-per-egg": "Gain 1 <food/> for each of your Eggs <egg/>.",
       "snake-steal-food-and-move-egg-2": "Steal 1 <food/> from your opponent.",
-      "snake-steal-food-and-move-egg": "Move one of your Eggs <egg/> to another space of your grid.",
+      "snake-steal-food-and-move-egg": "Move one of your Eggs <egg/> (by swapping the position of 2 spaces).",
       "snake-spy-and-military": "Spy, then gain 1 <military/>.",
       "snake-military-with-three-snakes": "If you have 3 Snakes <snake/> in play (including this one), gain 2 <military/>.",
       "snake-copy-snake": "If you have 5 Snakes <snake/> in play (including this one), copy the effect of one of your Snakes. That Snake is not activated: it can still be activated this round.",
@@ -476,7 +476,7 @@
       "player": "{player} flips the spied Egg back face down"
     },
     "move-egg": {
-      "you": "Move one of your Eggs to another space of your grid",
+      "you": "Move one of your Eggs by swapping its space with another space of your grid",
       "player": "{player} is moving one of their Eggs"
     },
     "flip-snake-to-egg": {

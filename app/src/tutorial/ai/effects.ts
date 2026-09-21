@@ -17,7 +17,7 @@ import { upgradedTiles } from '@gamepark/leda/rules/tileChoices'
 import { victorySymbolsToWin } from '@gamepark/leda/rules/victory'
 import { isCustomMoveType, isMoveItemType, MaterialMove, XYCoordinates } from '@gamepark/rules-api'
 import { Ai, bestOf, effectsGain, futureValue, gainValue, Scored } from './AiPlayer'
-import { bestPlacement, buriesACard, playCardValue, spendingPenalty, swapValue, victoryValue } from './cards'
+import { bestPlacement, playCardValue, spendingPenalty, swapValue, victoryValue } from './cards'
 import {
   cellOfTile,
   cellOutlook,
@@ -410,17 +410,17 @@ export const flipSnakeToEgg = (ai: Ai, moves: Move[]): Move | undefined =>
   )
 
 /**
- * "Move one of your Eggs": the Egg goes where it is most likely to be reached, which is what makes it worth the
- * 2 Food its owner will spend opening it (see {@link cellOutlook}).
- * Never onto a square that already holds a card: an Egg laid over one buries it for the rest of the game, which
- * is the one placement this AI never makes (see {@link buriesACard}).
+ * "Move one of your Eggs", by swapping its square with another one: the swap is worth what it does to the square
+ * the Egg trades places with (see {@link swapValue}), plus what the Egg gains by going where it is most likely to be
+ * reached, which is what makes it worth the 2 Food its owner will spend opening it (see {@link cellOutlook}).
  */
 export const moveEgg = (ai: Ai, moves: Move[]): Move | undefined =>
   bestOf(
     moves.flatMap((move) => {
-      if (!isMoveItemType(MaterialType.ClanCard)(move) || move.location.parent === undefined) return []
-      if (buriesACard(ai, move.location.parent)) return []
-      return [{ move, score: cellOutlook(ai, cellOfTile(ai.rules, move.location.parent)) }]
+      if (!isMoveItemType(MaterialType.Tile)(move)) return []
+      const from = cellOfTile(ai.rules, move.itemIndex)
+      const to = cellOf(move.location)
+      return [{ move, score: swapValue(ai, from, to) + cellOutlook(ai, to) - cellOutlook(ai, from) }]
     })
   ) ?? moves[0]
 

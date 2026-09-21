@@ -333,7 +333,7 @@
       "snake-draw-and-food-per-egg-2": "Piochez 1 carte.",
       "snake-draw-and-food-per-egg": "Gagnez 1 <food/> pour chacun de vos Oeufs <egg/>.",
       "snake-steal-food-and-move-egg-2": "Volez 1 <food/> à votre adversaire.",
-      "snake-steal-food-and-move-egg": "Déplacez un de vos Oeufs <egg/> sur une autre case de votre grille.",
+      "snake-steal-food-and-move-egg": "Déplacez l'un de vos Oeufs <egg/> (en échangeant la position de 2 cases).",
       "snake-spy-and-military": "Scrutez, puis gagnez 1 <military/>.",
       "snake-military-with-three-snakes": "Si vous avez 3 Serpents <snake/> en jeu (celui-ci compris), gagnez 2 <military/>.",
       "snake-copy-snake": "Si vous avez 5 Serpents <snake/> en jeu (celui-ci compris), copiez l'effet d'un de vos Serpents. Ce Serpent n'est pas activé : il pourra encore l'être cette manche.",
@@ -476,7 +476,7 @@
       "player": "{player} retourne l'Oeuf scruté face cachée"
     },
     "move-egg": {
-      "you": "Déplacez un de vos Oeufs sur une autre case de votre grille",
+      "you": "Déplacez l'un de vos Oeufs en échangeant sa case avec une autre case de votre grille",
       "player": "{player} déplace un de ses Oeufs"
     },
     "flip-snake-to-egg": {

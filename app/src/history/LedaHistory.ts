@@ -162,6 +162,7 @@ export class LedaHistory implements LogDescription<Move, number, Game> {
         // A swap is 2 moves, and only the first is a swap: the second is the tile it displaced going the other way,
         // which is what a grid holding 2 tiles on one square says (see {@link isGridSettled}).
         if (!isGridSettled(rules, owner)) return undefined
+        if (ruleId === RuleId.MoveEgg) return this.entry(MoveEggLog, rules, owner, 1)
         return this.entry(SwapSquaresLog, rules, owner, ruleId === RuleId.Organisation ? 0 : 1)
       }
       switch (ruleId) {
@@ -199,16 +200,14 @@ export class LedaHistory implements LogDescription<Move, number, Game> {
   }
 
   /**
-   * A card of a grid that moves without leaving it, which only the Snakes and the Cats ever do: an Egg laid on
-   * another square, an Egg turned onto its Snake side or a Snake turned back onto its Egg side, and the half turn
-   * a Cat card takes as it is activated (see {@link snake}, {@link Effect.HalfTurn}).
+   * A card of a grid that moves without leaving it, which only the Snakes and the Cats ever do: an Egg turned onto
+   * its Snake side or a Snake turned back onto its Egg side, and the half turn a Cat card takes as it is activated (see {@link snake}, {@link Effect.HalfTurn}).
    *
    * The half turn says nothing the entry of the activation it comes from does not already say, so it is left out,
    * exactly as the Desert a temporary tile becomes is.
    */
   private movedInPlay(move: MoveItem<number, MaterialType, LocationType>, card: MaterialItem<number, LocationType>, rules: LedaRules) {
     const owner = move.location.player
-    if (move.location.parent !== card.location.parent) return this.entry(MoveEggLog, rules, owner)
     if (!isSnakeCard(card)) return undefined
     return move.location.rotation === true ? this.entry(HatchedSnakeLog, rules, owner, 1) : this.entry(FlipSnakeToEggLog, rules, owner, 1)
   }

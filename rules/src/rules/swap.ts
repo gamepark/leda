@@ -14,9 +14,10 @@ type Rule = MaterialRulesPart<number, MaterialType, LocationType>
 type Move = MaterialMove<number, MaterialType, LocationType>
 
 /**
- * Swapping 2 squares of a player's own grid, which the organisation offers for 1 Food and a Scorpion Portal for
- * free. Shared so that the 2 always mean the same thing by a swap, the Portal being written as "swap the position
- * of 2 of your cards or tiles", which is the very move an organisation makes.
+ * Swapping 2 squares of a player's own grid, which the organisation offers for 1 Food, a Scorpion Portal for free,
+ * and a Snake for free as well provided one of the 2 squares carries an Egg. Shared so that they always mean the
+ * same thing by a swap, the Portal being written as "swap the position of 2 of your cards or tiles", which is the
+ * very move an organisation makes.
  *
  * A swap is 2 moves: the drag says which tile is taken and where it goes, and the tile that was there is sent the
  * other way round. The cards played on a square follow their tile on their own, being parented to it, which is
@@ -24,13 +25,16 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  */
 
 /**
- * The player who may swap 2 of their own squares right now, if any: the one organising their grid, and the one a
- * Scorpion Portal is asking (see {@link OrganisationRule} and {@link SwapSquaresRule}). The 2 are one and the same
- * question for the table, which has to let a tile be taken from under the cards played on it and to shine on the
- * squares that may be moved, and both rules answer a swap with the very same drag.
+ * The player who may swap 2 of their own squares right now, if any: the one organising their grid, the one a
+ * Scorpion Portal is asking, and the one a Snake has move an Egg (see {@link OrganisationRule},
+ * {@link SwapSquaresRule} and {@link MoveEggRule}). They are all one and the same question for the table, which has
+ * to let a tile be taken from under the cards played on it and to shine on the squares that may be moved, and all 3
+ * rules answer a swap with the very same drag.
  */
 export const swappingPlayer = (rules: Rules): number | undefined =>
-  rules.game.rule?.id === RuleId.Organisation || rules.game.rule?.id === RuleId.SwapSquares ? rules.game.rule.player : undefined
+  rules.game.rule !== undefined && swappingRules.includes(rules.game.rule.id) ? rules.game.rule.player : undefined
+
+const swappingRules = [RuleId.Organisation, RuleId.SwapSquares, RuleId.MoveEgg]
 
 /** Every swap of the grid, in both directions: a tile taken to the square of any other tile. */
 export const swapMoves = (rules: Rules, player: number): Move[] => {

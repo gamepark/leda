@@ -41,8 +41,9 @@ export const FlipSnakeToEggLog = (props: MaterialLogProps<MoveItem>) => {
 }
 
 /**
- * An Egg laid on another square of its owner's grid. Which Egg it is is not said and never will be: it was hidden
- * on both sides of the move, which is the whole of what the clan plays for (see {@link MoveEggRule}).
+ * The square of an Egg swapped with another square of its owner's grid. Which Egg it is is not said and never will
+ * be: the card stays hidden as it follows its tile, which is the whole of what the clan plays for
+ * (see {@link MoveEggRule}).
  */
 export const MoveEggLog = ({ move }: MaterialLogProps<MoveItem>) => {
   const player = usePlayerName(move.location.player)

@@ -333,7 +333,7 @@
       "snake-draw-and-food-per-egg-2": "Ziehe 1 Karte.",
       "snake-draw-and-food-per-egg": "Erhalte 1 <food/> für jedes deiner Eier <egg/>.",
       "snake-steal-food-and-move-egg-2": "Stiehl deinem Gegner 1 <food/>.",
-      "snake-steal-food-and-move-egg": "Versetze eines deiner Eier <egg/> auf ein anderes Feld deines Rasters.",
+      "snake-steal-food-and-move-egg": "Versetze eines deiner Eier <egg/> (indem du die Position von 2 Feldern tauschst).",
       "snake-spy-and-military": "Spähe und erhalte dann 1 <military/>.",
       "snake-military-with-three-snakes": "Wenn du 3 Schlangen <snake/> im Spiel hast (diese eingeschlossen), erhalte 2 <military/>.",
       "snake-copy-snake": "Wenn du 5 Schlangen <snake/> im Spiel hast (diese eingeschlossen), kopiere den Effekt einer deiner Schlangen. Diese Schlange gilt nicht als aktiviert: Sie kann in dieser Runde noch aktiviert werden.",
@@ -476,7 +476,7 @@
       "player": "{player} dreht das ausgespähte Ei wieder verdeckt um"
     },
     "move-egg": {
-      "you": "Versetze eines deiner Eier auf ein anderes Feld deines Rasters",
+      "you": "Versetze eines deiner Eier, indem du sein Feld mit einem anderen Feld deines Rasters tauschst",
       "player": "{player} versetzt eines seiner Eier"
     },
     "flip-snake-to-egg": {

@@ -333,7 +333,7 @@
       "snake-draw-and-food-per-egg-2": "Roba 1 carta.",
       "snake-draw-and-food-per-egg": "Gana 1 <food/> por cada uno de tus Huevos <egg/>.",
       "snake-steal-food-and-move-egg-2": "Róbale 1 <food/> a tu oponente.",
-      "snake-steal-food-and-move-egg": "Mueve uno de tus Huevos <egg/> a otra casilla de tu cuadrícula.",
+      "snake-steal-food-and-move-egg": "Mueve uno de tus Huevos <egg/> (intercambiando la posición de 2 casillas).",
       "snake-spy-and-military": "Espía, y luego gana 1 <military/>.",
       "snake-military-with-three-snakes": "Si tienes 3 Serpientes <snake/> en juego (incluida esta), gana 2 <military/>.",
       "snake-copy-snake": "Si tienes 5 Serpientes <snake/> en juego (incluida esta), copia el efecto de una de tus Serpientes. Esa Serpiente no se activa: todavía podrá activarse esta ronda.",
@@ -476,7 +476,7 @@
       "player": "{player} vuelve a poner el Huevo espiado boca abajo"
     },
     "move-egg": {
-      "you": "Mueve uno de tus Huevos a otra casilla de tu cuadrícula",
+      "you": "Mueve uno de tus Huevos intercambiando su casilla con otra casilla de tu cuadrícula",
       "player": "{player} mueve uno de sus Huevos"
     },
     "flip-snake-to-egg": {

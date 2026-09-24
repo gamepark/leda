@@ -1,11 +1,12 @@
 import { css } from '@emotion/react'
 import { LedaRules } from '@gamepark/leda/LedaRules'
-import { EffectChoice } from '@gamepark/leda/material/Effect'
+import { Effect, EffectChoice } from '@gamepark/leda/material/Effect'
 import { CustomMoveType } from '@gamepark/leda/rules/CustomMoveType'
 import { Dialog, PlayMoveButton, ThemeButton, useUndo } from '@gamepark/react-game'
 import { MaterialMoveBuilder } from '@gamepark/rules-api'
 import { Fragment } from 'react'
 import { useTranslation } from 'react-i18next'
+import { AwakeningIcon } from '../headers/AwakeningIcon'
 import { EffectIcon, EffectIcons } from '../headers/EffectIcon'
 import { copper } from '../theme'
 
@@ -29,6 +30,7 @@ export const ChooseEffectDialog = ({ choice, rules, player }: ChooseEffectDialog
   const { t } = useTranslation()
   const [undo, canUndo] = useUndo()
   const cancel = canUndo() ? () => undo() : undefined
+  const offersAwakening = choice.or.some((branch) => branch[Effect.Awakening] !== undefined)
   return (
     <Dialog open onBackdropClick={cancel}>
       <div css={content}>
@@ -55,6 +57,15 @@ export const ChooseEffectDialog = ({ choice, rules, player }: ChooseEffectDialog
             </Fragment>
           ))}
         </div>
+        {/*
+          An Awakening picked here does nothing yet, which the player would otherwise only learn once they have
+          picked it: said beside the choice, while the other branch is still within reach.
+        */}
+        {offersAwakening && (
+          <p css={awakeningNote}>
+            <AwakeningIcon /> {t('awakening.explain')}
+          </p>
+        )}
         {/*
           "Annuler" is the platform's own word, which every game on it shares: taken from the common namespace
           rather than written again here, so that it reads the same in every locale the platform is translated in.
@@ -119,6 +130,13 @@ const branchButton = css`
   min-width: 3em;
   min-height: 2em;
   padding: 0.2em 0.6em;
+`
+
+const awakeningNote = css`
+  margin: 1.2em auto 0;
+  max-width: 24em;
+  text-align: center;
+  font-size: 2em;
 `
 
 const buttons = css`

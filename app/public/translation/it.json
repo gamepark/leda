@@ -36,7 +36,8 @@
     "panda-activation": "Per te, un cristallo <special/> dà 1 <food/> <strong>oppure</strong> 1 effetto <strong>Risveglio</strong> <awakening/>.",
     "clan-victory": "La tua vittoria di clan richiede i tuoi {gold} Panda <gold/> in gioco. Hai già il Re in mano, e la Regina ti aspetta nel tuo mazzo: ti serviranno anche Panda <silver/>, e almeno <strong>{awakenings} effetti Risveglio</strong> <awakening/>.",
     "end": "Non appena soddisfi la tua condizione di vittoria di clan, o raggiungi la vittoria militare, la partita si ferma e tu vinci!",
-    "good-luck": "Ora tocca a te giocare. Buona fortuna!"
+    "good-luck": "Ora tocca a te giocare. Buona fortuna!",
+    "click-tip": "In qualsiasi momento, clicca su un elemento per scoprire cosa fa."
   },
   "mulligan": {
     "keep": "Tenere",

@@ -36,7 +36,8 @@
     "panda-activation": "Für dich bringt ein Kristall <special/> 1 <food/> <strong>oder</strong> 1 <strong>Erwachen</strong>-Effekt <awakening/>.",
     "clan-victory": "Dein Clan-Sieg verlangt deine {gold} Pandas <gold/> im Spiel. Den König hast du bereits auf der Hand, und die Königin wartet in deinem Nachziehstapel: Du brauchst außerdem Pandas <silver/> und mindestens <strong>{awakenings} Erwachen-Effekte</strong> <awakening/>.",
     "end": "Sobald du deine Clan-Siegbedingung erfüllst oder den Militärsieg erreichst, endet das Spiel und du gewinnst!",
-    "good-luck": "Jetzt bist du am Zug. Viel Glück!"
+    "good-luck": "Jetzt bist du am Zug. Viel Glück!",
+    "click-tip": "Klicke jederzeit auf ein Element, um zu erfahren, was es bewirkt."
   },
   "mulligan": {
     "keep": "Behalten",

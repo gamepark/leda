@@ -36,7 +36,8 @@
     "panda-activation": "For you, a crystal <special/> gives 1 <food/> <strong>or</strong> 1 <strong>Awakening</strong> <awakening/> effect.",
     "clan-victory": "Your clan victory requires your {gold} <gold/> Pandas in play. You already have the King in hand, and the Queen is waiting for you in your deck: you will also need <silver/> Pandas, and at least <strong>{awakenings} Awakening effects</strong> <awakening/>.",
     "end": "As soon as you meet your clan victory condition, or reach the military victory, the game stops and you win!",
-    "good-luck": "It is your turn to play now. Good luck!"
+    "good-luck": "It is your turn to play now. Good luck!",
+    "click-tip": "At any time, click an element to find out what it does."
   },
   "mulligan": {
     "keep": "Keep",

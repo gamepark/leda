@@ -36,7 +36,8 @@
     "panda-activation": "Para ti, un cristal <special/> da 1 <food/> <strong>o</strong> 1 efecto <strong>Despertar</strong> <awakening/>.",
     "clan-victory": "Tu victoria de clan exige tus {gold} Pandas <gold/> en juego. Ya tienes al Rey en la mano, y la Reina te espera en tu mazo: también necesitarás Pandas <silver/>, y al menos <strong>{awakenings} efectos Despertar</strong> <awakening/>.",
     "end": "En cuanto cumplas tu condición de victoria de clan, o alcances la victoria militar, ¡la partida se detiene y ganas!",
-    "good-luck": "Ahora te toca jugar. ¡Buena suerte!"
+    "good-luck": "Ahora te toca jugar. ¡Buena suerte!",
+    "click-tip": "En cualquier momento, haz clic en un elemento para saber qué hace."
   },
   "mulligan": {
     "keep": "Quedarme",

@@ -1,3 +1,4 @@
+import { css } from '@emotion/react'
 import { Clan } from '@gamepark/leda/Clan'
 import { LedaOptions } from '@gamepark/leda/LedaOptions'
 import { ActionZone, actionZoneCells } from '@gamepark/leda/material/ActionZone'
@@ -35,6 +36,26 @@ const awakeningsToWin = 5
 
 /** One popup of the tutorial, written in the translation files the way the help dialogs are (see {@link HelpText}). */
 const text = (code: string, values?: Record<string, unknown>) => () => <HelpText code={`tutorial.${code}`} values={values} />
+
+/**
+ * A popup followed by the reminder that any piece of the table tells what it does when pressed, laid on the steps
+ * where the reader is looking at material they will have to weigh on their own. Written once in the translation
+ * files, so that it reads the same on each of them.
+ */
+const textWithClickTip = (code: string, values?: Record<string, unknown>) => () => (
+  <>
+    <HelpText code={`tutorial.${code}`} values={values} />
+    <em css={clickTip}>
+      <HelpText code="tutorial.click-tip" />
+    </em>
+  </>
+)
+
+/** A line of its own, set a little apart from the popup it follows. */
+const clickTip = css`
+  display: block;
+  margin-top: 0.8em;
+`
 
 /**
  * The very text a help dialog reads, for a rule the tutorial has no reason to word a second time: 2 wordings of
@@ -181,7 +202,7 @@ export class LedaTutorial extends MaterialTutorial<number, MaterialType, Locatio
       focus: (game) => ({ materials: [this.myVictoryCondition(game)] })
     },
     {
-      popup: { text: text('grid'), ...popupRight },
+      popup: { text: textWithClickTip('grid'), ...popupRight },
       focus: (game) => ({ ...roomRight(gridSize), materials: [this.myTiles(game)] })
     },
 
@@ -233,7 +254,7 @@ export class LedaTutorial extends MaterialTutorial<number, MaterialType, Locatio
       focus: (game) => ({ materials: [this.material(game, MaterialType.FoodToken).player(tutorialPlayer)] })
     },
     {
-      popup: { text: text('food-use'), ...popupAbove },
+      popup: { text: textWithClickTip('food-use'), ...popupAbove },
       focus: (game) => ({ materials: [this.myBoughtCards(game)] })
     },
 
@@ -316,7 +337,7 @@ export class LedaTutorial extends MaterialTutorial<number, MaterialType, Locatio
       focus: (game) => ({ ...roomRight(actionTile.width), materials: [this.actionTileDeck(game)] })
     },
     {
-      popup: { text: text('your-organisation'), ...popupRight },
+      popup: { text: textWithClickTip('your-organisation'), ...popupRight },
       focus: (game) => ({ ...roomRight(gridSize), materials: [this.myHand(game), this.myTiles(game)] }),
       move: {}
     },

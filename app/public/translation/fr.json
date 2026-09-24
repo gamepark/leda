@@ -36,7 +36,8 @@
     "panda-activation": "Pour vous, un cristal <special/> rapporte 1 <food/> <strong>ou</strong> 1 effet <strong>Éveil</strong> <awakening/>.",
     "clan-victory": "Votre victoire de clan demande vos {gold} Pandas <gold/> en jeu. Vous avez déjà le Roi en main, et la Reine vous attend dans votre pioche : il vous faudra aussi des Pandas <silver/>, et au moins <strong>{awakenings} effets Éveil</strong> <awakening/>.",
     "end": "Dès que vous remplissez votre condition de victoire de clan, ou que vous atteignez la victoire militaire, la partie s'arrête et vous l'emportez !",
-    "good-luck": "À vous de jouer à présent. Bonne chance !"
+    "good-luck": "À vous de jouer à présent. Bonne chance !",
+    "click-tip": "À tout moment, cliquer sur un élément pour savoir ce qu'il fait."
   },
   "mulligan": {
     "keep": "Garder",

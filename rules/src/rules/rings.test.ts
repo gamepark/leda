@@ -387,10 +387,68 @@ describe('The Red Ring', () => {
     expect(rules.game.rule?.id).not.toBe(RuleId.PlaceRing)
   })
 
-  it('is alone in its window, the 3 other Rings belonging to the activation', () => {
-    // Both conditions are met, and only the one of phase 2 is answered there.
+  it('is alone in its window, the others waiting for the token to be resolved', () => {
+    // Both conditions are met, and only the one of the conflict is answered there.
     const rules = new LedaRules(game({ hand: [ClanCardId.CatRingWinConflictByThree, ClanCardId.CatRingEmptyDeck], symbols: { 1: 3, 2: 0 }, top: MilitaryVictoryTokenId.Victory }))
     settleConflict(rules)
     expect(offeredRings(rules)).toEqual([ClanCardId.CatRingWinConflictByThree])
+    pass(rules)
+    // The Blue Ring gets the window that follows the token, and the Red one is no longer offered there.
+    expect(offeredRings(rules)).toEqual([ClanCardId.CatRingEmptyDeck])
+  })
+
+  it('is offered before what the token asks for', () => {
+    const rules = new LedaRules(game({ ...setup({ 1: 3, 2: 0 }, MilitaryVictoryTokenId.Upgrade), deck: 1 }))
+    settleConflict(rules)
+    expect(offeredRings(rules)).toEqual([ClanCardId.CatRingWinConflictByThree])
+    placeRing(rules, ClanCardId.CatRingWinConflictByThree, { x: 3, y: 3 })
+    expect(rules.game.rule?.id).toBe(RuleId.UpgradeTile)
+  })
+
+  it('stays in hand when the token draws it', () => {
+    // Its window opens before the token draws anything: a Red Ring drawn there is not in hand when it is asked.
+    const state = game({ symbols: { 1: 3, 2: 0 }, top: MilitaryVictoryTokenId.Draw })
+    state.items[MaterialType.ClanCard]!.push({
+      id: { front: ClanCardId.CatRingWinConflictByThree, back: Clan.Cat },
+      location: { type: LocationType.PlayerDeck, player: 1, x: 0 }
+    })
+    const rules = new LedaRules(state)
+    settleConflict(rules)
+    expect(rules.material(MaterialType.ClanCard).location(LocationType.PlayerHand).player(1)).toHaveLength(1)
+    expect(rules.game.rule?.id).toBe(RuleId.Organisation)
+  })
+})
+
+describe('The window at the end of the conflict', () => {
+  it('offers the Blue Ring when the token draws the last card of the deck', () => {
+    const rules = new LedaRules(game({ hand: [ClanCardId.CatRingEmptyDeck], deck: 1, symbols: { 1: 1, 2: 0 }, top: MilitaryVictoryTokenId.Draw }))
+    settleConflict(rules)
+    expect(rules.material(MaterialType.ClanCard).location(LocationType.PlayerDeck).player(1)).toHaveLength(0)
+    expect(offeredRings(rules)).toEqual([ClanCardId.CatRingEmptyDeck])
+    placeRing(rules, ClanCardId.CatRingEmptyDeck, { x: 3, y: 3 })
+    expect(rules.game.rule?.id).toBe(RuleId.Organisation)
+  })
+
+  it('offers the Orange Ring once the token has upgraded a 5th tile', () => {
+    const rules = new LedaRules(game({ hand: [ClanCardId.CatRingFiveUpgradedTiles], deck: 1, upgraded: 4, symbols: { 1: 1, 2: 0 }, top: MilitaryVictoryTokenId.Upgrade }))
+    settleConflict(rules)
+    expect(rules.game.rule?.id).toBe(RuleId.UpgradeTile)
+    playAll(rules, rules.getLegalMoves(1)[0])
+    expect(offeredRings(rules)).toEqual([ClanCardId.CatRingFiveUpgradedTiles])
+    pass(rules)
+    expect(rules.game.rule?.id).toBe(RuleId.Organisation)
+  })
+
+  it('does not offer the Purple Ring, which belongs to the activation alone', () => {
+    const cards = [0, 1, 2].map((x) => ({ card: blankCard, x }))
+    const rules = new LedaRules(game({ cards, hand: [ClanCardId.CatRingThreeCatCards], deck: 1, symbols: { 1: 1, 2: 0 }, top: MilitaryVictoryTokenId.Victory }))
+    settleConflict(rules)
+    expect(rules.game.rule?.id).toBe(RuleId.Organisation)
+  })
+
+  it('opens nothing for the player who lost the conflict', () => {
+    const rules = new LedaRules(game({ hand: [ClanCardId.CatRingEmptyDeck], symbols: { 1: 0, 2: 1 }, top: MilitaryVictoryTokenId.Victory }))
+    settleConflict(rules)
+    expect(rules.game.rule?.id).toBe(RuleId.Organisation)
   })
 })

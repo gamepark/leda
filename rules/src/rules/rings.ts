@@ -8,7 +8,9 @@ import { MaterialType } from '../material/MaterialType'
 import { cellOf, gridTiles, sameCell } from '../material/PlayerGrid'
 import { Rules } from '../Rules'
 import { isItemActivated, roundZone } from './activation'
+import { pendingRules } from './effects'
 import { isMilitaryConflictPhase, militaryLead } from './militaryConflict'
+import { RuleId } from './RuleId'
 import { cardsInPlay } from './squares'
 import { upgradedTiles } from './tileChoices'
 
@@ -20,10 +22,12 @@ import { upgradedTiles } from './tileChoices'
  * is its condition, which the player has to have met when they put it in play, and which nothing keeps met: a deck
  * that fills back up or a tile a Scorpion turns back down closes the window again.
  *
- * Each of them names the phase of the round its window opens in, and 3 of the 4 name the same one: the moment a
- * player is done activating their zone, where the Pandas resolve their Awakenings (see {@link ActivateZoneRule}).
- * The Red Ring is the one of phase 2, what it asks for being settled by the conflict and by nothing else
- * (see {@link MilitaryVictoryRule}). Putting a Ring in play is never compulsory in either window.
+ * Each of them names the phases of the round its window opens in. 3 of the 4 are put in play the moment a player is
+ * done activating their zone, where the Pandas resolve their Awakenings (see {@link ActivateZoneRule}). The Red
+ * Ring is the one of phase 2, what it asks for being settled by the conflict and by nothing else
+ * (see {@link MilitaryVictoryRule}). The Blue and the Orange Rings get a last window once the token won there is
+ * resolved: it may draw the last card of a deck or upgrade a 5th tile, after the window of the activation has
+ * closed. Putting a Ring in play is never compulsory in any window.
  *
  * The app reads these to know which Rings to offer, and {@link PlaceRingRule} to know which moves are legal, so
  * that the two can never disagree.
@@ -69,34 +73,45 @@ const deckSize = (rules: Rules, player: number): number =>
   rules.material(MaterialType.ClanCard).location(LocationType.PlayerDeck).player(player).length
 
 /**
- * The 2 windows a Ring may be put in play in, which are 2 phases of the round: 3 of the Rings ask about a state of
- * the game and are played at the end of an activation, while the Red one asks about the conflict and is played on
- * it. A window is read off the phase and not written down: the same rule serves the two, and which one it is
- * asking in is what the round is in the middle of (see {@link isMilitaryConflictPhase}).
+ * The 3 windows a Ring may be put in play in: 3 of the Rings ask about a state of the game and are played at the
+ * end of an activation, while the Red one asks about the conflict and is played on it, the moment its token is
+ * won and before that token is resolved. What the token gives may then bring a state of the game about, hence a
+ * last window once it is resolved, for the Blue and Orange Rings (see {@link MilitaryVictoryRule}).
+ *
+ * A window is read off the round and not written down: the same rule serves the 3, and which one it is asking in
+ * is what the round is in the middle of (see {@link isMilitaryConflictPhase}). The window that follows the token
+ * is queued as soon as the token is won, so the one of the conflict is the one with it still waiting behind.
  */
 enum RingWindow {
   Activation = 1,
-  MilitaryConflict
+  MilitaryConflict,
+  MilitaryVictoryResolved
 }
 
-/** Which of the 2 is open, phase 3 and everything before the conflict being the activation window. */
-const openWindow = (rules: Rules): RingWindow => (isMilitaryConflictPhase(rules) ? RingWindow.MilitaryConflict : RingWindow.Activation)
+/** Which of the 3 is open, phase 3 and everything before the conflict being the activation window. */
+const openWindow = (rules: Rules): RingWindow => {
+  if (!isMilitaryConflictPhase(rules)) return RingWindow.Activation
+  return pendingRules(rules).includes(RuleId.PlaceRing) ? RingWindow.MilitaryConflict : RingWindow.MilitaryVictoryResolved
+}
 
 /** When each Ring may be put in play, and what it asks for there, both read off the card. */
-const ringPlacements: Record<Ring, { window: RingWindow; condition: (rules: Rules, player: number) => boolean }> = {
+const ringPlacements: Record<Ring, { windows: RingWindow[]; condition: (rules: Rules, player: number) => boolean }> = {
   /**
    * Red. Win a military conflict by 3 symbols or more, which is a lead over the opponent and not a total.
    * The one Ring of the conflict, and the reason there is a window there at all: a lead is only a conflict won
    * once both players are done activating, so this is true there and nowhere else.
    */
   [ClanCardId.CatRingWinConflictByThree]: {
-    window: RingWindow.MilitaryConflict,
+    windows: [RingWindow.MilitaryConflict],
     condition: (rules, player) => militaryLead(rules, player) >= ringConflictLead
   },
 
-  /** Blue. Empty your deck, the one clan card pile a Cat player draws from. */
+  /**
+   * Blue. Empty your deck, the one clan card pile a Cat player draws from. One of the tokens of the conflict draws a
+   * card, which may be the last one.
+   */
   [ClanCardId.CatRingEmptyDeck]: {
-    window: RingWindow.Activation,
+    windows: [RingWindow.Activation, RingWindow.MilitaryVictoryResolved],
     condition: (rules, player) => deckSize(rules, player) === 0
   },
 
@@ -105,21 +120,24 @@ const ringPlacements: Record<Ring, { window: RingWindow; condition: (rules: Rule
    * activated as such: a Ring put in play on the 3rd of them does not make the zone one that was activated with 3.
    */
   [ClanCardId.CatRingThreeCatCards]: {
-    window: RingWindow.Activation,
+    windows: [RingWindow.Activation],
     condition: (rules, player) => catCardsInZone(rules, player) >= ringCatCardsInZone
   },
 
-  /** Orange. Have 5 upgraded tiles, out of the 8 permanent ones a grid holds. */
+  /**
+   * Orange. Have 5 upgraded tiles, out of the 8 permanent ones a grid holds. One of the tokens of the conflict
+   * upgrades a tile, which may be the 5th.
+   */
   [ClanCardId.CatRingFiveUpgradedTiles]: {
-    window: RingWindow.Activation,
+    windows: [RingWindow.Activation, RingWindow.MilitaryVictoryResolved],
     condition: (rules, player) => upgradedTiles(rules, player).length >= ringUpgradedTiles
   }
 }
 
 /** Whether that Ring is one of the window that is open, and whether what it asks for is true. */
 const isPlayable = (rules: Rules, player: number, ring: Ring): boolean => {
-  const { window, condition } = ringPlacements[ring]
-  return window === openWindow(rules) && condition(rules, player)
+  const { windows, condition } = ringPlacements[ring]
+  return windows.includes(openWindow(rules)) && condition(rules, player)
 }
 
 /**

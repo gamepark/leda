@@ -14,7 +14,8 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  * square of their own grid, for free (see {@link rings}).
  *
  * It opens where the Pandas resolve their Awakenings, once the player is done activating their zone, and once more
- * the moment a conflict is won, which is the only place the Red Ring can be played
+ * the moment a conflict is won, which is the only place the Red Ring can be played, and a last time once the token
+ * won there is resolved, for the Blue and Orange Rings what it gives may have made playable
  * (see {@link ActivateZoneRule} and {@link MilitaryVictoryRule}).
  *
  * Free is not compulsory, hence the pass: a Ring put in play is a Ring that can be buried under a later card, and

@@ -31,6 +31,12 @@ export class MilitaryVictoryRule extends EffectRule {
    * after the Rings of the Cats, which is where the Red Ring is put in play: the conflict it asks for has just
    * been won, and that is the only moment it is ever true (see {@link PlaceRingRule}).
    *
+   * Once the token is resolved, the Rings get one more window: the card it draws may be the last of the deck, and
+   * the tile it upgrades the 5th of the grid, which the Blue and the Orange Rings ask for. That window is queued
+   * before the effects are, so that what they ask the player comes first, and it closes on its own when it has
+   * nothing to offer, what the token draws or upgrades being only known once it is resolved. It is also what tells
+   * the 2 windows apart: the one of the Red Ring is the one with the other still waiting (see {@link openWindow}).
+   *
    * The conflict of the round and nothing else: a token a card draws in the middle of an activation wins no
    * conflict, and the Rings of that phase have their own window at the end of it.
    */
@@ -38,8 +44,10 @@ export class MilitaryVictoryRule extends EffectRule {
     if (!isMoveItemType(MaterialType.MilitaryVictoryToken)(move)) return []
     if (move.location.type !== LocationType.PlayerMilitaryVictory) return []
     const token = this.material(MaterialType.MilitaryVictoryToken).getItem<MilitaryVictoryTokenId>(move.itemIndex)
+    const conflict = isMilitaryConflictPhase(this)
+    if (conflict) queueFirstRule(this, RuleId.PlaceRing)
     const moves = resolveEffects(this, militaryVictoryEffects[token.id] ?? {})
-    if (isMilitaryConflictPhase(this) && canPlaceRing(this, this.player)) queueFirstRule(this, RuleId.PlaceRing)
+    if (conflict && canPlaceRing(this, this.player)) queueFirstRule(this, RuleId.PlaceRing)
     return [...moves, ...this.resume()]
   }
 

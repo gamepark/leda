@@ -6,7 +6,7 @@
     "grid": "This is your action grid, 16 tiles in a 4x4 layout. Each round, you will activate <strong>4 spaces</strong> of it.",
     "action-tile": "This is the <strong>Action</strong> tile of the round. It indicates the zones of 4 spaces the active player has to choose from.",
     "choose-zone": "You are the <strong>active player</strong>. This tile lets you activate <strong>row 1</strong>, <strong>column 1</strong> or the <strong>top-left square</strong>. Your opponent will then activate the same zone in their own grid.",
-    "choose-row": "Choose to activate the <strong>first row</strong>.",
+    "choose-row": "Press the button to <strong>Activate the first row</strong>.",
     "activate-order": "The zone is chosen: the active player now activates their 4 spaces, <strong>in any order they choose</strong>.",
     "temporary-food": "This tile gives 1 <food/>, and it is a <strong>temporary</strong> tile. Activate it.",
     "desert": "A temporary tile is <strong>flipped</strong> <flip/> as soon as it is activated: it becomes a <strong>Desert</strong>, a side that no longer produces anything.",
@@ -100,6 +100,7 @@
     "tournament": "Tournament rules: both players may pick the same clan"
   },
   "zone": {
+    "activate": "Activate",
     "1": "row 1",
     "2": "row 2",
     "3": "row 3",

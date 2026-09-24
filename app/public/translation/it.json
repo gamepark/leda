@@ -6,7 +6,7 @@
     "grid": "Ecco la tua griglia d'azione, 16 tessere in 4x4. A ogni round ne attiverai <strong>4 caselle</strong>.",
     "action-tile": "Ecco la tessera <strong>Azione</strong> del round. È lei a indicare le zone di 4 caselle tra cui il giocatore attivo deve scegliere.",
     "choose-zone": "Sei il <strong>giocatore attivo</strong>. Questa tessera ti permette di attivare la <strong>riga 1</strong>, la <strong>colonna 1</strong> o il <strong>quadrato in alto a sinistra</strong>. Il tuo avversario attiverà poi la stessa zona nella propria griglia.",
-    "choose-row": "Scegli di attivare la <strong>prima riga</strong>.",
+    "choose-row": "Premi il pulsante per <strong>attivare la prima riga</strong>.",
     "activate-order": "La zona è scelta: il giocatore attivo attiva ora le sue 4 caselle, <strong>nell'ordine che preferisce</strong>.",
     "temporary-food": "Questa tessera dà 1 <food/>, ed è una tessera <strong>temporanea</strong>. Attivala.",
     "desert": "Una tessera temporanea viene <strong>girata</strong> <flip/> non appena viene attivata: diventa un <strong>Deserto</strong>, un lato che non produce più nulla.",
@@ -100,6 +100,7 @@
     "tournament": "Regole da torneo: entrambi i giocatori possono scegliere lo stesso clan"
   },
   "zone": {
+    "activate": "Attiva",
     "1": "la riga 1",
     "2": "la riga 2",
     "3": "la riga 3",

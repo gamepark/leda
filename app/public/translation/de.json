@@ -6,7 +6,7 @@
     "grid": "Das ist dein Aktionsraster, 16 Plättchen in 4x4. In jeder Runde aktivierst du davon <strong>4 Felder</strong>.",
     "action-tile": "Das ist das <strong>Aktions</strong>plättchen der Runde. Es gibt die Zonen aus 4 Feldern an, unter denen der aktive Spieler wählen muss.",
     "choose-zone": "Du bist der <strong>aktive Spieler</strong>. Dieses Plättchen lässt dich <strong>Reihe 1</strong>, <strong>Spalte 1</strong> oder das <strong>Quadrat oben links</strong> aktivieren. Dein Gegner aktiviert anschließend dieselbe Zone in seinem eigenen Raster.",
-    "choose-row": "Wähle die <strong>erste Reihe</strong> zur Aktivierung.",
+    "choose-row": "Drücke die Schaltfläche, um <strong>die erste Reihe zu aktivieren</strong>.",
     "activate-order": "Die Zone ist gewählt: Der aktive Spieler aktiviert nun seine 4 Felder, <strong>in beliebiger Reihenfolge</strong>.",
     "temporary-food": "Dieses Plättchen bringt 1 <food/> und ist ein <strong>temporäres</strong> Plättchen. Aktiviere es.",
     "desert": "Ein temporäres Plättchen wird <strong>umgedreht</strong> <flip/>, sobald es aktiviert wird: Es wird zu einer <strong>Wüste</strong>, einer Seite, die nichts mehr einbringt.",
@@ -100,6 +100,7 @@
     "tournament": "Turnierregeln: Beide Spieler dürfen denselben Clan wählen"
   },
   "zone": {
+    "activate": "Aktivieren",
     "1": "die Reihe 1",
     "2": "die Reihe 2",
     "3": "die Reihe 3",

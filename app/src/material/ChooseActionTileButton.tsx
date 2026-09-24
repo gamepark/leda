@@ -4,6 +4,7 @@ import { cellOf } from '@gamepark/leda/material/PlayerGrid'
 import { CustomMoveType } from '@gamepark/leda/rules/CustomMoveType'
 import { useAnimation } from '@gamepark/react-game'
 import { MaterialMoveBuilder, MaterialRules, XYCoordinates } from '@gamepark/rules-api'
+import { useTranslation } from 'react-i18next'
 import { offeredZones, zoneChosenOn, zoneColor } from './actionZones'
 import { LedaMenuButton } from './LedaMenuButton'
 import { TileButtonProps } from './TileMenuButton'
@@ -15,12 +16,15 @@ import { ZoneIcon } from './ZoneIcon'
  * the button is the move.
  * The zone it stands for is drawn inside it, which is what says which of the 3 rectangles the button belongs to,
  * and its rim is the color that rectangle is drawn in.
+ * A grid in a coin reads as the legend of the rectangles more than as something to press, which is what the word
+ * across it is for: the other medallions show a symbol that is already a verb, this one would show none.
  */
 export const ChooseZoneButton = ({ rules, cell }: { rules: MaterialRules<number, MaterialType, LocationType>; cell: XYCoordinates }) => {
   // Nothing is read off the Action tile while the table is still moving (see {@link ActionZoneComponent}).
   const animation = useAnimation()
   const zones = offeredZones(rules)
   const zone = zoneChosenOn(zones, cell)
+  const { t } = useTranslation()
   if (animation !== undefined || zone === undefined) return null
   return (
     <LedaMenuButton
@@ -28,6 +32,8 @@ export const ChooseZoneButton = ({ rules, cell }: { rules: MaterialRules<number,
       size={zoneButtonSize}
       accent={zoneColor(zones, zone)}
       move={MaterialMoveBuilder.customMove(CustomMoveType.ChooseAction, zone)}
+      label={t('zone.activate')}
+      labelBanner
     >
       <ZoneIcon zone={zone} size={zoneIconSize} />
     </LedaMenuButton>

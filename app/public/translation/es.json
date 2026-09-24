@@ -6,7 +6,7 @@
     "grid": "Esta es tu cuadrícula de acción, 16 losetas en 4x4. En cada ronda activarás <strong>4 casillas</strong>.",
     "action-tile": "Esta es la loseta de <strong>Acción</strong> de la ronda. Es la que indica las zonas de 4 casillas entre las que el jugador activo debe elegir.",
     "choose-zone": "Eres el <strong>jugador activo</strong>. Esta loseta te permite activar la <strong>fila 1</strong>, la <strong>columna 1</strong> o el <strong>cuadrado superior izquierdo</strong>. Tu oponente activará después la misma zona en su propia cuadrícula.",
-    "choose-row": "Elige activar la <strong>primera fila</strong>.",
+    "choose-row": "Pulsa el botón para <strong>activar la primera fila</strong>.",
     "activate-order": "La zona está elegida: el jugador activo activa ahora sus 4 casillas, <strong>en el orden que prefiera</strong>.",
     "temporary-food": "Esta loseta da 1 <food/>, y es una loseta <strong>temporal</strong>. Actívala.",
     "desert": "Una loseta temporal se <strong>voltea</strong> <flip/> en cuanto se activa: se convierte en un <strong>Desierto</strong>, una cara que ya no produce nada.",
@@ -100,6 +100,7 @@
     "tournament": "Reglas de torneo: ambos jugadores pueden elegir el mismo clan"
   },
   "zone": {
+    "activate": "Activar",
     "1": "la fila 1",
     "2": "la fila 2",
     "3": "la fila 3",

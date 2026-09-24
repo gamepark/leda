@@ -6,7 +6,7 @@
     "grid": "Voici votre grille d'action, 16 tuiles en 4x4. À chaque manche, vous en activerez <strong>4 cases</strong>.",
     "action-tile": "Voici la tuile <strong>Action</strong> de la manche. C'est elle qui indique les zones de 4 cases parmi lesquelles le joueur actif doit choisir.",
     "choose-zone": "Vous êtes le <strong>joueur actif</strong>. Cette tuile vous laisse activer la <strong>ligne 1</strong>, la <strong>colonne 1</strong> ou le <strong>carré en haut à gauche</strong>. Votre adversaire activera ensuite la même zone dans sa propre grille.",
-    "choose-row": "Choisissez d'activer la <strong>première ligne</strong>.",
+    "choose-row": "Appuyez sur le bouton pour <strong>Activer la première ligne</strong>.",
     "activate-order": "La zone est choisie : le joueur actif active maintenant ses 4 cases, <strong>dans l'ordre de son choix</strong>.",
     "temporary-food": "Cette tuile rapporte 1 <food/>, et c'est une tuile <strong>temporaire</strong>. Activez-la.",
     "desert": "Une tuile temporaire est <strong>retournée</strong> <flip/> dès qu'elle est activée : elle devient un <strong>Désert</strong>, une face qui ne produit plus rien.",
@@ -100,6 +100,7 @@
     "tournament": "Règles de tournoi : les deux joueurs peuvent choisir le même clan"
   },
   "zone": {
+    "activate": "Activer",
     "1": "la ligne 1",
     "2": "la ligne 2",
     "3": "la ligne 3",

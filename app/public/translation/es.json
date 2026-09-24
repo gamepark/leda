@@ -84,7 +84,7 @@
     "pick": "Elegir",
     "win-conflict": "Ganar un Conflicto militar con {count} o más de diferencia.",
     "empty-deck": "Vaciar tu mazo.",
-    "three-cat-cards": "Activar una zona con al menos {count} cartas de Gato.",
+    "three-cat-cards": "Activar una zona con al menos {count} cartas de Gato (todas tus cartas son cartas de Gato).",
     "five-upgraded-tiles": "Tener {count} losetas mejoradas."
   },
   "clan": {

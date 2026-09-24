@@ -84,7 +84,7 @@
     "pick": "Choisir",
     "win-conflict": "Remporter un Conflit militaire avec {count} d'écart ou plus.",
     "empty-deck": "Vider votre pioche.",
-    "three-cat-cards": "Activer une zone comptant au moins {count} cartes Chat.",
+    "three-cat-cards": "Activer une zone comptant au moins {count} cartes Chat (toutes vos cartes sont des cartes Chat).",
     "five-upgraded-tiles": "Avoir {count} tuiles améliorées."
   },
   "clan": {

@@ -84,7 +84,7 @@
     "pick": "Wählen",
     "win-conflict": "Gewinne einen Militärkonflikt mit {count} oder mehr Vorsprung.",
     "empty-deck": "Leere deinen Nachziehstapel.",
-    "three-cat-cards": "Aktiviere eine Zone mit mindestens {count} Katzen-Karten.",
+    "three-cat-cards": "Aktiviere eine Zone mit mindestens {count} Katzen-Karten (alle deine Karten sind Katzen-Karten).",
     "five-upgraded-tiles": "Habe {count} verbesserte Plättchen."
   },
   "clan": {

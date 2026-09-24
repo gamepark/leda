@@ -84,7 +84,7 @@
     "pick": "Pick",
     "win-conflict": "Win a Military Conflict by {count} or more.",
     "empty-deck": "Empty your deck.",
-    "three-cat-cards": "Activate a zone containing at least {count} Cat cards.",
+    "three-cat-cards": "Activate a zone containing at least {count} Cat cards (all your cards are Cat cards).",
     "five-upgraded-tiles": "Have {count} upgraded tiles."
   },
   "clan": {

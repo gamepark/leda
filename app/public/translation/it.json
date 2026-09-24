@@ -84,7 +84,7 @@
     "pick": "Scegli",
     "win-conflict": "Vincere un Conflitto militare con {count} o più di scarto.",
     "empty-deck": "Svuotare il tuo mazzo.",
-    "three-cat-cards": "Attivare una zona con almeno {count} carte Gatto.",
+    "three-cat-cards": "Attivare una zona con almeno {count} carte Gatto (tutte le tue carte sono carte Gatto).",
     "five-upgraded-tiles": "Avere {count} tessere migliorate."
   },
   "clan": {

@@ -1,6 +1,7 @@
 import { isMoveItem, Material, MaterialMove, MaterialRules, MaterialRulesPart } from '@gamepark/rules-api'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
+import { spyDifferentPiles } from './effects'
 import { Memory } from './Memory'
 import { playedEggs, spiedSide } from './snake'
 
@@ -46,7 +47,8 @@ const pileItems = (rules: Rules, player: number, pile: SpiedPile) => {
 export const pileTop = (rules: Rules, player: number, pile: SpiedPile) => pileItems(rules, player, pile).deck().limit(1)
 
 /**
- * The piles a Spy effect may look into.
+ * The piles a Spy effect may look into. All of them, unless a Scorpion Portal bound this Spy to the ones its own
+ * other Spies have not used yet (see {@link Effect.SpyDifferentPiles}).
  *
  * The Action tiles are left out once their deck is down to its last one: the 4 others are face up between the
  * players, so everyone already knows which tile is left, and there is nothing to look at.
@@ -55,8 +57,10 @@ export const pileTop = (rules: Rules, player: number, pile: SpiedPile) => pileIt
  * which token or which card it is, which they have no other way of knowing, and that is worth an effect on its
  * own: only the choice of where to put it back becomes a formality, since an empty pile has no top and no bottom.
  */
-export const spiablePiles = (rules: Rules, player: number): readonly SpiedPile[] =>
-  spiedPiles.filter((pile) => pileItems(rules, player, pile).length > (pile.type === MaterialType.ActionTile ? 1 : 0))
+export const spiablePiles = (rules: Rules, player: number): readonly SpiedPile[] => {
+  const taken = spyDifferentPiles(rules)?.piles ?? []
+  return spiedPiles.filter((pile) => !taken.includes(pile.type) && pileItems(rules, player, pile).length > (pile.type === MaterialType.ActionTile ? 1 : 0))
+}
 
 /** The pile an item is on top of, when a Spy effect could take it from there. Read by the app to place its button. */
 export const spiablePile = (rules: Rules, player: number, type: MaterialType, index: number): SpiedPile | undefined =>

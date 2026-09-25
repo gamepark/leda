@@ -2,8 +2,8 @@ import { isMoveItem, ItemMove, MaterialMove } from '@gamepark/rules-api'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { EffectRule } from './EffectRule'
-import { spentDifferentPileSpy, spyDifferentPiles } from './effects'
-import { eggBackMove, eggLookMoves, pileTop, putBackMoves, rememberSpy, SpiedPile, spiablePiles, spiedEgg, spiedItem } from './spy'
+import { spentDifferentPileSpy } from './effects'
+import { eggBackMove, eggLookMoves, pileTop, putBackMoves, rememberSpy, spiablePiles, spiedEgg, spiedItem } from './spy'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
 
@@ -38,21 +38,12 @@ export class SpyRule extends EffectRule {
   }
 
   /**
-   * The piles left to look into. All of them, unless a Scorpion Portal bound this Spy to the ones its own other
-   * Spies have not used yet (see {@link Effect.SpyDifferentPiles}).
-   */
-  get piles(): readonly SpiedPile[] {
-    const taken = spyDifferentPiles(this)?.piles ?? []
-    return spiablePiles(this, this.player).filter((pile) => !taken.includes(pile.type))
-  }
-
-  /**
    * The 3 piles, and the Eggs of the opponent. The Eggs are never barred by the constraint of a Scorpion Portal:
    * what that Portal binds is the piles its 2 Spies use, and a grid is not one of them.
    */
   lookMoves(): Move[] {
     const spied = { type: LocationType.SpiedItem, player: this.player }
-    return [...this.piles.flatMap((pile) => pileTop(this, this.player, pile).moveItems(spied)), ...eggLookMoves(this, this.player)]
+    return [...spiablePiles(this, this.player).flatMap((pile) => pileTop(this, this.player, pile).moveItems(spied)), ...eggLookMoves(this, this.player)]
   }
 
   /**

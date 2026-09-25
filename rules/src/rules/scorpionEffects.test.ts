@@ -13,6 +13,7 @@ import { CustomMoveType } from './CustomMoveType'
 import { cardDiscount, pendingRules } from './effects'
 import { Memory } from './Memory'
 import { RuleId } from './RuleId'
+import { spiablePiles } from './spy'
 import { swappingPlayer } from './swap'
 
 /**
@@ -345,6 +346,8 @@ describe('The Scorpion Portals', () => {
     const second = rules.getLegalMoves(1).filter(isMoveItemType(MaterialType.ClanCard))
     expect(second).toHaveLength(0)
     expect(rules.getLegalMoves(1)).toHaveLength(1)
+    // Nor does the app offer it: its button stands on the piles this reads.
+    expect(spiablePiles(rules, 1).map((pile) => pile.type)).toEqual([MaterialType.MilitaryVictoryToken])
   })
 
   it('has the opponent turn one of their own tiles over, then gives the turn back', () => {

@@ -14,6 +14,8 @@ import { RuleId } from './RuleId'
  */
 export class StartOrganisationRule extends MaterialRulesPart<number, MaterialType, LocationType> {
   onRuleStart(): MaterialMove<number, MaterialType, LocationType>[] {
+    // The conflict has played out all its rules. Emptied for a game rebuilt from older moves (see ChooseActionRule).
+    this.memorize(Memory.NextRules, undefined)
     return [this.startPlayerTurn(RuleId.Organisation, this.remind<number>(Memory.RoundPlayer))]
   }
 }

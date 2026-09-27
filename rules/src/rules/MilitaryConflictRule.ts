@@ -2,6 +2,7 @@ import { MaterialMove, MaterialRulesPart } from '@gamepark/rules-api'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { canWinMilitaryVictory, queueLast } from './effects'
+import { Memory } from './Memory'
 import { conflictWinner } from './militaryConflict'
 import { RuleId } from './RuleId'
 
@@ -25,6 +26,8 @@ export class MilitaryConflictRule extends MaterialRulesPart<number, MaterialType
    * asks for, so a round closed that way leaves it in the hand of its owner (see {@link ringPlacements}).
    */
   onRuleStart(): Move[] {
+    // The activation has played out all its rules. Emptied for a game rebuilt from older moves (see ChooseActionRule).
+    this.memorize(Memory.NextRules, undefined)
     const winner = conflictWinner(this)
     if (winner === undefined || !this.deck.length || !canWinMilitaryVictory(this)) return [this.startRule(RuleId.StartOrganisation)]
     queueLast(this, RuleId.StartOrganisation)

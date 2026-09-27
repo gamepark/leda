@@ -27,6 +27,10 @@ export class ChooseActionRule extends PlayerTurnRule<number, MaterialType, Locat
     this.memorize(Memory.OrganisationSwaps, undefined)
     // And for what was activated: nothing gives twice in one phase, and every round opens a phase of its own.
     this.memorize(Memory.ActivatedItems, undefined)
+    // Nothing is left waiting from the round before, which has played out all its rules. Emptied all the same: the
+    // server rebuilds a game in progress by replaying its moves with the rules of the day, and a rule these write
+    // down that the moves of an older version never consume would otherwise take over a later round.
+    this.memorize(Memory.NextRules, undefined)
     for (const player of this.game.players) {
       this.memorize(Memory.MilitarySymbols, 0, player)
       this.memorize(Memory.ActivatedCells, [], player)

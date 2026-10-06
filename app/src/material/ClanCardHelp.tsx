@@ -2,15 +2,19 @@ import { Clan } from '@gamepark/leda/Clan'
 import { LedaRules } from '@gamepark/leda/LedaRules'
 import { ClanCardId, ClanCardItemId, clanOf } from '@gamepark/leda/material/ClanCardId'
 import { Effect, EffectSet, isEffectChoice } from '@gamepark/leda/material/Effect'
-import { clanCardFoodCost, clanCardProperties } from '@gamepark/leda/material/clanCards/cardProperties'
+import { clanCardProperties } from '@gamepark/leda/material/clanCards/cardProperties'
 import { isRing } from '@gamepark/leda/material/clanCards/catCards'
 import { PandaLevel } from '@gamepark/leda/material/clanCards/PandaLevel'
 import { isPortal } from '@gamepark/leda/material/clanCards/scorpionCards'
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
 import { awakeningGroup } from '@gamepark/leda/rules/awakening'
+import { cardDiscount } from '@gamepark/leda/rules/effects'
+import { cardFoodCost } from '@gamepark/leda/rules/organisation'
+import { RuleId } from '@gamepark/leda/rules/RuleId'
 import { eggCost } from '@gamepark/leda/rules/snake'
 import { MaterialHelpProps, useRules } from '@gamepark/react-game'
+import { Location } from '@gamepark/rules-api'
 import { useTranslation } from 'react-i18next'
 import PandaBronzeImage from '../images/icons/PandaBronze.png'
 import PandaSilverImage from '../images/icons/PandaSilver.png'
@@ -122,6 +126,7 @@ const awakeningRequirement: Partial<Record<PandaLevel, string>> = {
  */
 export const ClanCardHelp = ({ item }: MaterialHelpProps<number, MaterialType, LocationType>) => {
   const { t } = useTranslation()
+  const rules = useRules<LedaRules>()
   const id = item.id as ClanCardItemId | undefined
   const card = id?.front
   return (
@@ -140,7 +145,7 @@ export const ClanCardHelp = ({ item }: MaterialHelpProps<number, MaterialType, L
         </>
       ) : (
         <>
-          <CardCost card={card} player={item.location?.player} />
+          <CardCost card={card} player={item.location?.player} discount={rules === undefined ? 0 : offeredDiscount(rules, item.location)} />
           <CardEffects card={card} />
           {/* The Awakening reminder is the one that counts the Pandas it takes; the others read no number. */}
           {cardNotes(card).map((note) => (
@@ -159,8 +164,9 @@ export const ClanCardHelp = ({ item }: MaterialHelpProps<number, MaterialType, L
  *
  * A Portal is the one whose price cannot be printed, since it goes down as the game goes on: its formula is
  * written out, and what it comes to right now is worked out beside it, for the player whose card this is.
+ * Any other price in Food is printed, and only gets a current one beside it while an effect discounts it.
  */
-const CardCost = ({ card, player }: { card: ClanCardId; player?: number }) => {
+const CardCost = ({ card, player, discount }: { card: ClanCardId; player?: number; discount: number }) => {
   const { t } = useTranslation()
   const rules = useRules<LedaRules>()
   const { cost, pandaLevel } = clanCardProperties[card]
@@ -178,14 +184,20 @@ const CardCost = ({ card, player }: { card: ClanCardId; player?: number }) => {
     )
   }
   if ('cards' in cost) return <Line label={t('help.cost')}>{t('help.cards-cost', { count: cost.cards })}</Line>
+  const current = rules === undefined || player === undefined ? undefined : cardFoodCost(rules, player, card, discount)
   if (typeof cost.food === 'number') {
     return (
       <Line label={t('help.cost')}>
         <HelpText code="help.food-cost" values={{ count: cost.food }} />
+        {current !== undefined && current !== cost.food && (
+          <>
+            {' '}
+            <HelpText code="help.current" values={{ count: current }} />
+          </>
+        )}
       </Line>
     )
   }
-  const current = rules === undefined || player === undefined ? undefined : clanCardFoodCost(card, rules, player)
   return (
     <Line label={t('help.cost')}>
       <HelpText code={`help.card.${clanCardCodes[card]}-cost`} />
@@ -198,6 +210,13 @@ const CardCost = ({ card, player }: { card: ClanCardId; player?: number }) => {
     </Line>
   )
 }
+
+/**
+ * What an effect takes off the price of this card right now: only while its owner is being offered to play a card
+ * out of their hand (see {@link Memory.CardDiscount}). The memory outlives that rule, hence the rule being checked.
+ */
+const offeredDiscount = (rules: LedaRules, location?: Location<number, LocationType>): number =>
+  rules.game.rule?.id === RuleId.PlayCard && location?.type === LocationType.PlayerHand && location.player === rules.getActivePlayer() ? cardDiscount(rules) : 0
 
 /**
  * What the card gives once its square is activated, under the headings its own clan prints: one effect for a Panda

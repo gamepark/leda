@@ -162,6 +162,8 @@
       "pack": "The PACK effect replaces the normal effect as long as the card is orthogonally adjacent to 2 Shark tokens.",
       "portal": "Placing the 4 Portals in the 4 corners of your action grid wins the game.",
       "desert": "A Desert is a temporary tile flipped to its back side.",
+      "copy-tile": "If the copied effect is that of a temporary tile, flipping it to its Desert side is ignored.",
+      "copy-cat": "A square whose effect would give you nothing cannot be copied: the Panda Queen, for example, since you have no Panda cards. When both players play the same clan, this effect cannot be copied, and the Rotate effect of the copied card is ignored: the Rotate effect is never applied twice.",
       "permanent": "A permanent tile can always be activated. An Upgrade <upgrade/> effect flips it to its back side, where it will be more powerful in future activations.",
       "temporary": "A temporary tile becomes a Desert as soon as it is activated. A Flip <flip/> effect turns it back to its front side, where it can be activated again.",
       "conflict": "At the end of each round, the player who gathered the most military symbols <military/> draws the top token of the pile and resolves its effect. In case of a tie, nobody draws it.",

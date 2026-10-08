@@ -12,8 +12,8 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  */
 export class FlipDesertRule extends EffectRule {
   /** "If possible": a player whose temporary tiles all show their front, or lie under a card, has no Desert to turn back. */
-  onRuleStart(): Move[] {
-    return this.deserts.length > 0 ? [] : this.resume()
+  isPossible(): boolean {
+    return this.deserts.length > 0
   }
 
   getPlayerMoves() {

@@ -21,8 +21,8 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  */
 export class ActivateCardRule extends EffectRule implements ActivationChoice {
   /** A player whose only card in play is the Queen herself has nothing to activate with her. */
-  onRuleStart(): Move[] {
-    return this.cells.length > 0 ? [] : this.resume()
+  isPossible(): boolean {
+    return this.cells.length > 0
   }
 
   getPlayerMoves(): Move[] {

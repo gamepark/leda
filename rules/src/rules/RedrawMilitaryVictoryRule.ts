@@ -17,8 +17,8 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  */
 export class RedrawMilitaryVictoryRule extends EffectRule {
   /** A player who has won no token yet has none to trade, and the draw is not theirs to make either. */
-  onRuleStart(): Move[] {
-    return this.tokens.length > 0 ? [] : this.resume()
+  isPossible(): boolean {
+    return this.tokens.length > 0
   }
 
   getPlayerMoves(): Move[] {

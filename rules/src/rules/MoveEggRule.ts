@@ -18,8 +18,8 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  */
 export class MoveEggRule extends EffectRule {
   /** A player whose Eggs have all hatched, or lie under another card, has none to move. */
-  onRuleStart(): Move[] {
-    return this.eggTiles.length > 0 ? [] : this.resume()
+  isPossible(): boolean {
+    return this.eggTiles.length > 0
   }
 
   /** The swaps of the grid that take the square of an Egg somewhere else. */

@@ -162,6 +162,8 @@
       "pack": "Der RUDEL-Effekt ersetzt den normalen Effekt, solange die Karte orthogonal an 2 Hai-Marker angrenzt.",
       "portal": "Wer die 4 Portale in die 4 Ecken seines Aktionsrasters legt, gewinnt das Spiel.",
       "desert": "Eine Wüste ist ein temporäres Plättchen, das auf seine Rückseite gedreht wurde.",
+      "copy-tile": "Ist der kopierte Effekt der eines temporären Plättchens, wird das Drehen auf seine Wüstenseite ignoriert.",
+      "copy-cat": "Ein Feld, dessen Effekt dir nichts bringen würde, kann nicht kopiert werden: zum Beispiel die Panda-Königin, da du keine Panda-Karten hast. Spielen beide Spieler denselben Clan, kann dieser Effekt nicht kopiert werden, und der Drehung-Effekt der kopierten Karte wird ignoriert: Der Drehung-Effekt wird nie 2-mal ausgeführt.",
       "permanent": "Ein dauerhaftes Plättchen ist immer aktivierbar. Ein Verbessern-Effekt <upgrade/> dreht es auf seine Rückseite, auf der es bei den nächsten Aktivierungen stärker ist.",
       "temporary": "Ein temporäres Plättchen wird zu einer Wüste, sobald es aktiviert wird. Ein Umdrehen-Effekt <flip/> legt es zurück auf seine Vorderseite, auf der es wieder aktivierbar ist.",
       "conflict": "Am Ende jeder Runde zieht der Spieler, der die meisten Militärsymbole <military/> gesammelt hat, den obersten Marker des Stapels und führt seinen Effekt aus. Bei Gleichstand zieht ihn niemand.",

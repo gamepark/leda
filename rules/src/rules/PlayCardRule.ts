@@ -21,8 +21,8 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  */
 export class PlayCardRule extends EffectRule {
   /** Nothing to play leaves nothing to ask, and turning down what cannot be done is not a decision. */
-  onRuleStart(): Move[] {
-    return this.playCardMoves.length > 0 ? [] : this.resume()
+  isPossible(): boolean {
+    return this.playCardMoves.length > 0
   }
 
   getPlayerMoves(): Move[] {

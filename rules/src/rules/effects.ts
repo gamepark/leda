@@ -239,7 +239,7 @@ const resolve = (rule: Rule, effect: Effect, quantity: number, asked: Asked, sou
 }
 
 /** The effects that are a rule of their own, which is to say the ones the player is asked to answer. */
-const effectRules: Partial<Record<Effect, RuleId>> = {
+export const effectRules: Partial<Record<Effect, RuleId>> = {
   [Effect.Upgrade]: RuleId.UpgradeTile,
   [Effect.Flip]: RuleId.FlipDesert,
   [Effect.Spy]: RuleId.Spy,

@@ -15,8 +15,8 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  */
 export class UpgradeTileRule extends EffectRule {
   /** An Upgrade is lost if there is nothing left to upgrade: every permanent tile already shows its best face. */
-  onRuleStart(): Move[] {
-    return this.upgradableTiles.length > 0 ? [] : this.resume()
+  isPossible(): boolean {
+    return this.upgradableTiles.length > 0
   }
 
   getPlayerMoves() {

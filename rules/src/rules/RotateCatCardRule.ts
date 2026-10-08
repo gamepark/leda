@@ -20,8 +20,8 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  */
 export class RotateCatCardRule extends EffectRule {
   /** A player with no Cat card worth turning has nothing to do, and the effect is lost rather than refused. */
-  onRuleStart(): Move[] {
-    return this.cells.length > 0 ? [] : this.resume()
+  isPossible(): boolean {
+    return this.cells.length > 0
   }
 
   getPlayerMoves(): Move[] {

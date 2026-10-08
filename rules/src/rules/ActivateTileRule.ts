@@ -23,8 +23,8 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  */
 export class ActivateTileRule extends EffectRule implements ActivationChoice {
   /** A grid whose every square is covered leaves nothing to activate, and the effect is lost. */
-  onRuleStart(): Move[] {
-    return this.cells.length > 0 ? [] : this.resume()
+  isPossible(): boolean {
+    return this.cells.length > 0
   }
 
   getPlayerMoves(): Move[] {

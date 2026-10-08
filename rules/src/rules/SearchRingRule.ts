@@ -26,8 +26,8 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  */
 export class SearchRingRule extends EffectRule {
   /** A deck with no Ring left leaves nothing to search for, and the effect is lost. */
-  onRuleStart(): Move[] {
-    return this.rings.length > 0 ? [] : this.resume()
+  isPossible(): boolean {
+    return this.rings.length > 0
   }
 
   getPlayerMoves(): Move[] {

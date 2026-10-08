@@ -16,8 +16,8 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  * The tokens worth nothing but their Victory symbols are left out: picking one would be picking nothing.
  */
 export class TriggerMilitaryVictoryRule extends EffectRule {
-  onRuleStart(): Move[] {
-    return this.tokens.length > 0 ? [] : this.resume()
+  isPossible(): boolean {
+    return this.tokens.length > 0
   }
 
   getPlayerMoves(): Move[] {

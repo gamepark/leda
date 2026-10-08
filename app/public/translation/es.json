@@ -162,6 +162,8 @@
       "pack": "El efecto MANADA sustituye al efecto normal mientras la carta esté ortogonalmente adyacente a 2 fichas de Tiburón.",
       "portal": "Colocar los 4 Portales en las 4 esquinas de tu cuadrícula de acción hace ganar la partida.",
       "desert": "Un Desierto es una loseta temporal volteada a su cara de reverso.",
+      "copy-tile": "Si el efecto copiado es el de una loseta temporal, se ignora su volteo a la cara de Desierto.",
+      "copy-cat": "Una casilla cuyo efecto no te aportaría nada no puede copiarse: la Reina Panda, por ejemplo, ya que no tienes cartas de Panda. Cuando ambos jugadores juegan el mismo clan, este efecto no puede copiarse, y el efecto Rotación de la carta copiada se ignora: el efecto Rotación nunca se aplica 2 veces.",
       "permanent": "Una loseta permanente siempre puede activarse. Un efecto Mejorar <upgrade/> la voltea a su reverso, donde será más poderosa en las próximas activaciones.",
       "temporary": "Una loseta temporal se convierte en un Desierto en cuanto se activa. Un efecto Voltear <flip/> la devuelve a su anverso, donde vuelve a poder activarse.",
       "conflict": "Al final de cada ronda, el jugador que haya reunido más símbolos militares <military/> roba la primera ficha del montón y resuelve su efecto. En caso de empate, nadie la roba.",

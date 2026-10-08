@@ -24,8 +24,8 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  */
 export class SpendRingForTokenRule extends EffectRule {
   /** A player with no Ring in hand has nothing to trade, and the effect is lost rather than refused. */
-  onRuleStart(): Move[] {
-    return this.rings.length > 0 ? [] : this.resume()
+  isPossible(): boolean {
+    return this.rings.length > 0
   }
 
   getPlayerMoves(): Move[] {

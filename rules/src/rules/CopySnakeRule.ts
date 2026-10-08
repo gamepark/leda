@@ -29,8 +29,8 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  */
 export class CopySnakeRule extends EffectRule {
   /** A player whose only Snake in play is the one asking has nothing to copy with it (see {@link copiableSnakes}). */
-  onRuleStart(): Move[] {
-    return this.cells.length > 0 ? [] : this.resume()
+  isPossible(): boolean {
+    return this.cells.length > 0
   }
 
   getPlayerMoves(): Move[] {

@@ -278,7 +278,22 @@ const CardEffects = ({ card }: { card: ClanCardId }) => {
  * The reminders under the card: the keywords of its clan, and the once-per-activation rule for the cards it bears
  * on, which is the one rule of the game the box answers in its FAQ rather than in its rulebook.
  */
-const cardNotes =(card: ClanCardId): string[] => [...clanNotes(card), ...(activatesOutOfTurn(card) ? [activationRuleCode] : [])]
+const cardNotes =(card: ClanCardId): string[] => [...clanNotes(card), ...copyNotes(card), ...(activatesOutOfTurn(card) ? [activationRuleCode] : [])]
+
+/**
+ * The reminders of the cards that give the effect of a square without activating it: a Cat card copying a square of
+ * its opponent, a Scorpion card reading the reminder of a Desert. Neither turns a temporary tile over, that being
+ * what activating it costs and not what it gives (see {@link CopyOpponentCardRule}, {@link ActivateDesertRule}).
+ * A Cat card copying a Cat card, in a mirror match, does not take the Rotation of the copied card on top of its own.
+ */
+const copyNotes = (card: ClanCardId): string[] => {
+  const { effects, secondEffects } = clanCardProperties[card]
+  const printed = [...effectsOf(effects), ...effectsOf(secondEffects)]
+  const notes: string[] = []
+  if (printed.includes(Effect.CopyOpponentCard) || printed.includes(Effect.ActivateDesert)) notes.push('help.note.copy-tile')
+  if (printed.includes(Effect.CopyOpponentCard)) notes.push('help.note.copy-cat')
+  return notes
+}
 
 /**
  * The effects that reach into a grid to have something activated out of turn, plus the swap that moves what a

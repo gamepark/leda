@@ -24,8 +24,8 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  */
 export class UpgradeAndActivateTileRule extends EffectRule implements ActivationChoice {
   /** Nothing left to upgrade leaves nothing to do, and the effect is lost. */
-  onRuleStart(): Move[] {
-    return this.tiles.length > 0 ? [] : this.resume()
+  isPossible(): boolean {
+    return this.tiles.length > 0
   }
 
   getPlayerMoves(): Move[] {

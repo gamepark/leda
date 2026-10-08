@@ -22,8 +22,12 @@ export class MilitaryVictoryRule extends EffectRule {
    * draw, whoever brought the player here (see {@link Effect.BlockMilitaryVictory}).
    */
   onRuleStart(): Move[] {
-    if (!this.deck.length || !canWinMilitaryVictory(this)) return this.resume()
+    if (!this.isPossible()) return this.resume()
     return this.deck.limit(1).moveItems({ type: LocationType.PlayerMilitaryVictory, player: this.player })
+  }
+
+  isPossible(): boolean {
+    return this.deck.length > 0 && canWinMilitaryVictory(this)
   }
 
   /**

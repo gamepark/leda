@@ -20,8 +20,8 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  */
 export class FlipSnakeToEggRule extends EffectRule {
   /** A player whose Snakes have all been buried under other cards has none left to turn back. */
-  onRuleStart(): Move[] {
-    return this.snakes.length > 0 ? [] : this.resume()
+  isPossible(): boolean {
+    return this.snakes.length > 0
   }
 
   getPlayerMoves(): Move[] {

@@ -16,8 +16,8 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  */
 export class PlaceSharkTokenRule extends EffectRule {
   /** Nothing to place, or nowhere left to place it, and the effect is lost. */
-  onRuleStart(): Move[] {
-    return this.getPlayerMoves().length > 0 ? [] : this.resume()
+  isPossible(): boolean {
+    return this.getPlayerMoves().length > 0
   }
 
   getPlayerMoves(): Move[] {

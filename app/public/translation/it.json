@@ -162,6 +162,8 @@
       "pack": "L'effetto BRANCO sostituisce l'effetto normale finché la carta è ortogonalmente adiacente a 2 segnalini Squalo.",
       "portal": "Posare i 4 Portali nei 4 angoli della tua griglia d'azione fa vincere la partita.",
       "desert": "Un Deserto è una tessera temporanea girata sul suo retro.",
+      "copy-tile": "Se l'effetto copiato è quello di una tessera temporanea, il suo girarsi sul lato Deserto viene ignorato.",
+      "copy-cat": "Una casella il cui effetto non ti darebbe nulla non può essere copiata: la Regina Panda, per esempio, poiché non hai carte Panda. Quando entrambi i giocatori giocano lo stesso clan, questo effetto non può essere copiato, e l'effetto Rotazione della carta copiata viene ignorato: l'effetto Rotazione non viene mai applicato 2 volte.",
       "permanent": "Una tessera permanente è sempre attivabile. Un effetto Migliorare <upgrade/> la gira sul suo retro, dove sarà più potente nelle prossime attivazioni.",
       "temporary": "Una tessera temporanea diventa un Deserto non appena viene attivata. Un effetto Girare <flip/> la rimette sul suo fronte, dove torna a essere attivabile.",
       "conflict": "Alla fine di ogni round, il giocatore che ha riunito più simboli militari <military/> pesca il primo gettone della pila e ne risolve l'effetto. In caso di parità, nessuno lo pesca.",

@@ -25,8 +25,8 @@ export class SpyRule extends EffectRule {
    * No pile worth looking into and no Egg to read leaves nothing to do, and a rule with no move would hang the
    * game: both other piles empty while the Action tiles are down to their last one (see {@link spiablePiles}).
    */
-  onRuleStart(): Move[] {
-    return this.getPlayerMoves().length > 0 ? [] : this.resume()
+  isPossible(): boolean {
+    return this.getPlayerMoves().length > 0
   }
 
   getPlayerMoves(): Move[] {

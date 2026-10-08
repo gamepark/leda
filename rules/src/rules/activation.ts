@@ -11,6 +11,7 @@ import { TileId } from '../material/TileId'
 import { Rules } from '../Rules'
 import { pendingRules, resolveEffects, resolveEffectSequence } from './effects'
 import { Memory } from './Memory'
+import { givesAnything } from './copy'
 import { cardEffectsOn } from './playedCards'
 import { RoundPhase, roundPhase } from './roundPhase'
 import { RuleId } from './RuleId'
@@ -240,18 +241,22 @@ export const activateTile = (rule: PlayerTurnRule<number, MaterialType, Location
  * The squares a Cat card copying the opponent may pick: the squares of the zone of the round that hold something
  * of that opponent to give, whether they have activated it yet or not. A card of theirs, or the tile of a bare
  * square: the card names a square, and a square is a card over a tile.
- * A square with nothing to give is left out, exactly as it is when its owner activates the zone: what may be
- * copied is what they could activate, which is the same question asked on their grid (see {@link isActivable}).
- *
  * The one reading of a grid the once-per-phase rule does not narrow (see {@link stillActivable}): what is
  * activated here is the card that copies, on this side of the table, and the card read across it is not activated
  * at all. Its owner activating it themselves, before or after, is their own single activation of it.
+ *
+ * A square is offered only if copying it gives something to the player copying (see {@link givesAnything}): what
+ * it gives is read on their side of the table, and a Snake card counting Snakes gives nothing to a Cat. A square
+ * with nothing to give at all, a Desert or an Egg, is left out by that same question.
  */
 export const copiableCells = (rules: Rules, player: number): XYCoordinates[] => {
   const zone = roundZone(rules)
   const opponent = rules.game.players.find((other) => other !== player)
   if (zone === undefined || opponent === undefined) return []
-  return actionZoneCells[zone].filter((cell) => isActivable(rules, opponent, cell))
+  return actionZoneCells[zone].filter((cell) => {
+    const effects = squareEffects(rules, opponent, cell)
+    return effects !== undefined && givesAnything(rules, player, effects)
+  })
 }
 
 /**

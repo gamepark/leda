@@ -162,6 +162,8 @@
       "pack": "L'effet MEUTE remplace l'effet normal tant que la carte est orthogonalement adjacente à 2 pions Requin.",
       "portal": "Placer les 4 Portails dans les 4 coins de votre grille d'action fait gagner la partie.",
       "desert": "Un Désert est une tuile temporaire retournée sur sa face verso.",
+      "copy-tile": "Si l'effet copié est celui d'une tuile temporaire, son retournement sur sa face Désert est ignoré.",
+      "copy-cat": "Une case dont l'effet ne vous rapporterait rien ne peut pas être copiée : la Reine Panda par exemple, puisque vous n'avez pas de carte Panda. En match miroir, cet effet est non copiable, et l'effet Rotation de la carte copiée est ignoré : l'effet Rotation n'est jamais fait 2 fois.",
       "permanent": "Une tuile permanente est toujours activable. Un effet Améliorer <upgrade/> la retourne sur son verso, où elle sera plus puissante lors des prochaines activations.",
       "temporary": "Une tuile temporaire devient un Désert dès qu'elle est activée. Un effet Retourner <flip/> la remet sur son recto, où elle est de nouveau activable.",
       "conflict": "À la fin de chaque manche, le joueur qui a réuni le plus de symboles militaires <military/> pioche le premier jeton de la pile et résout son effet. En cas d'égalité, personne ne le pioche.",

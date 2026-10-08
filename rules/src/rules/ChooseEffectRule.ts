@@ -15,8 +15,8 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  */
 export class ChooseEffectRule extends EffectRule {
   /** A choice with nothing to choose from would leave the game waiting for a player with no move. */
-  onRuleStart(): Move[] {
-    return this.branches.length > 0 ? [] : this.resume()
+  isPossible(): boolean {
+    return this.branches.length > 0
   }
 
   getPlayerMoves(): Move[] {

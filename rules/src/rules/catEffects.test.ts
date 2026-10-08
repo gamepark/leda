@@ -116,6 +116,9 @@ const playAll = (rules: LedaRules, move: MaterialMove<number, MaterialType, Loca
 
 const activate = (rules: LedaRules, x: number) => playAll(rules, rules.customMove(CustomMoveType.ActivateSquare, { x, y: 0 }))
 
+/** The squares of the opponent a Cat card copying may pick. */
+const copiable = (rules: LedaRules) => rules.getLegalMoves(1).filter(isCustomMoveType(CustomMoveType.ActivateSquare)).map((move) => move.data)
+
 const military = (rules: LedaRules, player = 1) => rules.game.memory[Memory.MilitarySymbols][player]
 
 const food = (rules: LedaRules) => rules.material(MaterialType.FoodToken).location(LocationType.PlayerFood).player(1).getQuantity()
@@ -388,9 +391,9 @@ describe('The Cat cards that ask the player something', () => {
 
   it('never copies a half turn, no clan but this one printing any', () => {
     // What the copy is resolved on is the card that copied it, so a copied half turn would turn that card a
-    // second time and undo its own (see {@link CopyOpponentCardRule}). It cannot happen: the 2 players hold 2
-    // different clans, and only the Cats print one. Pinned here rather than argued, since a card added to any
-    // other sheet would break the copy silently.
+    // second time and undo its own (see {@link CopyOpponentCardRule}). A mirror match of Cats is the one way to
+    // copy one, and a copied half turn has no card to turn. Pinned here rather than argued, since a card added to
+    // any other sheet would be copied outside of a mirror match.
     const turning = getEnumValues(ClanCardId).filter((card) => [false, true].some((second) => hasHalfTurn(clanCardEffects(card, second))))
     expect(turning.every((card) => clanOf(card) === Clan.Cat)).toBe(true)
   })
@@ -444,7 +447,7 @@ describe('The Cat cards that ask the player something', () => {
     expect(food(rules)).toBe(7)
   })
 
-  it('copies the Shark card that counts the tokens around it, and finds none around itself', () => {
+  it('never copies the Shark card that counts the tokens around it, which finds none around a Cat card', () => {
     const rules = new LedaRules(
       game({
         cards: [{ card: ClanCardId.CatCopyOpponentCard, x: 0 }],
@@ -455,11 +458,9 @@ describe('The Cat cards that ask the player something', () => {
       })
     )
     activate(rules, 0)
-    playAll(rules, rules.customMove(CustomMoveType.ActivateSquare, { x: 1, y: 0 }))
-    // That awake face is what is copied, and it counts the tokens around the card resolving it: a Cat card, in a
-    // grid holding no Shark token at all, hence nothing.
-    expect(military(rules, 1)).toBe(0)
-    expect(military(rules, 2)).toBe(0)
+    // That awake face counts the tokens around the card resolving it: a Cat card, in a grid holding no Shark
+    // token at all, hence nothing, and a copy giving nothing is not offered.
+    expect(copiable(rules)).toEqual([{ x: 0, y: 0 }, { x: 2, y: 0 }, { x: 3, y: 0 }])
 
     // The same card with its Pack asleep, to show the 0 above is the Pack face being read and not a copy that
     // failed: its printed face gives 2 Military, and those 2 are copied.
@@ -555,6 +556,150 @@ describe('The Cat cards that ask the player something', () => {
     const card = rules.material(MaterialType.ClanCard).location(LocationType.PlayedCard).player(1).getItem()!
     expect(cellOf(rules.material(MaterialType.Tile).getItem(card.location.parent!).location)).toEqual({ x: 3, y: 3 })
     expect(card.location.rotation).toBe(true)
+  })
+
+  it('never copies the copy of a mirror match, which would copy the same squares again forever', () => {
+    const rules = new LedaRules(
+      game({
+        cards: [{ card: ClanCardId.CatCopyOpponentCard, x: 0 }],
+        opponentCards: [{ card: ClanCardId.CatCopyOpponentCard, x: 1 }],
+        // Nothing else of theirs to copy in the zone: their copy alone, which is the square that would loop.
+        opponentTiles: { tile: TileId.TemporaryFood, flipped: true }
+      })
+    )
+    activate(rules, 0)
+    expect(rules.game.rule?.id).not.toBe(RuleId.CopyOpponentCard)
+  })
+
+  it('copies the copying Cat card of a mirror match while it shows its other face', () => {
+    const rules = new LedaRules(
+      game({
+        cards: [{ card: ClanCardId.CatCopyOpponentCard, x: 0 }],
+        opponentCards: [{ card: ClanCardId.CatCopyOpponentCard, x: 1, rotated: true }],
+        opponentTiles: { tile: TileId.TemporaryFood, flipped: true }
+      })
+    )
+    activate(rules, 0)
+    expect(rules.game.rule?.id).toBe(RuleId.CopyOpponentCard)
+    expect(rules.getLegalMoves(1).filter(isCustomMoveType(CustomMoveType.ActivateSquare))).toHaveLength(1)
+    playAll(rules, rules.customMove(CustomMoveType.ActivateSquare, { x: 1, y: 0 }))
+    // The 2 cards of its other face, and only the half turn of the card copying: theirs stays as it stands.
+    expect(hand(rules).length).toBe(2)
+    expect(isRotated(rules, 0)).toBe(true)
+  })
+
+  it('never copies the Panda Queen, the player copying having no Panda of their own to activate', () => {
+    const rules = new LedaRules(
+      game({
+        cards: [{ card: ClanCardId.CatCopyOpponentCard, x: 0 }, { card: ClanCardId.CatFoodAndMilitary, x: 2 }],
+        opponentCards: [{ card: ClanCardId.PandaQueen, x: 1 }]
+      })
+    )
+    activate(rules, 0)
+    // The 3 bare tiles of their row, and not the square of their Queen: her owner's Pandas are not the player's.
+    expect(copiable(rules)).toEqual([{ x: 0, y: 0 }, { x: 2, y: 0 }, { x: 3, y: 0 }])
+
+    const alone = new LedaRules(
+      game({
+        cards: [{ card: ClanCardId.CatCopyOpponentCard, x: 0 }],
+        opponentCards: [{ card: ClanCardId.PandaQueen, x: 1 }],
+        opponentTiles: { tile: TileId.TemporaryFood, flipped: true }
+      })
+    )
+    activate(alone, 0)
+    expect(alone.game.rule?.id).not.toBe(RuleId.CopyOpponentCard)
+  })
+
+  /** Whether the tile of that square of the player shows its back: upgraded for a permanent tile, a Desert otherwise. */
+  const isTileFlipped = (rules: LedaRules, x: number, y: number) =>
+    tileAt(rules.material(MaterialType.Tile), 1, { x, y }).getItem()!.location.rotation === true
+
+  it('copies the Pack of a Shark card activating a tile, which activates and upgrades a tile of the player', () => {
+    const rules = new LedaRules(
+      game({
+        cards: [{ card: ClanCardId.CatCopyOpponentCard, x: 0 }],
+        opponentCards: [{ card: ClanCardId.SharkUpgrade, x: 1 }],
+        opponentSharkTokens: [0, 1, 2]
+      })
+    )
+    activate(rules, 0)
+    playAll(rules, rules.customMove(CustomMoveType.ActivateSquare, { x: 1, y: 0 }))
+    expect(rules.game.rule?.id).toBe(RuleId.ActivateAndUpgradeTile)
+    expect(rules.game.rule?.player).toBe(1)
+    playAll(rules, rules.customMove(CustomMoveType.ActivateSquare, { x: 3, y: 3 }))
+    // The Food of the permanent tile of the player, which is then upgraded.
+    expect(food(rules)).toBe(1)
+    expect(isTileFlipped(rules, 3, 3)).toBe(true)
+  })
+
+  it('copies the Scorpion card activating a Desert, which reads a Desert of the player', () => {
+    const rules = new LedaRules(
+      game({
+        cards: [{ card: ClanCardId.CatCopyOpponentCard, x: 0 }],
+        opponentCards: [{ card: ClanCardId.ScorpionActivateDesert, x: 1 }],
+        tiles: { tile: TileId.TemporaryFood, flipped: true }
+      })
+    )
+    activate(rules, 0)
+    playAll(rules, rules.customMove(CustomMoveType.ActivateSquare, { x: 1, y: 0 }))
+    expect(rules.game.rule?.id).toBe(RuleId.ActivateDesert)
+    expect(rules.game.rule?.player).toBe(1)
+    playAll(rules, rules.customMove(CustomMoveType.ActivateSquare, { x: 3, y: 3 }))
+    expect(food(rules)).toBe(1)
+    expect(isTileFlipped(rules, 3, 3)).toBe(true)
+  })
+
+  it('copies the Scorpion card upgrading then activating a tile, on a tile of the player', () => {
+    const rules = new LedaRules(
+      game({
+        cards: [{ card: ClanCardId.CatCopyOpponentCard, x: 0 }],
+        opponentCards: [{ card: ClanCardId.ScorpionUpgradeAndActivate, x: 1 }]
+      })
+    )
+    activate(rules, 0)
+    playAll(rules, rules.customMove(CustomMoveType.ActivateSquare, { x: 1, y: 0 }))
+    expect(rules.game.rule?.id).toBe(RuleId.UpgradeAndActivateTile)
+    expect(rules.game.rule?.player).toBe(1)
+    const upgrade = rules.getLegalMoves(1).find((move) => isMoveItemType(MaterialType.Tile)(move) && move.itemIndex === tileIndex(1, 15))!
+    playAll(rules, upgrade)
+    // The 2 Food of the upgraded face of the permanent tile.
+    expect(food(rules)).toBe(2)
+    expect(isTileFlipped(rules, 3, 3)).toBe(true)
+  })
+
+  it('never copies a Snake whose effect gives nothing to a player with no Snake nor Egg', () => {
+    const empty = [
+      ClanCardId.SnakeMilitaryWithThreeSnakes,
+      ClanCardId.SnakeCopySnake,
+      ClanCardId.SnakeMilitaryVictoryAndFlipBack,
+      ClanCardId.SnakeDrawAndFoodPerEgg,
+      ClanCardId.SnakeStealFoodAndMoveEgg,
+      ClanCardId.SnakeSpyAndUpgrade
+    ]
+    for (const card of empty) {
+      const rules = new LedaRules(
+        game({ cards: [{ card: ClanCardId.CatCopyOpponentCard, x: 0 }], opponentCards: [{ card, x: 1, rotated: true }] })
+      )
+      activate(rules, 0)
+      expect(copiable(rules), ClanCardId[card]).toEqual([{ x: 0, y: 0 }, { x: 2, y: 0 }, { x: 3, y: 0 }])
+    }
+    // A Snake whose effect asks nothing of the Snakes of its owner is copied like any other card.
+    const rules = new LedaRules(
+      game({ cards: [{ card: ClanCardId.CatCopyOpponentCard, x: 0 }], opponentCards: [{ card: ClanCardId.SnakeSpyAndMilitary, x: 1, rotated: true }] })
+    )
+    activate(rules, 0)
+    expect(copiable(rules)).toHaveLength(4)
+  })
+
+  it('never copies the face of a Cat card of a mirror match that holds nothing but its Rotation', () => {
+    const rules = new LedaRules(
+      game({
+        cards: [{ card: ClanCardId.CatCopyOpponentCard, x: 0 }],
+        opponentCards: [{ card: ClanCardId.CatSearchRing, x: 1, rotated: true }]
+      })
+    )
+    activate(rules, 0)
+    expect(copiable(rules)).toEqual([{ x: 0, y: 0 }, { x: 2, y: 0 }, { x: 3, y: 0 }])
   })
 
   it('is lost when the opponent has nothing to activate in the zone', () => {

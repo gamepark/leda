@@ -11,6 +11,21 @@ import { startNextRule } from './effects'
  * of what the same effects asked for, and then whatever was interrupted to ask (see {@link Memory.NextRules}).
  */
 export abstract class EffectRule extends PlayerTurnRule<number, MaterialType, LocationType> {
+  /** An effect with nothing to act on is lost: the game moves on without asking anything (see {@link isPossible}). */
+  onRuleStart(): MaterialMove<number, MaterialType, LocationType>[] {
+    return this.isPossible() ? [] : this.resume()
+  }
+
+  /**
+   * Whether the effect has anything to act on for its player: a Desert to turn back, a tile to upgrade, a card to
+   * activate. Asked when the rule starts, and asked too of the effects a Cat card may copy, before it is offered to
+   * copy them: a copy that would give nothing is not one (see {@link givesAnything}).
+   * A new effect rule says here when it is lost, and both questions are answered at once.
+   */
+  isPossible(): boolean {
+    return true
+  }
+
   resume(): MaterialMove<number, MaterialType, LocationType>[] {
     return startNextRule(this)
   }

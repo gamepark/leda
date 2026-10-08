@@ -23,8 +23,8 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  */
 export class ActivateDesertRule extends EffectRule implements ActivationChoice {
   /** A player with no Desert at all has nothing to read, and the effect is lost. */
-  onRuleStart(): Move[] {
-    return this.cells.length > 0 ? [] : this.resume()
+  isPossible(): boolean {
+    return this.cells.length > 0
   }
 
   getPlayerMoves(): Move[] {

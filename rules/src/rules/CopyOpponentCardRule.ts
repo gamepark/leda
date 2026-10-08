@@ -27,13 +27,14 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  * Nothing of theirs is spent and nothing lands on their side, their square staying exactly as it stands: a
  * temporary tile of theirs does not become the Desert activating it would have made of it, becoming one being
  * what it costs its owner to activate it and not what it gives (see {@link activateTile}). Their card is not
- * turned over either, and no copy ever turns one: the 2 players hold 2 different clans (see {@link ChooseClanRule}),
- * so the only clan whose cards take a half turn is the one holding this card, never the one it copies.
+ * turned over either, and no copy ever turns one: a Cat card copied in a mirror match gives its half turn to no
+ * card at all, so the Rotation is done once, by the card copying (see {@link Effect.HalfTurn}). Nor is the copying
+ * face of their own Cat card offered, a copy of a copy reading the same squares again (see {@link copiableCells}).
  */
 export class CopyOpponentCardRule extends EffectRule {
   /** An opponent with nothing of their own to activate in the zone leaves nothing to copy, and the effect is lost. */
-  onRuleStart(): Move[] {
-    return this.cells.length > 0 ? [] : this.resume()
+  isPossible(): boolean {
+    return this.cells.length > 0
   }
 
   getPlayerMoves(): Move[] {

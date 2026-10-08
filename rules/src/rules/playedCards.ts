@@ -85,15 +85,17 @@ export const rotateCardOn = (rules: Rules, player: number, cell: XYCoordinates):
 }
 
 /**
- * The cards an "activate one of your cards in play" effect may pick, which the Panda Queen is the only card of
- * the box to give. The covered cards are left out, exactly as they are when a square is activated.
+ * The cards an "activate one of your Panda cards in play" effect may pick, which the Panda Queen is the only card
+ * of the box to give. The covered cards are left out, exactly as they are when a square is activated.
  *
+ * Pandas only, as the Queen reads: a Cat card copying her finds no Panda of its owner to activate, and the copy is
+ * not offered at all (see {@link givesAnything}).
  * A card that would activate a card is left out too: with 1 Queen per clan that means the Queen herself, and
  * activating her over and over is not something the rulebook ever asks a player to stop doing.
  */
 export const activableCards = (rules: Rules, player: number) =>
   visibleCards(rules, player)
-    .id<ClanCardItemId>((id) => id.front !== undefined && isActivableCard(clanCardEffects(id.front)))
+    .id<ClanCardItemId>((id) => id.back === Clan.Panda && id.front !== undefined && isActivableCard(clanCardEffects(id.front)))
     // An Egg is a card in play that gives nothing, and activating one is not a way around paying to hatch it.
     .filter((card) => !isEgg(card))
 

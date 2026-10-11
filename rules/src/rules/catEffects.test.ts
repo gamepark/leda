@@ -348,6 +348,15 @@ describe('The Cat cards that ask the player something', () => {
     expect(kept.material(MaterialType.MilitaryVictoryToken).location(LocationType.PlayerMilitaryVictory).length).toBe(0)
   })
 
+  it('keeps the Ring on a round a Scorpion Portal closed to Military Victory tokens, where it would buy nothing', () => {
+    const rules = new LedaRules(game({ cards: [{ card: ClanCardId.CatSpendRingForToken, x: 0 }], hand: [ClanCardId.CatRingEmptyDeck] }))
+    rules.game.memory[Memory.MilitaryVictoryBlocked] = true
+    activate(rules, 0)
+    expect(rules.game.rule?.id).not.toBe(RuleId.SpendRingForToken)
+    expect(hand(rules).length).toBe(1)
+    expect(rules.material(MaterialType.MilitaryVictoryToken).location(LocationType.PlayerMilitaryVictory).length).toBe(0)
+  })
+
   it('shows the Ring traded for a token to the opponent before it goes under the deck', () => {
     const rules = new LedaRules(game({ cards: [{ card: ClanCardId.CatSpendRingForToken, x: 0 }], hand: [ClanCardId.CatRingEmptyDeck] }))
     activate(rules, 0)

@@ -4,6 +4,7 @@ import { MaterialType } from '../material/MaterialType'
 import { canWinMilitaryVictory, queueLast } from './effects'
 import { Memory } from './Memory'
 import { conflictWinner } from './militaryConflict'
+import { canPlaceRing } from './rings'
 import { RuleId } from './RuleId'
 
 type Move = MaterialMove<number, MaterialType, LocationType>
@@ -21,15 +22,22 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  */
 export class MilitaryConflictRule extends MaterialRulesPart<number, MaterialType, LocationType> {
   /**
-   * A Scorpion Portal may have closed the round to Military Victory tokens, and then the conflict has no winner at
-   * all: nobody may win one, so there is nothing to win and nothing was won. That is what the Red Ring of the Cats
-   * asks for, so a round closed that way leaves it in the hand of its owner (see {@link ringPlacements}).
+   * A Scorpion Portal may have closed the round to Military Victory tokens: "no player may win a Military Victory
+   * token this round", which takes the token away and leaves the conflict alone. It is still fought and still won,
+   * so the Red Ring of the Cats, which asks for a conflict won and not for a token, is still offered to its winner
+   * (see {@link ringPlacements}).
    */
   onRuleStart(): Move[] {
     // The activation has played out all its rules. Emptied for a game rebuilt from older moves (see ChooseActionRule).
     this.memorize(Memory.NextRules, undefined)
     const winner = conflictWinner(this)
-    if (winner === undefined || !this.deck.length || !canWinMilitaryVictory(this)) return [this.startRule(RuleId.StartOrganisation)]
+    if (winner === undefined) return [this.startRule(RuleId.StartOrganisation)]
+    if (!canWinMilitaryVictory(this)) {
+      if (!canPlaceRing(this, winner)) return [this.startRule(RuleId.StartOrganisation)]
+      queueLast(this, RuleId.StartOrganisation)
+      return [this.startPlayerTurn(RuleId.PlaceRing, winner)]
+    }
+    if (!this.deck.length) return [this.startRule(RuleId.StartOrganisation)]
     queueLast(this, RuleId.StartOrganisation)
     return [this.startPlayerTurn(RuleId.MilitaryVictory, winner)]
   }

@@ -102,6 +102,8 @@ export class LedaHistory implements LogDescription<Move, number, Game> {
      */
     if (ruleId === RuleId.MilitaryConflict) {
       if (isStartPlayerTurn(move) && move.id === RuleId.MilitaryVictory) return this.entry(ConflictLog, rules, move.player)
+      // A round closed to tokens still has a winner, sent straight to the window of the Red Ring.
+      if (isStartPlayerTurn(move) && move.id === RuleId.PlaceRing) return this.entry(ConflictLog, rules, move.player)
       if (isStartRule(move) && move.id === RuleId.StartOrganisation) return this.entry(ConflictLog, rules, undefined)
     }
 

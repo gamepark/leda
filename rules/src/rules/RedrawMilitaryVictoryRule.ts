@@ -2,6 +2,7 @@ import { isMoveItemType, ItemMove, MaterialMove } from '@gamepark/rules-api'
 import { Effect } from '../material/Effect'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
+import { militaryVictoryEffects, MilitaryVictoryTokenId } from '../material/MilitaryVictoryTokenId'
 import { EffectRule } from './EffectRule'
 import { resolveEffects } from './effects'
 import { ownedMilitaryVictoryTokens } from './militaryConflict'
@@ -29,10 +30,26 @@ export class RedrawMilitaryVictoryRule extends EffectRule {
     return ownedMilitaryVictoryTokens(this, this.player)
   }
 
-  /** The token is back under the pile: what follows is a draw, which is a rule of its own. */
+  /**
+   * The token is back under the pile, and the top one takes its place, which is then resolved.
+   *
+   * Drawn here rather than by {@link MilitaryVictoryRule}: a token traded is not a token won, so a round a Scorpion
+   * Portal closed to Military Victory tokens still lets the Sharks trade one (see {@link Effect.BlockMilitaryVictory}).
+   * Nor is it the conflict of the round, whose Rings that rule opens a window for. There is always a token to draw,
+   * the one just put back being one.
+   */
   afterItemMove(move: ItemMove<number, MaterialType, LocationType>): Move[] {
     if (!isMoveItemType(MaterialType.MilitaryVictoryToken)(move)) return []
-    if (move.location.type !== LocationType.MilitaryVictoryDeck) return []
-    return [...resolveEffects(this, { [Effect.MilitaryVictory]: 1 }), ...this.resume()]
+    if (move.location.type === LocationType.MilitaryVictoryDeck) {
+      return this.deck.limit(1).moveItems({ type: LocationType.PlayerMilitaryVictory, player: this.player })
+    }
+    if (move.location.type !== LocationType.PlayerMilitaryVictory) return []
+    const token = this.material(MaterialType.MilitaryVictoryToken).getItem<MilitaryVictoryTokenId>(move.itemIndex)
+    return [...resolveEffects(this, militaryVictoryEffects[token.id] ?? {}), ...this.resume()]
+  }
+
+  /** deck() draws from the highest x, which is the top of the pile the DeckLocator stacks. */
+  get deck() {
+    return this.material(MaterialType.MilitaryVictoryToken).location(LocationType.MilitaryVictoryDeck).deck()
   }
 }

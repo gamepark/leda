@@ -3,7 +3,7 @@ import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { CustomMoveType } from './CustomMoveType'
 import { EffectRule } from './EffectRule'
-import { queueFirstRule } from './effects'
+import { canWinMilitaryVictory, queueFirstRule } from './effects'
 import { revealedCard, revealMoves } from './reveal'
 import { RuleId } from './RuleId'
 import { ringsInHand, underDeckMoves } from './underDeck'
@@ -23,9 +23,12 @@ type Move = MaterialMove<number, MaterialType, LocationType>
  * hand nobody but its owner reads to a deck nobody reads at all would be spent without anyone seeing which.
  */
 export class SpendRingForTokenRule extends EffectRule {
-  /** A player with no Ring in hand has nothing to trade, and the effect is lost rather than refused. */
+  /**
+   * A player with no Ring in hand has nothing to trade, and the effect is lost rather than refused. So it is on a
+   * round a Scorpion Portal closed to Military Victory tokens: the Ring would buy nothing (see {@link Effect.BlockMilitaryVictory}).
+   */
   isPossible(): boolean {
-    return this.rings.length > 0
+    return this.rings.length > 0 && canWinMilitaryVictory(this)
   }
 
   getPlayerMoves(): Move[] {

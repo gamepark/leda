@@ -141,6 +141,27 @@ describe('The Pack effects that ask the player something', () => {
     expect(food(rules)).toBe(1)
   })
 
+  it('draws no Military Victory token on a round a Scorpion Portal closed to them', () => {
+    const rules = new LedaRules(game({ cards: [{ card: ClanCardId.SharkPackDrawToken, cell: middle }], tokens: [middle, ...around] }))
+    rules.game.memory[Memory.MilitaryVictoryBlocked] = true
+    activate(rules, middle)
+    expect(rules.material(MaterialType.MilitaryVictoryToken).location(LocationType.PlayerMilitaryVictory)).toHaveLength(0)
+    expect(food(rules)).toBe(0)
+  })
+
+  it('still trades a Military Victory token on a round a Scorpion Portal closed to them, which is not winning one', () => {
+    const rules = new LedaRules(
+      game({ cards: [{ card: ClanCardId.SharkPackRedrawToken, cell: middle }], tokens: [middle, ...around], won: [MilitaryVictoryTokenId.Draw] })
+    )
+    rules.game.memory[Memory.MilitaryVictoryBlocked] = true
+    activate(rules, middle)
+    expect(rules.game.rule?.id).toBe(RuleId.RedrawMilitaryVictory)
+    playAll(rules, rules.getLegalMoves(1)[0])
+    const owned = rules.material(MaterialType.MilitaryVictoryToken).location(LocationType.PlayerMilitaryVictory).player(1).getItems()
+    expect(owned.map((token) => token.id)).toEqual([MilitaryVictoryTokenId.Food])
+    expect(food(rules)).toBe(1)
+  })
+
   it('triggers a Military Victory token already won, which stays where it is', () => {
     const rules = new LedaRules(
       game({ cards: [{ card: ClanCardId.SharkSpyOrTriggerToken, cell: middle }], tokens: [middle, ...around], won: [MilitaryVictoryTokenId.Food] })

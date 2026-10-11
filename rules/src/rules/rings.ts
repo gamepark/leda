@@ -8,7 +8,7 @@ import { MaterialType } from '../material/MaterialType'
 import { cellOf, gridTiles, sameCell } from '../material/PlayerGrid'
 import { Rules } from '../Rules'
 import { isItemActivated, roundZone } from './activation'
-import { pendingRules } from './effects'
+import { canWinMilitaryVictory, pendingRules } from './effects'
 import { isMilitaryConflictPhase, militaryLead } from './militaryConflict'
 import { RuleId } from './RuleId'
 import { cardsInPlay } from './squares'
@@ -88,9 +88,14 @@ enum RingWindow {
   MilitaryVictoryResolved
 }
 
-/** Which of the 3 is open, phase 3 and everything before the conflict being the activation window. */
+/**
+ * Which of the 3 is open, phase 3 and everything before the conflict being the activation window.
+ * A round a Scorpion Portal closed to Military Victory tokens has a conflict and no token to resolve after it, so
+ * its conflict has the one window (see {@link MilitaryConflictRule}).
+ */
 const openWindow = (rules: Rules): RingWindow => {
   if (!isMilitaryConflictPhase(rules)) return RingWindow.Activation
+  if (!canWinMilitaryVictory(rules)) return RingWindow.MilitaryConflict
   return pendingRules(rules).includes(RuleId.PlaceRing) ? RingWindow.MilitaryConflict : RingWindow.MilitaryVictoryResolved
 }
 

@@ -360,9 +360,29 @@ describe('The Red Ring', () => {
     expect(rules.game.rule?.id).toBe(RuleId.Organisation)
   })
 
-  it('stays in hand on a round a Scorpion Portal closed to Military Victory tokens', () => {
-    // Nobody may win one, so the conflict has no winner at all and there is no conflict won by 3 symbols.
+  it('is put in play on a round a Scorpion Portal closed to Military Victory tokens', () => {
+    // Nobody may win a token, which leaves the conflict alone: it is still won by 3 symbols, and the token stays put.
     const rules = new LedaRules(game({ ...setup({ 1: 3, 2: 0 }, MilitaryVictoryTokenId.Victory), blocked: true }))
+    settleConflict(rules)
+    expect(rules.game.rule?.id).toBe(RuleId.PlaceRing)
+    expect(offeredRings(rules)).toEqual([ClanCardId.CatRingWinConflictByThree])
+    placeRing(rules, ClanCardId.CatRingWinConflictByThree, { x: 3, y: 3 })
+    expect(rules.material(MaterialType.MilitaryVictoryToken).location(LocationType.PlayerMilitaryVictory)).toHaveLength(0)
+    expect(rules.game.rule?.id).toBe(RuleId.Organisation)
+  })
+
+  it('is alone in its window on a round closed to tokens, which has no token to resolve after it', () => {
+    const rules = new LedaRules(
+      game({ hand: [ClanCardId.CatRingWinConflictByThree, ClanCardId.CatRingEmptyDeck], symbols: { 1: 3, 2: 0 }, top: MilitaryVictoryTokenId.Victory, blocked: true })
+    )
+    settleConflict(rules)
+    expect(offeredRings(rules)).toEqual([ClanCardId.CatRingWinConflictByThree])
+    pass(rules)
+    expect(rules.game.rule?.id).toBe(RuleId.Organisation)
+  })
+
+  it('opens nothing on a round closed to tokens when the conflict is won by less than 3 symbols', () => {
+    const rules = new LedaRules(game({ ...setup({ 1: 2, 2: 0 }, MilitaryVictoryTokenId.Victory), blocked: true }))
     settleConflict(rules)
     expect(rules.game.rule?.id).toBe(RuleId.Organisation)
   })

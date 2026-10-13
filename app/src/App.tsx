@@ -15,6 +15,7 @@ import { useEffect, useState } from 'react'
 import { GameDisplay } from './GameDisplay'
 import { Headers } from './headers/Headers'
 import { MilitarySymbolSound } from './sounds/MilitarySymbolSound'
+import { VictorySound } from './sounds/VictorySound'
 
 export function App() {
   const game = useGame<MaterialGame>()
@@ -32,7 +33,9 @@ export function App() {
       <MaterialImageLoader onImagesLoad={() => setImagesLoading(false)} />
       <MaterialGameSounds />
       <MilitarySymbolSound />
-      <Menu />
+      <VictorySound />
+      {/* LEDA is won the moment a condition is met: once the last move has landed, there is nothing left to watch. */}
+      <Menu resultDialogDelay={3000} />
       <FailuresDialog />
       <FullscreenDialog />
       {!loading && <LiveLogContainer css={liveLog} />}

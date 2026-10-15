@@ -90,6 +90,7 @@ import { EggSpyHistoryButton, SpyHistoryButton } from './SpyHistoryButton'
 import { SpyPileButton } from './SpyPileButton'
 import { SwapHistoryButton } from './SwapHistoryButton'
 import { tileSize } from './TileDescription'
+import { celebrationCss } from './victoryCelebration'
 
 /**
  * The back of the cards of a clan: the emblem of that clan for the 4 of the base box, which is what a card face
@@ -292,10 +293,15 @@ export class ClanCardDescription extends LedaCardDescription<ClanCardItemId> {
    *
    * An Egg its reader knows turns face up under the pointer, on the table alone and not while it is dragged
    * (see {@link eggPeekOnHover}).
+   *
+   * The cards that won the victory of their clan jump once the game is over (see {@link celebrationCss}).
    */
   getItemExtraCss(item: MaterialItem<number, LocationType, ClanCardItemId>, context: ItemContext<number, MaterialType, LocationType>) {
     if (this.coversATileToDrag(item, context)) return letTheTileThrough
-    return showsAnEgg(item) && item.id?.front !== undefined && !context.isDragging ? eggPeekOnHover : undefined
+    return [
+      showsAnEgg(item) && item.id?.front !== undefined && !context.isDragging && eggPeekOnHover,
+      celebrationCss(context.rules, MaterialType.ClanCard, context.index)
+    ]
   }
 
   /**

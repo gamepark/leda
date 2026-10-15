@@ -1,8 +1,10 @@
 import { LocationType } from '@gamepark/leda/material/LocationType'
 import { MaterialType } from '@gamepark/leda/material/MaterialType'
-import { SoundKit, TokenDescription } from '@gamepark/react-game'
+import { ItemContext, SoundKit, TokenDescription } from '@gamepark/react-game'
+import { MaterialItem } from '@gamepark/rules-api'
 import SharkTokenImage from '../images/tokens/shark.png'
 import { SharkTokenHelp } from './SharkTokenHelp'
+import { celebrationCss } from './victoryCelebration'
 
 const sharkTokenRatio = 388 / 359
 
@@ -27,4 +29,9 @@ export class SharkTokenDescription extends TokenDescription<number, MaterialType
 
   /** Clicking a token opens what it does to the card under it, and what the 9th one wins (see {@link SharkTokenHelp}). */
   help = SharkTokenHelp
+
+  /** The 9 tokens of a Shark victory jump once the game is over (see {@link celebrationCss}). */
+  getItemExtraCss(_item: MaterialItem<number, LocationType>, context: ItemContext<number, MaterialType, LocationType>) {
+    return celebrationCss(context.rules, MaterialType.SharkToken, context.index)
+  }
 }

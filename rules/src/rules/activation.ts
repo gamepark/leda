@@ -31,9 +31,11 @@ export const roundZone = (rules: Rules): ActionZone | undefined => rules.game.me
  * Whether the zone is being activated, the rules an effect opens along the way included: a Military Victory token
  * opens the same ones, so those count only when the activation is what they go back to.
  * Read off the rules waiting rather than off a list of such rules, which every clan card would have to be added to.
+ * A victory can end the game in the middle of an activation, leaving the rules it would have gone back to waiting:
+ * there is no rule any more once the game is over, and no zone left to activate either.
  */
 export const isActivationPhase = (rules: Rules): boolean =>
-  rules.game.rule?.id === RuleId.ActivateZone || pendingRules(rules).includes(RuleId.ActivateZone)
+  rules.game.rule !== undefined && (rules.game.rule.id === RuleId.ActivateZone || pendingRules(rules).includes(RuleId.ActivateZone))
 
 /** The squares of the zone a player has already resolved this round. */
 export const activatedCells = (rules: Rules, player: number): XYCoordinates[] => rules.game.memory[Memory.ActivatedCells]?.[player] ?? []

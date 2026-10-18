@@ -515,8 +515,8 @@
         "player": "{player} ha vinto con i suoi {count} Portali <portal/> nei 4 angoli"
       },
       "5": {
-        "you": "Hai vinto con {count} Serpenti <snake/> schiusi in gioco",
-        "player": "{player} ha vinto con {count} Serpenti <snake/> schiusi in gioco"
+        "you": "Hai vinto con {count} Serpenti schiusi in gioco",
+        "player": "{player} ha vinto con {count} Serpenti schiusi in gioco"
       }
     },
     "round": "Partita terminata al round {round}",

@@ -515,8 +515,8 @@
         "player": "{player} hat mit seinen {count} Portalen <portal/> in den 4 Ecken gewonnen"
       },
       "5": {
-        "you": "Du hast mit {count} geschlüpften Schlangen <snake/> im Spiel gewonnen",
-        "player": "{player} hat mit {count} geschlüpften Schlangen <snake/> im Spiel gewonnen"
+        "you": "Du hast mit {count} geschlüpften Schlangen im Spiel gewonnen",
+        "player": "{player} hat mit {count} geschlüpften Schlangen im Spiel gewonnen"
       }
     },
     "round": "Spiel beendet in Runde {round}",

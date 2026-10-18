@@ -515,8 +515,8 @@
         "player": "{player} a gagné avec ses {count} Portails <portal/> dans les 4 coins"
       },
       "5": {
-        "you": "Vous avez gagné avec {count} Serpents <snake/> éclos en jeu",
-        "player": "{player} a gagné avec {count} Serpents <snake/> éclos en jeu"
+        "you": "Vous avez gagné avec {count} Serpents éclos en jeu",
+        "player": "{player} a gagné avec {count} Serpents éclos en jeu"
       }
     },
     "round": "Partie terminée à la manche {round}",

@@ -515,8 +515,8 @@
         "player": "{player} won with their {count} Portals <portal/> in the 4 corners"
       },
       "5": {
-        "you": "You won with {count} hatched Snakes <snake/> in play",
-        "player": "{player} won with {count} hatched Snakes <snake/> in play"
+        "you": "You won with {count} hatched Snakes in play",
+        "player": "{player} won with {count} hatched Snakes in play"
       }
     },
     "round": "Game over in round {round}",

@@ -505,13 +505,12 @@ class PlayerSpotLocator extends Locator {
  * Its cards are stacked one card thickness above the next rather than laid on one another: a pile is worth
  * reading as a pile, and above all a card put back under the deck has to land below every card it holds, or
  * nothing would say which of them is on top of which (see {@link underPileApproach}).
- * They are stacked straight up, unlike the 2 piles of the middle column, which are staggered a little on x and y
- * as well: the deck stays lined up with the row of the grid it answers to, however many cards are left in it.
+ * Like any deck, they are also staggered a little on x and y, so its thickness shows from above.
  */
 class PlayerDeckLocator extends DeckLocator {
   /** Only 10 cards are drawn however many the deck holds: a deeper stack costs DOM nodes for 0.05 cm each. */
   limit = 10
-  gap = { x: 0, y: 0, z: cardThickness }
+  gap = { x: -0.05, y: -0.05, z: cardThickness }
 
   locationDescription = new PlayerDeckDescription()
 

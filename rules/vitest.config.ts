@@ -1,11 +1,8 @@
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
-  test: {
-    server: {
-      deps: {
-        inline: [/@gamepark\//]
-      }
-    }
+  test: {},
+  ssr: {
+    noExternal: ['@gamepark/rules-api', 'es-toolkit']
   }
 })

@@ -1,5 +1,4 @@
 import { isMoveItemType, ItemMove, MaterialMove } from '@gamepark/rules-api'
-import { Effect } from '../material/Effect'
 import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { militaryVictoryEffects, MilitaryVictoryTokenId } from '../material/MilitaryVictoryTokenId'

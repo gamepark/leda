@@ -32,7 +32,7 @@ export const VictorySound = () => {
     sound.currentTime = 0
     // Rejected when the browser has not been given a gesture to play on yet, which is not worth a stack trace.
     sound.play().catch(() => {})
-  }, [won])
+  }, [won, sound])
 
   return null
 }

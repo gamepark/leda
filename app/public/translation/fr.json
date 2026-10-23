@@ -59,6 +59,9 @@
   "activation": {
     "lock": "Celle-ci a déjà été activée : elle ne le sera plus avant la prochaine manche."
   },
+  "hatching": {
+    "cost": "Il faut {count} <food/> pour faire éclore un Oeuf."
+  },
   "swap": {
     "history": {
       "text": "{player} a échangé ces 2 éléments."

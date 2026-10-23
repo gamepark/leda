@@ -59,6 +59,9 @@
   "activation": {
     "lock": "Dieses wurde bereits aktiviert: Es wird vor der nächsten Runde nicht erneut aktiviert."
   },
+  "hatching": {
+    "cost": "Du brauchst {count} <food/>, um ein Ei schlüpfen zu lassen."
+  },
   "swap": {
     "history": {
       "text": "{player} hat diese 2 Elemente getauscht."

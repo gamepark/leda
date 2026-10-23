@@ -312,9 +312,22 @@ export const activateCard = (
  * one there is anything to activate on, and hatching it is a purchase the player is free to turn down
  * (see {@link ActivateZoneRule}).
  */
-export const hatchableCells = (rules: Rules, player: number): XYCoordinates[] => {
+export const hatchableCells = (rules: Rules, player: number): XYCoordinates[] => (canPayHatching(rules, player) ? zoneEggCells(rules, player) : [])
+
+/**
+ * The Eggs of the zone a player would be offered to hatch if they had the Food for it, and only while they do not:
+ * the app marks them, so that a player short of Food knows why their Egg is not shining (see {@link HatchEggButton}).
+ * Read while the zone itself is what the player is asked about, and not while an effect it opened is waiting.
+ */
+export const unaffordableEggCells = (rules: Rules, player: number): XYCoordinates[] => {
+  if (rules.game.rule?.id !== RuleId.ActivateZone || rules.game.rule.player !== player || canPayHatching(rules, player)) return []
+  return zoneEggCells(rules, player)
+}
+
+/** The Eggs of the zone of the round on squares not activated yet this phase, whatever their owner can pay. */
+const zoneEggCells = (rules: Rules, player: number): XYCoordinates[] => {
   const zone = roundZone(rules)
-  if (zone === undefined || !canPayHatching(rules, player)) return []
+  if (zone === undefined) return []
   const activated = activatedCells(rules, player)
   return actionZoneCells[zone].filter((cell) => !activated.some((done) => sameCell(done, cell)) && isHatchable(rules, player, cell))
 }

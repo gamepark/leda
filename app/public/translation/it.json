@@ -59,6 +59,9 @@
   "activation": {
     "lock": "Questa è già stata attivata: non lo sarà più prima del prossimo round."
   },
+  "hatching": {
+    "cost": "Servono {count} <food/> per far schiudere un Uovo."
+  },
   "swap": {
     "history": {
       "text": "{player} ha scambiato questi 2 elementi."

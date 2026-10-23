@@ -13,6 +13,8 @@ type LedaMenuButtonProps = {
   accent?: string
   /** The label laid across the bottom of the medallion, rather than beside it where the framework puts it. */
   labelBanner?: boolean
+  /** Faded and struck through: something the player would be offered, were it not for a cost they cannot pay. */
+  crossed?: boolean
 } & ItemButtonProps &
   HTMLAttributes<HTMLButtonElement>
 
@@ -26,7 +28,7 @@ export const ledaMenuButtonSize = 2.2
  * The css of the framework is replaced rather than completed, because the css prop given to ItemMenuButton takes
  * the place of its own, hence the transform below: it is the one ItemMenuButton applies to place itself on its item.
  */
-export const LedaMenuButton = ({ filled, size = ledaMenuButtonSize, accent, labelBanner, x = 0, y = 0, ...props }: LedaMenuButtonProps) => (
+export const LedaMenuButton = ({ filled, size = ledaMenuButtonSize, accent, labelBanner, crossed, x = 0, y = 0, ...props }: LedaMenuButtonProps) => (
   <ItemMenuButton
     x={x}
     y={y}
@@ -37,6 +39,7 @@ export const LedaMenuButton = ({ filled, size = ledaMenuButtonSize, accent, labe
       filled && filledMedallion,
       accent !== undefined && accentMedallion(accent),
       labelBanner && bannerLabel,
+      crossed && crossedMedallion,
       !filled && (props.move !== undefined || props.moves !== undefined) && pulse(accent ?? copper),
       transformCss('translate(-50%, -50%)', `translate(${x}em, ${y}em)`)
     ]}
@@ -143,6 +146,24 @@ const bannerLabel = css`
     padding: 0 0.4em;
     font-size: 0.75em;
     transform: translateX(-50%) translateZ(0.1em);
+  }
+`
+
+/** The stroke is drawn in the coin's own ink, above the symbol, and lets every click through to the button. */
+const crossedMedallion = css`
+  opacity: 0.6;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 15%;
+    right: 15%;
+    height: 0.15em;
+    margin-top: -0.075em;
+    background: ${ink};
+    transform: rotate(-45deg);
+    pointer-events: none;
   }
 `
 

@@ -8,7 +8,7 @@ import { LocationType } from '../material/LocationType'
 import { MaterialType } from '../material/MaterialType'
 import { MilitaryVictoryTokenId } from '../material/MilitaryVictoryTokenId'
 import { TileId } from '../material/TileId'
-import { hatchableCells } from './activation'
+import { hatchableCells, unaffordableEggCells } from './activation'
 import { CustomMoveType } from './CustomMoveType'
 import { cardDiscount, pendingRules } from './effects'
 import { Memory } from './Memory'
@@ -158,6 +158,13 @@ describe('An Egg on the grid', () => {
   it('is not offered to a player who cannot pay for it', () => {
     const rules = new LedaRules(game({ cards: [{ card: ClanCardId.SnakeStealFoodAndMilitary, cell: played }], food: eggCost - 1 }))
     expect(hatchableCells(rules, 1)).toEqual([])
+    // The app still marks it, so that its owner knows what the Egg is waiting for.
+    expect(unaffordableEggCells(rules, 1)).toEqual([played])
+  })
+
+  it('is not marked as unaffordable to a player who can pay for it', () => {
+    const rules = new LedaRules(game({ cards: [{ card: ClanCardId.SnakeStealFoodAndMilitary, cell: played }], food: eggCost }))
+    expect(unaffordableEggCells(rules, 1)).toEqual([])
   })
 
   it('covers the tile of its square, which is therefore not activated instead', () => {

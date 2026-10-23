@@ -59,6 +59,9 @@
   "activation": {
     "lock": "This one has already been activated: it will not be activated again before the next round."
   },
+  "hatching": {
+    "cost": "You need {count} <food/> to hatch an Egg."
+  },
   "swap": {
     "history": {
       "text": "{player} swapped these 2 elements."

@@ -59,6 +59,9 @@
   "activation": {
     "lock": "Esta ya ha sido activada: no volverá a activarse antes de la próxima ronda."
   },
+  "hatching": {
+    "cost": "Necesitas {count} <food/> para hacer eclosionar un Huevo."
+  },
   "swap": {
     "history": {
       "text": "{player} ha intercambiado estos 2 elementos."

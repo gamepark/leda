@@ -1,6 +1,16 @@
 {
   "option.tournamentRules": "Турнирные правила",
   "option.tournamentRules.help": "Оба игрока могут выбрать один и тот же клан, а 2 жетона Военной победы, дающие 2 военные победы, убираются из игры.",
-  "option.snakesClan": "Клан Змей",
-  "option.snakesClan.help": "Добавляет клан Змей из дополнения к кланам, которые могут выбрать игроки."
+  "option.clanSelection": "Выбор кланов",
+  "option.clanSelection.help": "Как каждый игрок получает свой клан",
+  "option.clanSelection.1": "В игре",
+  "option.clanSelection.1.help": "Игроки по очереди выбирают свой клан в начале партии",
+  "option.clanSelection.2": "Свободный",
+  "option.clanSelection.2.help": "Каждый игрок свободно выбирает свой клан перед партией",
+  "identities": "Клан",
+  "identities.1": "Панды",
+  "identities.2": "Акулы",
+  "identities.3": "Кошки",
+  "identities.4": "Скорпионы",
+  "identities.5": "Змеи"
 }

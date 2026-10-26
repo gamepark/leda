@@ -1,6 +1,16 @@
 {
   "option.tournamentRules": "Reglas de torneo",
   "option.tournamentRules.help": "Ambos jugadores pueden elegir el mismo clan, y las 2 fichas de Victoria militar que otorgan 2 victorias militares se retiran del juego.",
-  "option.snakesClan": "Clan de las Serpientes",
-  "option.snakesClan.help": "Añade el clan de las Serpientes, de la expansión, a los clanes que los jugadores pueden elegir."
+  "option.clanSelection": "Elección de clanes",
+  "option.clanSelection.help": "Cómo obtiene cada jugador su clan",
+  "option.clanSelection.1": "En la partida",
+  "option.clanSelection.1.help": "Cada jugador elige su clan por turnos al comienzo de la partida",
+  "option.clanSelection.2": "Libre",
+  "option.clanSelection.2.help": "Cada jugador elige libremente su clan antes de la partida",
+  "identities": "Clan",
+  "identities.1": "Pandas",
+  "identities.2": "Tiburones",
+  "identities.3": "Gatos",
+  "identities.4": "Escorpiones",
+  "identities.5": "Serpientes"
 }

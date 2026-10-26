@@ -180,9 +180,13 @@ Follow existing key naming patterns in the JSON files. Keep keys descriptive and
 Options are declared in `rules/src/LedaOptions.ts` with `OptionsSpecV2` — **plain JSON, no functions
 and no text**. The platform snapshots it when the bundle is prepared and reads it from its database.
 
-Leda has no identity to choose, since the clan is picked during the game. Beside the table size, it has 2
-boolean options: `tournamentRules` (mirror matches allowed, and the 2 Military Victory tokens worth 2
-Victory symbols left out of the pile) and `snakesClan` (the Snakes of the extension offered in `ChooseClanRule`).
+Beside the table size, Leda has the boolean option `tournamentRules` (mirror matches allowed, and the 2 Military
+Victory tokens worth 2 Victory symbols left out of the pile) and the enum `clanSelection` (`ClanSelection.InGame`, the
+default, or `Free`, as in Skyrift). The Snakes of the extension are always offered: they are no longer an option.
+
+The clan is normally picked during the game, so players are numbered. With `ClanSelection.Free` (friendly games only,
+gated by the platform), each player picks their clan before the game as their **identity**: the player id *is* the
+clan. `LedaSetup` then shuffles the players and plays the `ChooseClan` moves itself, so the game opens at the mulligan.
 
 ```typescript
 export const LedaOptionsSpecV2: OptionsSpecV2 = {
@@ -190,20 +194,25 @@ export const LedaOptionsSpecV2: OptionsSpecV2 = {
   players: { min: 2, max: 2 },
   options: {
     tournamentRules: { kind: 'boolean' },
-    snakesClan: { kind: 'boolean' }
+    clanSelection: { kind: 'enum', values: [ClanSelection.InGame, ClanSelection.Free] }
+  },
+  identities: {
+    requires: [{ option: 'clanSelection', values: [ClanSelection.Free] }],
+    values: [Clan.Panda, Clan.Shark, Clan.Cat, Clan.Scorpion, Clan.Snake]
   }
 }
 ```
 
-Since rules-api 7.8, the game state records its options in `game.options` (absent in older games):
-`playsSnakesClan` (`rules/src/rules/snake.ts`) reads it there. `tournamentRules` predates that and still goes
-through `Memory.TournamentRules`, read by `playsTournamentRules` (`rules/src/rules/tournament.ts`).
+Since rules-api 7.8, the game state records its options in `game.options` (absent in older games).
+`tournamentRules` predates that and still goes through `Memory.TournamentRules`, read by `playsTournamentRules`
+(`rules/src/rules/tournament.ts`).
 
 Three things do **not** belong in it:
 
 - **Texts** go to `app/public/options/{locale}.json`, keyed by convention: `option.<option>`,
   `option.<option>.<value>`, `identities.<value>`, plus optional `.help` and `.warn` variants. A
-  boolean has no value to label, so `option.<option>` and its `.help` are all each Leda option needs.
+  boolean has no value to label, so `option.<option>` and its `.help` are all it needs; `clanSelection` also
+  labels its values, and `identities.<clan>` names the clans.
 - **`subscriberRequired`, `competitiveDisabled`, `competitivePlayers`** belong to the platform database.
 - **`validate`** no longer exists. Express constraints as `playerCount` (on an option or a value),
   `requires` on a value, or a `forbidden-combination` rule whose `message` is a key in the options

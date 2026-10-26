@@ -1,6 +1,16 @@
 {
   "option.tournamentRules": "Turnierregeln",
   "option.tournamentRules.help": "Beide Spieler dürfen denselben Clan wählen, und die 2 Militärsieg-Marker, die 2 Militärsiege geben, werden aus dem Spiel genommen.",
-  "option.snakesClan": "Clan der Schlangen",
-  "option.snakesClan.help": "Fügt den Clan der Schlangen aus der Erweiterung zu den Clans hinzu, die die Spieler wählen können."
+  "option.clanSelection": "Clanwahl",
+  "option.clanSelection.help": "Wie jeder Spieler seinen Clan erhält",
+  "option.clanSelection.1": "Im Spiel",
+  "option.clanSelection.1.help": "Jeder Spieler wählt zu Beginn der Partie reihum seinen Clan",
+  "option.clanSelection.2": "Frei",
+  "option.clanSelection.2.help": "Jeder Spieler wählt seinen Clan vor der Partie frei",
+  "identities": "Clan",
+  "identities.1": "Pandas",
+  "identities.2": "Haie",
+  "identities.3": "Katzen",
+  "identities.4": "Skorpione",
+  "identities.5": "Schlangen"
 }

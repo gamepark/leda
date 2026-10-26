@@ -1,6 +1,16 @@
 {
   "option.tournamentRules": "Tournament rules",
   "option.tournamentRules.help": "Both players may pick the same clan, and the 2 Military Victory tokens granting 2 military victories are removed from the game.",
-  "option.snakesClan": "Snakes clan",
-  "option.snakesClan.help": "Adds the Snakes clan, from the expansion, to the clans the players may pick."
+  "option.clanSelection": "Clan selection",
+  "option.clanSelection.help": "How each player gets their clan",
+  "option.clanSelection.1": "In game",
+  "option.clanSelection.1.help": "Each player picks their clan in turn at the start of the game",
+  "option.clanSelection.2": "Free",
+  "option.clanSelection.2.help": "Each player freely picks their clan before the game",
+  "identities": "Clan",
+  "identities.1": "Pandas",
+  "identities.2": "Sharks",
+  "identities.3": "Cats",
+  "identities.4": "Scorpions",
+  "identities.5": "Snakes"
 }

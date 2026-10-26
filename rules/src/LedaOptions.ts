@@ -1,26 +1,29 @@
 import { OptionsSpecV2 } from '@gamepark/rules-api'
+import { Clan } from './Clan'
+import { ClanSelection } from './ClanSelection'
 
 /**
  * This is the type of object that the game receives when a new game is started.
- * The clan is not an option, it is picked during the game (see {@link Clan}), so players are simply numbered 1 and 2.
+ * By default the clan is not an option, it is picked during the game (see {@link Clan}), so players are simply numbered 1 and 2.
  *
  * `tournamentRules` plays the game the way tournaments do: both players may pick the same clan, and the 2 Military
  * Victory tokens worth 2 Victory symbols are left in the box. Absent when the host did not tick it.
  *
- * `snakesClan` adds the Snakes, the clan of the extension, to the clans the players may pick. Without it they are
- * neither offered nor shown. Absent when the host did not tick it.
+ * `clanSelection` lets each player pick their clan before the game ({@link ClanSelection.Free}): their clan is then
+ * their player id. Absent in games created before the option existed, which pick it at the table.
  */
 export type LedaOptions = {
-  players: number
+  /** The table size, or one entry per player holding its clan as identity (ClanSelection.Free) */
+  players: number | { id?: Clan }[]
   tournamentRules?: boolean
-  snakesClan?: boolean
+  clanSelection?: ClanSelection
 }
 
 /**
  * The structure of everything a host can choose before the game starts — and nothing else.
  *
- * Leda has no identity to pick, since the clan is taken during the game. Beside the table size, which is always 2,
- * the only choices are whether to play with the tournament rules, and whether the Snakes may be picked.
+ * Beside the table size, which is always 2, the choices are whether to play with the tournament rules, and whether
+ * the clans are picked at the table or before the game, as the player identities.
  *
  * Two things are deliberately absent from this declaration, both because they change without the game changing:
  *
@@ -42,6 +45,12 @@ export const LedaOptionsSpecV2: OptionsSpecV2 = {
   players: { min: 2, max: 2 },
   options: {
     tournamentRules: { kind: 'boolean' },
-    snakesClan: { kind: 'boolean' }
+    clanSelection: { kind: 'enum', values: [ClanSelection.InGame, ClanSelection.Free] }
+  },
+  // Players are their clan only when they pick it freely; otherwise they are numbered and choose at the table.
+  // An identity being unique, a free selection never makes a mirror match, tournament rules or not.
+  identities: {
+    requires: [{ option: 'clanSelection', values: [ClanSelection.Free] }],
+    values: [Clan.Panda, Clan.Shark, Clan.Cat, Clan.Scorpion, Clan.Snake]
   }
 }

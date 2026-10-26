@@ -1,6 +1,16 @@
 {
   "option.tournamentRules": "Règles de tournoi",
   "option.tournamentRules.help": "Les deux joueurs peuvent choisir le même clan, et les 2 jetons Victoire militaire donnant 2 victoires militaires sont retirés du jeu.",
-  "option.snakesClan": "Clan des Serpents",
-  "option.snakesClan.help": "Ajoute le clan des Serpents, issu de l'extension, aux clans que les joueurs peuvent choisir."
+  "option.clanSelection": "Choix des clans",
+  "option.clanSelection.help": "Comment chaque joueur obtient son clan",
+  "option.clanSelection.1": "En partie",
+  "option.clanSelection.1.help": "Chaque joueur choisit son clan à tour de rôle au début de la partie",
+  "option.clanSelection.2": "Libre",
+  "option.clanSelection.2.help": "Chaque joueur choisit librement son clan avant la partie",
+  "identities": "Clan",
+  "identities.1": "Pandas",
+  "identities.2": "Requins",
+  "identities.3": "Chats",
+  "identities.4": "Scorpions",
+  "identities.5": "Serpents"
 }

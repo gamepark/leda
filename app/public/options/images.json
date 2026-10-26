@@ -1,0 +1,27 @@
+{
+  "identities.1": {
+    "src": "/options/panda.webp",
+    "width": 400,
+    "height": 400
+  },
+  "identities.2": {
+    "src": "/options/shark.webp",
+    "width": 400,
+    "height": 400
+  },
+  "identities.3": {
+    "src": "/options/cat.webp",
+    "width": 400,
+    "height": 400
+  },
+  "identities.4": {
+    "src": "/options/scorpion.webp",
+    "width": 400,
+    "height": 400
+  },
+  "identities.5": {
+    "src": "/options/snake.webp",
+    "width": 400,
+    "height": 400
+  }
+}

@@ -1,10 +1,14 @@
-import { getEnumValues, MaterialGameSetup } from '@gamepark/rules-api'
+import { getEnumValues, MaterialGameSetup, MaterialMoveBuilder } from '@gamepark/rules-api'
+import { shuffle } from 'es-toolkit'
+import { Clan } from './Clan'
+import { ClanSelection } from './ClanSelection'
 import { LedaOptions } from './LedaOptions'
 import { LedaRules } from './LedaRules'
 import { ActionTileId } from './material/ActionTileId'
 import { LocationType } from './material/LocationType'
 import { MaterialType } from './material/MaterialType'
 import { baseTiles } from './material/TileId'
+import { CustomMoveType } from './rules/CustomMoveType'
 import { Memory } from './rules/Memory'
 import { RuleId } from './rules/RuleId'
 import { militaryVictoryPile } from './rules/tournament'
@@ -70,10 +74,27 @@ export class LedaSetup extends MaterialGameSetup<number, MaterialType, LocationT
   }
 
   /**
-   * Setup step 5 gives the first player. The website already hands the players over in a random order,
-   * so the first of them starts.
+   * With ClanSelection.Free, the platform hands each player the clan they picked as their identity
    */
-  start() {
+  clansPicked(options: LedaOptions) {
+    return options.clanSelection === ClanSelection.Free && Array.isArray(options.players) && options.players.every((player) => player.id !== undefined)
+  }
+
+  /**
+   * Setup step 5 gives the first player. The website already hands the players over in a random order,
+   * so the first of them starts. Not when they hold identities, which come in the order of the clans: they are shuffled.
+   *
+   * When the clans were picked before the game, each player takes theirs in turn order exactly as at the table,
+   * through the same moves, which leaves the game at the mulligan.
+   */
+  start(options: LedaOptions) {
+    const clansPicked = this.clansPicked(options)
+    if (clansPicked) this.game.players = shuffle(this.game.players)
     this.startPlayerTurn(RuleId.ChooseClan, this.players[0])
+    if (clansPicked) {
+      for (const player of this.players) {
+        this.playMove(MaterialMoveBuilder.customMove(CustomMoveType.ChooseClan, player as Clan))
+      }
+    }
   }
 }

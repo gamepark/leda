@@ -3,7 +3,8 @@ import { ClanCardId } from './material/ClanCardId'
 
 /**
  * The clans. During setup the players pick one each, one after the other, starting with the first player, so 2 of
- * them are in play in any given game. A clan is not a player id: it is chosen once the game is on.
+ * them are in play in any given game. A clan is not a player id: it is chosen once the game is on, unless the players
+ * picked it before the game (see {@link ClanSelection.Free}), in which case each player id is their clan.
  *
  * In the order of the box, which is the order they are offered in and the order everything else follows. The
  * Snakes come last, being the clan of the extension rather than one of the 4 the base box holds.
